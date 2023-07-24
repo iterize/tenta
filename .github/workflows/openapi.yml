@@ -1,0 +1,19 @@
+name: openapi
+on:
+  push:
+    branches: [main]
+    paths:
+      - server/openapi.yml
+      - .github/workflows/openapi.yml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Deploy OpenAPI documentation
+        uses: bump-sh/github-action@v1
+        with:
+          file: server/openapi.yml
+          doc: 24616c25-ad93-410b-8a2f-d3a9b96c04c6
+          token: ${{ secrets.BUMP_TOKEN }}

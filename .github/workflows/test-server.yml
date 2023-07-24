@@ -1,0 +1,42 @@
+name: test-server
+on:
+  push:
+    branches: [main]
+    paths:
+      - server/**
+      - .github/workflows/test-server.yml
+  pull_request:
+    paths:
+      - server/**
+      - .github/workflows/test-server.yml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4 # Uses the Python version in .python-version
+        with:
+          python-version-file: server/.python-version
+      - name: Install poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load virtual environment cache
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: server/.venv
+          key: ${{ runner.os }}-${{ hashFiles('server/poetry.lock') }}-1 # Increment to invalidate cache
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: scripts/setup
+      - name: Run tests
+        run: scripts/test
