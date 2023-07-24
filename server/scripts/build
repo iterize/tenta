@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# Safety first
+set -o errexit -o pipefail -o nounset
+# Change into the project's directory
+cd "$(dirname "$0")/.."
+
+# Get the current commit hash and branch name
+COMMIT_SHA="$(git rev-parse --verify HEAD)"
+BRANCH_NAME="$(git branch --show-current)"
+
+# Build the docker image
+docker build --build-arg commit_sha="${COMMIT_SHA}" --build-arg branch_name="${BRANCH_NAME}" --tag server .
+yes | docker image prune

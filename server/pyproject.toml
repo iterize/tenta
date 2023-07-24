@@ -1,0 +1,75 @@
+[tool.poetry]
+name = "server"
+version = "0.1.0"
+description = ""
+authors = ["Felix Böhm <felix@felixboehm.dev>"]
+
+[tool.poetry.dependencies]
+python = "~3.11"
+starlette = "^0.28.0"
+uvicorn = {extras = ["standard"], version = "^0.22.0"}
+asyncpg = "^0.27.0"
+pydantic = "^2.0"
+passlib = {extras = ["argon2"], version = "^1.7.4"}
+pendulum = "^2.1.2"
+aiomqtt = "^1.0.0"
+
+[tool.poetry.group.dev]
+optional = true
+
+[tool.poetry.group.dev.dependencies]
+jupyterlab = "^4.0.2"
+black = "^23.3.0"
+sqlfluff = "^2.1.1"
+httpx = "^0.24.0"
+ruff = "^0.0.275"
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+anyio = "^3.6.2"
+asgi-lifespan = "^2.1.0"
+seaborn = "^0.12.2"
+
+[tool.black]
+preview = true
+
+[tool.ruff]
+line-length = 88
+select = ["E", "W", "F", "I", "N"]
+ignore = ["E501"]
+target-version = "py311"
+
+[tool.ruff.isort]
+lines-after-imports = 2
+
+[tool.ruff.pep8-naming]
+classmethod-decorators = ["classmethod", "pydantic.field_validator"]
+
+[tool.sqlfluff.core]
+dialect = "postgres"
+templater = "placeholder"
+exclude_rules = "L032"
+
+[tool.sqlfluff.templater.placeholder]
+param_style = "dollar"
+user_identifier = "'016d56bc-029a-4fbc-86ea-d0b8c8a8dfd9'"
+sensor_identifier = "'016d56bc-029a-4fbc-86ea-d0b8c8a8dfd9'"
+network_identifier = "'016d56bc-029a-4fbc-86ea-d0b8c8a8dfd9'"
+user_name = "'user'"
+sensor_name = "'sensor'"
+password_hash = "'9c8cf1d1ca883388'"
+access_token_hash = "'9c8cf1d1ca883388'"
+measurement = "'{}'"
+configuration = "'{}'"
+revision = 0
+index = 0
+creation_timestamp = "'1970-01-01T00:00:00+00:00'"
+acknowledgement_timestamp = "'1970-01-01T00:00:00+00:00'"
+severity = "'info'"
+subject = "'subject'"
+details = "'details'"
+direction = "'next'"
+success = "TRUE"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

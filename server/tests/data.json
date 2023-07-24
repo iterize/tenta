@@ -1,0 +1,205 @@
+{
+    "user": [
+        {
+            "identifier": "575a7328-4e2e-4b88-afcc-e0b5ed3920cc",
+            "name": "ash",
+            "creation_timestamp": 0,
+            "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$JaT0nnOuVYqx9h6jtLa21g$iRkdLMm6Pigqop5+DVzLwNRIxyE2uP3ZdYKJjHo4LhM"
+        }
+    ],
+    "network": [
+        {
+            "identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
+            "name": "default",
+            "creation_timestamp": 0
+        }
+    ],
+    "sensor": [
+        {
+            "identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "name": "bulbasaur",
+            "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
+            "creation_timestamp": 0
+        },
+        {
+            "identifier": "2d2a3794-2345-4500-8baa-493f88123087",
+            "name": "charmander",
+            "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
+            "creation_timestamp": 0
+        },
+        {
+            "identifier": "df1ad8d1-63ea-45b6-ae42-86febb182fe8",
+            "name": "squirtle",
+            "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
+            "creation_timestamp": 0
+        }
+    ],
+    "permission": [
+        {
+            "user_identifier": "575a7328-4e2e-4b88-afcc-e0b5ed3920cc",
+            "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
+            "creation_timestamp": 0
+        }
+    ],
+    "session": [
+        {
+            "access_token_hash": "88a2419d0d862e44e44cdf98abda5e99b7655d12c7b7d4e8a4f3731a1095eac0709e798a75b8d669158e03e5bd13ad91e100c525ec90fb619f4b575d7f219a1a",
+            "user_identifier": "575a7328-4e2e-4b88-afcc-e0b5ed3920cc",
+            "creation_timestamp": 0
+        }
+    ],
+    "configuration": [
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "value": {},
+            "revision": 0,
+            "creation_timestamp": 100,
+            "publication_timestamp": 100,
+            "acknowledgement_timestamp": 100,
+            "receipt_timestamp": 100,
+            "success": true
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "value": {},
+            "revision": 1,
+            "creation_timestamp": 200,
+            "publication_timestamp": 200,
+            "acknowledgement_timestamp": 200,
+            "receipt_timestamp": 200,
+            "success": false
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "value": {},
+            "revision": 2,
+            "creation_timestamp": 300,
+            "publication_timestamp": 300,
+            "acknowledgement_timestamp": null,
+            "receipt_timestamp": null,
+            "success": null
+        },
+        {
+            "sensor_identifier": "2d2a3794-2345-4500-8baa-493f88123087",
+            "value": {},
+            "revision": 0,
+            "creation_timestamp": 0,
+            "publication_timestamp": 0,
+            "acknowledgement_timestamp": 0,
+            "receipt_timestamp": 0,
+            "success": true
+        },
+        {
+            "sensor_identifier": "df1ad8d1-63ea-45b6-ae42-86febb182fe8",
+            "configuration": {},
+            "revision": 0,
+            "creation_timestamp": 0,
+            "publication_timestamp": 0,
+            "acknowledgement_timestamp": 0,
+            "receipt_timestamp": 0,
+            "success": true
+        }
+    ],
+    "measurement": [
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "value": {
+                "somewhere": 8,
+                "what": 9.5,
+                "tomorrow": "yes"
+            },
+            "revision": null,
+            "creation_timestamp": 0,
+            "receipt_timestamp": 0,
+            "index": 0
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "value": {
+                "somewhere": 530,
+                "what": 2.8,
+                "tomorrow": "which"
+            },
+            "revision": null,
+            "creation_timestamp": 100,
+            "receipt_timestamp": 100,
+            "index": 0
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "value": {
+                "somewhere": 20,
+                "what": 1.2,
+                "tomorrow": "no"
+            },
+            "revision": 1,
+            "creation_timestamp": 200,
+            "receipt_timestamp": 300,
+            "index": 0
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "value": {
+                "somewhere": 270,
+                "what": 4.0,
+                "tomorrow": "maybe"
+            },
+            "revision": 1,
+            "creation_timestamp": 300,
+            "receipt_timestamp": 300,
+            "index": 1
+        }
+    ],
+    "log": [
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "severity": "info",
+            "subject": "Everything is fine",
+            "revision": null,
+            "creation_timestamp": 0,
+            "receipt_timestamp": 200,
+            "index": 0,
+            "details": null
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "severity": "info",
+            "subject": "Everything is fine",
+            "revision": 0,
+            "creation_timestamp": 100,
+            "receipt_timestamp": 200,
+            "index": 1,
+            "details": null
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "severity": "warning",
+            "subject": "The CPU is toasty",
+            "revision": 0,
+            "creation_timestamp": 200,
+            "receipt_timestamp": 200,
+            "index": 2,
+            "details": "Get the marshmallows ready!"
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "severity": "warning",
+            "subject": "The CPU is toasty",
+            "revision": 1,
+            "creation_timestamp": 300,
+            "receipt_timestamp": 300,
+            "index": 0,
+            "details": "Get the marshmallows ready!"
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "severity": "error",
+            "subject": "The CPU is burning",
+            "revision": 2,
+            "creation_timestamp": 400,
+            "receipt_timestamp": 400,
+            "index": 0,
+            "details": "Please call the fire department."
+        }
+    ]
+}

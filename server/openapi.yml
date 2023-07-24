@@ -1,0 +1,430 @@
+openapi: 3.0.2
+info:
+  title: Hermes
+  version: "0.1"
+servers:
+  - url: "https://sea-turtle-app-38sco.ondigitalocean.app"
+tags:
+  - name: Status
+  - name: Users
+  - name: Networks
+  - name: Sensors
+  - name: Measurements
+  - name: Logs
+paths:
+  "/status":
+    get:
+      tags: [Status]
+      summary: Read server status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  environment:
+                    type: string
+                    example: production
+                  commit_sha:
+                    type: string
+                    example: 1a2984bf5ffda71207fb133d785eb486cb465618
+                  branch_name:
+                    type: string
+                    example: main
+                  start_timestamp:
+                    $ref: "#/components/schemas/timestamp"
+  "/users":
+    post:
+      tags: [Users]
+      summary: Create user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  $ref: "#/components/schemas/name"
+                password:
+                  $ref: "#/components/schemas/password"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    $ref: "#/components/schemas/token"
+                  user_identifier:
+                    $ref: "#/components/schemas/identifier"
+        "409":
+          $ref: "#/components/responses/409"
+  "/authentication":
+    post:
+      tags: [Users]
+      summary: Authenticate
+      description: |
+        Authenticate a user from a username and password and return an access token. Use this access token in all requests to protected routes.
+
+        The access token is valid indefinitely.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  $ref: "#/components/schemas/name"
+                password:
+                  $ref: "#/components/schemas/password"
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    $ref: "#/components/schemas/token"
+                  user_identifier:
+                    $ref: "#/components/schemas/identifier"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+  "/networks/{network_identifier}":
+    parameters:
+      - $ref: "#/components/parameters/network_identifier"
+    get:
+      tags: [Networks]
+      summary: Read network
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sensor_identifier:
+                      $ref: "#/components/schemas/identifier"
+                    sensor_name:
+                      $ref: "#/components/schemas/name"
+                    bucket_timestamps:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/timestamp"
+                    measurement_counts:
+                      type: array
+                      items:
+                        type: integer
+  "/networks/{network_identifier}/sensors":
+    parameters:
+      - $ref: "#/components/parameters/network_identifier"
+    post:
+      tags: [Sensors]
+      summary: Create sensor
+      security:
+        - "Bearer token": []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sensor_name:
+                  $ref: "#/components/schemas/name"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sensor_identifier:
+                    $ref: "#/components/schemas/identifier"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+  "/networks/{network_identifier}/sensors/{sensor_identifier}":
+    parameters:
+      - $ref: "#/components/parameters/network_identifier"
+      - $ref: "#/components/parameters/sensor_identifier"
+    put:
+      tags: [Sensors]
+      summary: Update sensor
+      security:
+        - "Bearer token": []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sensor_name:
+                  $ref: "#/components/schemas/name"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sensor_identifier:
+                    $ref: "#/components/schemas/identifier"
+        "404":
+          $ref: "#/components/responses/404"
+        "409":
+          $ref: "#/components/responses/409"
+  "/networks/{network_identifier}/sensors/{sensor_identifier}/configurations":
+    parameters:
+      - $ref: "#/components/parameters/network_identifier"
+      - $ref: "#/components/parameters/sensor_identifier"
+    post:
+      tags: [Sensors]
+      summary: Create configuration
+      description: |
+        Create or update a sensor's configuration. Each configuration is assigned a monotonically increasing `revision` number. The new configuration is stored in the database and relayed to the sensor over MQTT.
+
+        Configurations are an optional feature. Sensors don't need to implement configuration updates and can nevertheless send measurements and logs unidirectionally to the server.
+      security:
+        - "Bearer token": []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/configuration"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  revision:
+                    $ref: "#/components/schemas/revision"
+        "404":
+          $ref: "#/components/responses/404"
+    get:
+      tags: [Sensors]
+      summary: Read configurations
+      description: "Return a sensor's configurations in pages of 64 elements sorted ascendingly by `revision`."
+      parameters:
+        - $ref: "#/components/parameters/direction"
+        - $ref: "#/components/parameters/revision"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      $ref: "#/components/schemas/configuration"
+                    revision:
+                      $ref: "#/components/schemas/revision"
+                    creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    publication_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    acknowledgement_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    receipt_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    success:
+                      type: boolean
+  "/networks/{network_identifier}/sensors/{sensor_identifier}/measurements":
+    parameters:
+      - $ref: "#/components/parameters/network_identifier"
+      - $ref: "#/components/parameters/sensor_identifier"
+    get:
+      tags: [Measurements]
+      summary: Read measurements
+      description: "Return a sensor's measurements in pages of 64 elements sorted ascendingly by `creation_timestamp`."
+      parameters:
+        - $ref: "#/components/parameters/direction"
+        - $ref: "#/components/parameters/creation_timestamp"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    value:
+                      type: object
+                    revision:
+                      $ref: "#/components/schemas/revision"
+                    creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+  "/networks/{network_identifier}/sensors/{sensor_identifier}/logs":
+    parameters:
+      - $ref: "#/components/parameters/network_identifier"
+      - $ref: "#/components/parameters/sensor_identifier"
+    get:
+      tags: [Logs]
+      summary: Read logs
+      description: "Return a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`."
+      parameters:
+        - $ref: "#/components/parameters/direction"
+        - $ref: "#/components/parameters/creation_timestamp"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    severity:
+                      $ref: "#/components/schemas/severity"
+                    subject:
+                      type: string
+                    revision:
+                      $ref: "#/components/schemas/revision"
+                    creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    details:
+                      type: string
+  "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
+    parameters:
+      - $ref: "#/components/parameters/network_identifier"
+      - $ref: "#/components/parameters/sensor_identifier"
+    get:
+      tags: [Logs]
+      summary: Read logs aggregation
+      description: "Read an aggregation of a sensor's logs that have a severity of warning or error."
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    severity:
+                      $ref: "#/components/schemas/severity"
+                    subject:
+                      type: string
+                    min_revision:
+                      $ref: "#/components/schemas/revision"
+                    max_revision:
+                      $ref: "#/components/schemas/revision"
+                    min_creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    max_creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    count:
+                      $ref: "#/components/schemas/count"
+components:
+  securitySchemes:
+    "Bearer token":
+      type: http
+      scheme: bearer
+  responses:
+    401:
+      description: Unauthorized
+    404:
+      description: Not Found
+    409:
+      description: Conflict
+  schemas:
+    identifier:
+      type: string
+      example: 575a7328-4e2e-4b88-afcc-e0b5ed3920cc
+      pattern: "^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$"
+    token:
+      type: string
+      example: c59805ae394cceea937163877ca31375183650586137170a69652b6d8543e869
+      pattern: "^[0-9a-f]{64}$"
+    timestamp:
+      type: number
+      example: 1683644500.3
+    name:
+      description: "The regex means: lowercase letters and numbers, separated by dashes, with no leading, trailing, or double dashes."
+      type: string
+      example: example
+      pattern: "^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$"
+    password:
+      type: string
+      example: "12345678"
+      minLength: 8
+      maxLength: 256
+    configuration:
+      description: "Configurations are JSON objects that are relayed to the sensors over MQTT. Sensors are expected to validate the configurations they receive and respond with positive or negative acknowledgements."
+      type: object
+      example:
+        somewhere: 8.5
+        what: true
+        tomorrow: "value"
+    revision:
+      description: "Configurations are assigned monotonically increasing revision numbers. The revision is used as an identifier in the communication with the sensors and can clearly match configurations to measurements and logs."
+      type: integer
+    severity:
+      type: string
+      enum: [info, warning, error]
+    count:
+      type: integer
+      minimum: 0
+    authorization:
+      type: string
+      example: Bearer c59805ae394cceea937163877ca31375183650586137170a69652b6d8543e869
+      pattern: "^Bearer [0-9a-f]{64}$"
+  parameters:
+    network_identifier:
+      name: network_identifier
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/identifier"
+    sensor_identifier:
+      name: sensor_identifier
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/identifier"
+    revision:
+      name: revision
+      description: "The cursor of the query. Depending on the direction, the request returns the next or previous elements. The cursor is excluded from the result."
+      in: query
+      schema:
+        $ref: "#/components/schemas/revision"
+    creation_timestamp:
+      name: creation_timestamp
+      description: "The cursor of the query. Depending on the direction, the request returns the next or previous elements. The cursor is excluded from the result."
+      in: query
+      schema:
+        $ref: "#/components/schemas/timestamp"
+    direction:
+      name: direction
+      description: "The direction of the page based on the cursor. If no cursor is provided, `next` returns the first page and `previous` returns the last page."
+      in: query
+      schema:
+        type: string
+        enum: [next, previous]
+        default: next

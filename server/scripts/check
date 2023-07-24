@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Color definitions
+RESTORE=$(tput sgr0)
+GREEN=$(tput setaf 2)
+
+printf "[..] Running black"
+# Capture program output in variable
+output=$(script -q /dev/null poetry run black --quiet ./app ./tests ./scripts 2>&1 | tr -d '\r' | cat | sed 's/^/  /')
+printf '\r%s[OK]%s Running black\n' "$GREEN" "$RESTORE"
+# If there's output, print it
+[ -z "$output" ] || printf '\n%s\n' "$output"
+
+printf "[..] Running ruff"
+output=$(script -q /dev/null poetry run ruff --fix ./app ./tests ./scripts 2>&1 | tr -d '\r' | cat | sed 's/^/  /')
+printf '\r%s[OK]%s Running ruff\n' "$GREEN" "$RESTORE"
+[ -z "$output" ] || printf '\n%s\n' "$output"
+
+printf "[..] Running sqlfluff"
+output=$(script -q /dev/null poetry run sqlfluff fix --force -v --disable-progress-bar ./app/queries.sql 2>&1 | tr -d '\r' | cat | sed 's/^/  /')
+printf '\r%s[OK]%s Running sqlfluff\n' "$GREEN" "$RESTORE"
+[ -z "$output" ] || printf '\n%s\n' "$output"

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# Safety first
+set -o errexit -o pipefail -o nounset
+# Change into the project's directory
+cd "$(dirname "$0")/.."
+
+# Set our environment variables
+export ENVIRONMENT="test"
+export COMMIT_SHA=$(git rev-parse --verify HEAD)
+export BRANCH_NAME=$(git branch --show-current)
+export POSTGRESQL_URL="localhost"
+export POSTGRESQL_PORT="5432"
+export POSTGRESQL_IDENTIFIER="postgres"
+export POSTGRESQL_PASSWORD="12345678"
+export POSTGRESQL_DATABASE="database"
+export MQTT_URL="localhost"
+export MQTT_PORT="1883"
+export MQTT_IDENTIFIER="server"
+export MQTT_PASSWORD="password"
+
+# Path to our Mosquitto configuation
+MOSQUITTO_CONFIGURATION="$(pwd)/tests/mosquitto.conf"
+
+# Start PostgreSQL via docker in the background
+docker run -td --rm --name postgres -p 127.0.0.1:5432:5432 -e POSTGRES_USER="${POSTGRESQL_IDENTIFIER}" -e POSTGRES_PASSWORD="${POSTGRESQL_PASSWORD}" -e POSTGRES_DB="${POSTGRESQL_DATABASE}" timescale/timescaledb:latest-pg15 >/dev/null
+# Start the Mosquitto MQTT broker via docker in the background
+docker run -td --rm --name mosquitto -p 127.0.0.1:1883:1883 -v "${MOSQUITTO_CONFIGURATION}:/mosquitto/config/mosquitto.conf" eclipse-mosquitto:latest >/dev/null
+# Wait for services to be ready
+sleep 4
+# Run the database initialization script
+./scripts/initialize ||:
+# Run the tests
+poetry run pytest --cov=app --cov-report=term-missing tests "$@" || status=$?
+# Stop and remove the Mosquitto docker container
+docker stop mosquitto >/dev/null
+# Stop and remove the PostgreSQL docker container
+docker stop postgres >/dev/null
+# Exit with captured status code
+exit ${status=0}
