@@ -461,4 +461,8 @@ app = starlette.applications.Starlette(
         ),
         starlette.middleware.Middleware(auth.AuthenticationMiddleware),
     ],
+    exception_handlers={
+        starlette.exceptions.HTTPException: errors.handler,
+        500: errors.panic,
+    },
 )

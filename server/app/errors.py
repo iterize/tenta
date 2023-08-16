@@ -1,4 +1,22 @@
 import starlette.exceptions
+import starlette.responses
+
+
+async def handler(request, exc):
+    """Return JSON instead of the default text/plain for handled exceptions."""
+    return starlette.responses.JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=exc.headers,
+    )
+
+
+async def panic(request, exc):
+    """Return JSON instead of the default text/plain for errors."""
+    return starlette.responses.JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error"},
+    )
 
 
 class _CustomError(starlette.exceptions.HTTPException):
