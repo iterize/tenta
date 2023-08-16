@@ -70,6 +70,7 @@ VALUES (
 -- name: create-measurement
 INSERT INTO measurement (
     sensor_identifier,
+    attribute,
     value,
     revision,
     creation_timestamp,
@@ -78,7 +79,8 @@ INSERT INTO measurement (
 )
 VALUES (
     ${sensor_identifier},
-    ${measurement},
+    ${attribute},
+    ${value},
     ${revision},
     ${creation_timestamp},
     now(),

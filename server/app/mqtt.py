@@ -101,11 +101,11 @@ async def _process_acknowledgements(sensor_identifier, payload, dbpool):
         arguments=[
             {
                 "sensor_identifier": sensor_identifier,
-                "revision": value.revision,
-                "acknowledgement_timestamp": value.timestamp,
-                "success": value.success,
+                "revision": element.revision,
+                "acknowledgement_timestamp": element.timestamp,
+                "success": element.success,
             }
-            for value in payload.values
+            for element in payload.values
         ],
     )
     try:
@@ -127,12 +127,14 @@ async def _process_measurements(sensor_identifier, payload, dbpool):
         arguments=[
             {
                 "sensor_identifier": sensor_identifier,
-                "revision": value.revision,
-                "creation_timestamp": value.timestamp,
+                "attribute": attribute,
+                "value": value,
+                "revision": element.revision,
+                "creation_timestamp": element.timestamp,
                 "index": index,
-                "measurement": value.value,
             }
-            for index, value in enumerate(payload.values)
+            for index, element in enumerate(payload.values)
+            for attribute, value in element.value.items()
         ],
     )
     try:
@@ -141,13 +143,6 @@ async def _process_measurements(sensor_identifier, payload, dbpool):
         logger.warning(
             f"[MQTT] Failed to process; Sensor not found: {sensor_identifier}"
         )
-    """
-    else:
-        logger.info(
-            f"[MQTT] Processed {len(payload.values)} measurements from"
-            f" {sensor_identifier}"
-        )
-    """
 
 
 async def _process_logs(sensor_identifier, payload, dbpool):
@@ -156,14 +151,14 @@ async def _process_logs(sensor_identifier, payload, dbpool):
         arguments=[
             {
                 "sensor_identifier": sensor_identifier,
-                "revision": value.revision,
-                "creation_timestamp": value.timestamp,
+                "revision": element.revision,
+                "creation_timestamp": element.timestamp,
                 "index": index,
-                "severity": value.severity,
-                "subject": value.subject,
-                "details": value.details,
+                "severity": element.severity,
+                "subject": element.subject,
+                "details": element.details,
             }
-            for index, value in enumerate(payload.values)
+            for index, element in enumerate(payload.values)
         ],
     )
     try:

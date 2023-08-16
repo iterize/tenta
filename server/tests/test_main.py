@@ -18,7 +18,10 @@ def returns(response, check):
     """Check that a httpx request returns with a specific status code or error."""
     if isinstance(check, int):
         return response.status_code == check
-    return response.status_code == check.STATUS_CODE and response.text == check.DETAIL
+    return (
+        response.status_code == check.STATUS_CODE
+        and response.json()["detail"] == check.DETAIL
+    )
 
 
 def sorts(response, key):

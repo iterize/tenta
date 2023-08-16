@@ -9,7 +9,7 @@ import app.validation.constants as constants
 
 
 class StrictModel(pydantic.BaseModel):
-    # TODO Set frozen=True
+    # TODO Set frozen=True, see routes.py for details
     model_config = pydantic.ConfigDict(strict=True, frozen=False, extra="forbid")
 
 
@@ -37,17 +37,4 @@ Key = pydantic.constr(max_length=64, pattern=constants.Pattern.KEY.value)
 # During validation somehow, or by handling the database error?
 Revision = pydantic.conint(ge=0, lt=constants.Limit.MAXINT4)
 Timestamp = pydantic.confloat(ge=0, lt=constants.Limit.MAXINT4)
-
-# TODO Validate the values more thoroughly for min and max limits/lengths
-# number of JSON fields or nesting depth could be interesting as well
-# Or, check the actual size of the JSON / length of the JSON string
-Value = (
-    None
-    | pydantic.StrictBool
-    | pydantic.StrictInt
-    | pydantic.StrictFloat
-    | pydantic.StrictStr
-    | list
-    | dict
-)
-Measurement = dict[Key, Value]
+Measurement = dict[Key, float]
