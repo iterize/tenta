@@ -103,11 +103,8 @@
     "measurement": [
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "value": {
-                "somewhere": 8,
-                "what": 9.5,
-                "tomorrow": "yes"
-            },
+            "attribute": "somewhere",
+            "value": 6800.0,
             "revision": null,
             "creation_timestamp": 0,
             "receipt_timestamp": 0,
@@ -115,11 +112,26 @@
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "value": {
-                "somewhere": 530,
-                "what": 2.8,
-                "tomorrow": "which"
-            },
+            "attribute": "tomorrow",
+            "value": 1.2,
+            "revision": null,
+            "creation_timestamp": 0,
+            "receipt_timestamp": 0,
+            "index": 1
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "attribute": "tomorrow",
+            "value": -0.4,
+            "revision": null,
+            "creation_timestamp": 0,
+            "receipt_timestamp": 0,
+            "index": 2
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "attribute": "somewhere",
+            "value": 8200.0,
             "revision": null,
             "creation_timestamp": 100,
             "receipt_timestamp": 100,
@@ -127,11 +139,17 @@
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "value": {
-                "somewhere": 20,
-                "what": 1.2,
-                "tomorrow": "no"
-            },
+            "attribute": "tomorrow",
+            "value": 0.1,
+            "revision": null,
+            "creation_timestamp": 100,
+            "receipt_timestamp": 100,
+            "index": 1
+        },
+        {
+            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
+            "attribute": "somewhere",
+            "value": 6000.0,
             "revision": 1,
             "creation_timestamp": 200,
             "receipt_timestamp": 300,
@@ -139,11 +157,8 @@
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "value": {
-                "somewhere": 270,
-                "what": 4.0,
-                "tomorrow": "maybe"
-            },
+            "attribute": "somewhere",
+            "value": 7800.0,
             "revision": 1,
             "creation_timestamp": 300,
             "receipt_timestamp": 300,

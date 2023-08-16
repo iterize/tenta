@@ -78,7 +78,8 @@ CREATE UNIQUE INDEX ON configuration (sensor_identifier ASC, revision DESC);
 -- continue to do without an index. The same ideas apply to the logs table.
 CREATE TABLE measurement (
     sensor_identifier UUID NOT NULL REFERENCES sensor (identifier) ON DELETE CASCADE,
-    value JSONB NOT NULL,
+    attribute TEXT NOT NULL,
+    value DOUBLE PRECISION NOT NULL,
     revision INT,
     creation_timestamp TIMESTAMPTZ NOT NULL,
     receipt_timestamp TIMESTAMPTZ NOT NULL,
