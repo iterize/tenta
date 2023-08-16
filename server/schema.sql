@@ -82,8 +82,7 @@ CREATE TABLE measurement (
     value DOUBLE PRECISION NOT NULL,
     revision INT,
     creation_timestamp TIMESTAMPTZ NOT NULL,
-    receipt_timestamp TIMESTAMPTZ NOT NULL,
-    index INT NOT NULL
+    receipt_timestamp TIMESTAMPTZ NOT NULL
 
     -- Add lat/long parameters here? -> could then be visualized in the dashboard (in a map)
 );
@@ -117,7 +116,6 @@ CREATE TABLE log (
     revision INT,
     creation_timestamp TIMESTAMPTZ NOT NULL,
     receipt_timestamp TIMESTAMPTZ NOT NULL,
-    index INT NOT NULL,
     details TEXT
 );
 

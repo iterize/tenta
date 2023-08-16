@@ -52,7 +52,6 @@ INSERT INTO log (
     revision,
     creation_timestamp,
     receipt_timestamp,
-    index,
     details
 )
 VALUES (
@@ -62,7 +61,6 @@ VALUES (
     ${revision},
     ${creation_timestamp},
     now(),
-    ${index},
     ${details}
 );
 
@@ -74,8 +72,7 @@ INSERT INTO measurement (
     value,
     revision,
     creation_timestamp,
-    receipt_timestamp,
-    index
+    receipt_timestamp
 )
 VALUES (
     ${sensor_identifier},
@@ -83,8 +80,7 @@ VALUES (
     ${value},
     ${revision},
     ${creation_timestamp},
-    now(),
-    ${index}
+    now()
 );
 
 
@@ -165,10 +161,12 @@ LIMIT 64;
 
 
 -- name: read-measurements
+-- Assemble data points that have the same timestamp and revision
+-- back into measurements, then sort and paginate
 SELECT
-    value,
     revision,
-    creation_timestamp
+    creation_timestamp,
+    jsonb_object_agg(attribute, value) AS value
 FROM measurement
 WHERE
     sensor_identifier = ${sensor_identifier}
@@ -185,6 +183,7 @@ WHERE
             )
         ELSE TRUE
     END
+GROUP BY revision, creation_timestamp
 ORDER BY
     CASE WHEN ${direction} = 'next' THEN creation_timestamp END ASC,
     CASE WHEN ${direction} = 'previous' THEN creation_timestamp END DESC

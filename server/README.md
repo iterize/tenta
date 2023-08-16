@@ -46,7 +46,7 @@ The payloads are JSON encoded and have the following structure:
     {
       "revision": 0, // optional parameter
       "timestamp": 1683645000.0,
-      "value": {} // this can be any valid JSON
+      "value": {} // this contains data points with type double
     }
   ]
 }

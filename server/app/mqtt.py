@@ -131,9 +131,8 @@ async def _process_measurements(sensor_identifier, payload, dbpool):
                 "value": value,
                 "revision": element.revision,
                 "creation_timestamp": element.timestamp,
-                "index": index,
             }
-            for index, element in enumerate(payload.values)
+            for element in payload.values
             for attribute, value in element.value.items()
         ],
     )
@@ -153,12 +152,11 @@ async def _process_logs(sensor_identifier, payload, dbpool):
                 "sensor_identifier": sensor_identifier,
                 "revision": element.revision,
                 "creation_timestamp": element.timestamp,
-                "index": index,
                 "severity": element.severity,
                 "subject": element.subject,
                 "details": element.details,
             }
-            for index, element in enumerate(payload.values)
+            for element in payload.values
         ],
     )
     try:

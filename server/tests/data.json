@@ -107,8 +107,7 @@
             "value": 6800.0,
             "revision": null,
             "creation_timestamp": 0,
-            "receipt_timestamp": 0,
-            "index": 0
+            "receipt_timestamp": 0
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
@@ -116,8 +115,7 @@
             "value": 1.2,
             "revision": null,
             "creation_timestamp": 0,
-            "receipt_timestamp": 0,
-            "index": 1
+            "receipt_timestamp": 0
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
@@ -125,8 +123,7 @@
             "value": -0.4,
             "revision": null,
             "creation_timestamp": 0,
-            "receipt_timestamp": 0,
-            "index": 2
+            "receipt_timestamp": 0
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
@@ -134,8 +131,7 @@
             "value": 8200.0,
             "revision": null,
             "creation_timestamp": 100,
-            "receipt_timestamp": 100,
-            "index": 0
+            "receipt_timestamp": 100
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
@@ -143,8 +139,7 @@
             "value": 0.1,
             "revision": null,
             "creation_timestamp": 100,
-            "receipt_timestamp": 100,
-            "index": 1
+            "receipt_timestamp": 100
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
@@ -152,8 +147,7 @@
             "value": 6000.0,
             "revision": 1,
             "creation_timestamp": 200,
-            "receipt_timestamp": 300,
-            "index": 0
+            "receipt_timestamp": 300
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
@@ -161,8 +155,7 @@
             "value": 7800.0,
             "revision": 1,
             "creation_timestamp": 300,
-            "receipt_timestamp": 300,
-            "index": 1
+            "receipt_timestamp": 300
         }
     ],
     "log": [
@@ -173,7 +166,6 @@
             "revision": null,
             "creation_timestamp": 0,
             "receipt_timestamp": 200,
-            "index": 0,
             "details": null
         },
         {
@@ -183,7 +175,6 @@
             "revision": 0,
             "creation_timestamp": 100,
             "receipt_timestamp": 200,
-            "index": 1,
             "details": null
         },
         {
@@ -193,7 +184,6 @@
             "revision": 0,
             "creation_timestamp": 200,
             "receipt_timestamp": 200,
-            "index": 2,
             "details": "Get the marshmallows ready!"
         },
         {
@@ -203,7 +193,6 @@
             "revision": 1,
             "creation_timestamp": 300,
             "receipt_timestamp": 300,
-            "index": 0,
             "details": "Get the marshmallows ready!"
         },
         {
@@ -213,7 +202,6 @@
             "revision": 2,
             "creation_timestamp": 400,
             "receipt_timestamp": 400,
-            "index": 0,
             "details": "Please call the fire department."
         }
     ]
