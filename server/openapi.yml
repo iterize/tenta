@@ -101,6 +101,34 @@ paths:
           $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
+  "/networks":
+    post:
+      tags: [Networks]
+      summary: Create network
+      security:
+        - "Bearer token": []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                network_name:
+                  $ref: "#/components/schemas/name"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  network_identifier:
+                    $ref: "#/components/schemas/identifier"
+        "401":
+          $ref: "#/components/responses/401"
+        "409":
+          $ref: "#/components/responses/409"
   "/networks/{network_identifier}":
     parameters:
       - $ref: "#/components/parameters/network_identifier"
