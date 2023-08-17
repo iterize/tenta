@@ -400,3 +400,4 @@ async def test_read_measurements_with_previous_page(
 # TODO check log aggregation
 # TODO check create sensor when network exists but user does not have permission
 # TODO check missing/wrong authentication
+# TODO differences between 401 and 404

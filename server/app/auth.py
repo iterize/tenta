@@ -6,6 +6,7 @@ import starlette.authentication
 import starlette.requests
 
 import app.database as database
+import app.errors as errors
 from app.logs import logger
 
 
@@ -105,7 +106,7 @@ class Resource:
         self.identifier = identifier
 
     async def _authorize(self, request):
-        raise NotImplementedError()
+        raise NotImplementedError
 
 
 class Network(Resource):
@@ -121,7 +122,9 @@ class Network(Resource):
         )
         elements = await request.state.dbpool.fetch(query, *arguments)
         elements = database.dictify(elements)
-        return None if len(elements) == 0 else "default"
+        if len(elements) == 0:
+            raise errors.NotFoundError
+        return None if elements[0] is None else "default"
 
 
 class Sensor(Resource):
@@ -138,7 +141,9 @@ class Sensor(Resource):
         )
         elements = await request.state.dbpool.fetch(query, *arguments)
         elements = database.dictify(elements)
-        return None if len(elements) == 0 else "default"
+        if len(elements) == 0:
+            raise errors.NotFoundError
+        return None if elements[0] is None else "default"
 
 
 async def authorize(request, resource):

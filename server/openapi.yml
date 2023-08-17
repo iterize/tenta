@@ -1,6 +1,6 @@
 openapi: 3.0.2
 info:
-  title: Hermes
+  title: Tenta
   version: "0.1"
 servers:
   - url: "https://sea-turtle-app-38sco.ondigitalocean.app"
@@ -155,6 +155,8 @@ paths:
                 properties:
                   sensor_identifier:
                     $ref: "#/components/schemas/identifier"
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -186,6 +188,8 @@ paths:
                 properties:
                   sensor_identifier:
                     $ref: "#/components/schemas/identifier"
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
         "409":
@@ -218,6 +222,8 @@ paths:
                 properties:
                   revision:
                     $ref: "#/components/schemas/revision"
+        "401":
+          $ref: "#/components/responses/401"
         "404":
           $ref: "#/components/responses/404"
     get:

@@ -51,10 +51,10 @@ async def create_user(request, values):
                 logger.warning(
                     f"{request.method} {request.url.path} -- Uniqueness violation"
                 )
-                raise errors.ConflictError()
+                raise errors.ConflictError
             except Exception as e:  # pragma: no cover
                 logger.error(e, exc_info=True)
-                raise errors.InternalServerError()
+                raise errors.InternalServerError
             user_identifier = database.dictify(elements)[0]["user_identifier"]
             # Create new session
             query, arguments = database.parametrize(
@@ -68,7 +68,7 @@ async def create_user(request, values):
                 await connection.execute(query, *arguments)
             except Exception as e:  # pragma: no cover
                 logger.error(e, exc_info=True)
-                raise errors.InternalServerError()
+                raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=201,
@@ -86,17 +86,17 @@ async def create_session(request, values):
         elements = await request.state.dbpool.fetch(query, *arguments)
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     elements = database.dictify(elements)
     if len(elements) == 0:
         logger.warning(f"{request.method} {request.url.path} -- User not found")
-        raise errors.NotFoundError()
+        raise errors.NotFoundError
     user_identifier = elements[0]["user_identifier"]
     password_hash = elements[0]["password_hash"]
     # Check if password hashes match
     if not auth.verify_password(values.body["password"], password_hash):
         logger.warning(f"{request.method} {request.url.path} -- Invalid password")
-        raise errors.UnauthorizedError()
+        raise errors.UnauthorizedError
     access_token = auth.generate_token()
     # Create new session
     query, arguments = database.parametrize(
@@ -110,7 +110,7 @@ async def create_session(request, values):
         await request.state.dbpool.execute(query, *arguments)
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=201,
@@ -148,7 +148,7 @@ async def read_network(request, values):
         elements = await request.state.dbpool.fetch(query, *arguments)
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -165,7 +165,7 @@ async def create_sensor(request, values):
         logger.warning(
             f"{request.method} {request.url.path} -- Insufficient authorization"
         )
-        raise errors.NotFoundError()
+        raise errors.UnauthorizedError
     query, arguments = database.parametrize(
         identifier="create-sensor",
         arguments={
@@ -178,13 +178,13 @@ async def create_sensor(request, values):
     except asyncpg.ForeignKeyViolationError:
         # This can happen if the network is deleted after the permissions check
         logger.warning(f"{request.method} {request.url.path} -- Network not found")
-        raise errors.NotFoundError()
+        raise errors.NotFoundError
     except asyncpg.exceptions.UniqueViolationError:
         logger.warning(f"{request.method} {request.url.path} -- Uniqueness violation")
-        raise errors.ConflictError()
+        raise errors.ConflictError
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     sensor_identifier = database.dictify(elements)[0]["sensor_identifier"]
     # Return successful response
     return starlette.responses.JSONResponse(
@@ -208,7 +208,7 @@ async def update_sensor(request, values):
         logger.warning(
             f"{request.method} {request.url.path} -- Insufficient authorization"
         )
-        raise errors.NotFoundError()
+        raise errors.UnauthorizedError
     query, arguments = database.parametrize(
         identifier="update-sensor",
         arguments={
@@ -220,13 +220,13 @@ async def update_sensor(request, values):
         response = await request.state.dbpool.execute(query, *arguments)
     except asyncpg.exceptions.UniqueViolationError:
         logger.warning(f"{request.method} {request.url.path} -- Uniqueness violation")
-        raise errors.ConflictError()
+        raise errors.ConflictError
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     if response != "UPDATE 1":
         logger.warning(f"{request.method} {request.url.path} -- Sensor not found")
-        raise errors.NotFoundError()
+        raise errors.NotFoundError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -249,7 +249,7 @@ async def create_configuration(request, values):
         logger.warning(
             f"{request.method} {request.url.path} -- Insufficient authorization"
         )
-        raise errors.NotFoundError()
+        raise errors.UnauthorizedError
     query, arguments = database.parametrize(
         identifier="create-configuration",
         arguments={
@@ -261,10 +261,10 @@ async def create_configuration(request, values):
         elements = await request.state.dbpool.fetch(query, *arguments)
     except asyncpg.ForeignKeyViolationError:
         logger.warning(f"{request.method} {request.url.path} -- Sensor not found")
-        raise errors.NotFoundError()
+        raise errors.NotFoundError
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     revision = database.dictify(elements)[0]["revision"]
     # Send MQTT message with configuration
     await mqtt.publish_configuration(
@@ -295,7 +295,7 @@ async def read_configurations(request, values):
         elements = await request.state.dbpool.fetch(query, *arguments)
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -319,7 +319,7 @@ async def read_measurements(request, values):
         elements = await request.state.dbpool.fetch(query, *arguments)
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -343,7 +343,7 @@ async def read_logs(request, values):
         elements = await request.state.dbpool.fetch(query, *arguments)
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -363,7 +363,7 @@ async def read_logs_aggregates(request, values):
         elements = await request.state.dbpool.fetch(query, *arguments)
     except Exception as e:  # pragma: no cover
         logger.error(e, exc_info=True)
-        raise errors.InternalServerError()
+        raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -441,7 +441,7 @@ async def lifespan(app):
         task = loop.create_task(mqtt.listen(mqttc, dbpool))
         # Yield clients to application state
         yield {"dbpool": dbpool, "mqttc": mqttc}
-        # Wait for the MQTT listener task to be cancelled
+        # Wait for the MQTT listener task to be cancelled when the app exits
         task.cancel()
         try:
             await task

@@ -227,16 +227,6 @@ FROM "user"
 WHERE name = ${user_name};
 
 
--- name: read-permissions
--- Could be extended to support finer grained permissions
-SELECT
-    user_identifier,
-    permission.network_identifier
-FROM session
-LEFT JOIN permission USING (user_identifier)
-WHERE session.access_token_hash = ${access_token_hash};
-
-
 -- name: authenticate
 SELECT user_identifier
 FROM session
@@ -244,20 +234,37 @@ WHERE access_token_hash = ${access_token_hash};
 
 
 -- name: authorize-resource-network
-SELECT 1
-FROM permission
-WHERE
-    user_identifier = ${user_identifier}
-    AND network_identifier = ${network_identifier};
+-- Return no elements if the network doesn't exist and NULL if permissions are missing
+-- Could be extended to support finer grained permission relationships
+WITH interim AS (
+    SELECT
+        user_identifier,
+        network_identifier
+    FROM permission
+    WHERE user_identifier = ${user_identifier}
+)
+
+SELECT user_identifier
+FROM network
+LEFT JOIN interim ON network.identifier = interim.network_identifier
+WHERE network.identifier = ${network_identifier};
 
 
 -- name: authorize-resource-sensor
-SELECT 1
-FROM permission
-INNER JOIN sensor USING (network_identifier)
+-- Return no elements if the network or thing doesn't exist and NULL if permissions are missing
+-- Could be extended to support finer grained permission relationships
+WITH interim AS (
+    SELECT
+        user_identifier,
+        network_identifier
+    FROM permission
+    WHERE user_identifier = ${user_identifier}
+)
+SELECT user_identifier
+FROM sensor
+LEFT JOIN interim USING (network_identifier)
 WHERE
-    user_identifier = ${user_identifier}
-    AND network_identifier = ${network_identifier}
+    sensor.network_identifier = ${network_identifier}
     AND sensor.identifier = ${sensor_identifier};
 
 
