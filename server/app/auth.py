@@ -1,5 +1,6 @@
 import hashlib
 import secrets
+import enum
 
 import passlib.context
 import starlette.authentication
@@ -99,6 +100,13 @@ class AuthenticationMiddleware:
 ########################################################################################
 
 
+@enum.unique
+class Relationship(enum.IntEnum):
+    NONE = 0  # The requester is not authenticated
+    DEFAULT = 1  # The requester is authenticated, but no relationship exists
+    OWNER = 2
+
+
 class Resource:
     """Base class for resources that need authorization checks."""
 
@@ -106,13 +114,23 @@ class Resource:
         self.identifier = identifier
 
     async def _authorize(self, request):
+        """Return the relationship between the requester and the resource."""
         raise NotImplementedError
+
+
+class User(Resource):
+    async def _authorize(self, request):
+        if request.state.identity is None:
+            return Relationship.NONE
+        if request.state.identity == self.identifier:
+            return Relationship.OWNER
+        return Relationship.DEFAULT
 
 
 class Network(Resource):
     async def _authorize(self, request):
         if request.state.identity is None:
-            return None
+            return Relationship.NONE
         query, arguments = database.parametrize(
             identifier="authorize-resource-network",
             arguments={
@@ -124,13 +142,13 @@ class Network(Resource):
         elements = database.dictify(elements)
         if len(elements) == 0:
             raise errors.NotFoundError
-        return None if elements[0] is None else "default"
+        return Relationship.DEFAULT if elements[0] is None else Relationship.OWNER
 
 
 class Sensor(Resource):
     async def _authorize(self, request):
         if request.state.identity is None:
-            return None
+            return Relationship.NONE
         query, arguments = database.parametrize(
             identifier="authorize-resource-sensor",
             arguments={
@@ -143,7 +161,7 @@ class Sensor(Resource):
         elements = database.dictify(elements)
         if len(elements) == 0:
             raise errors.NotFoundError
-        return None if elements[0] is None else "default"
+        return Relationship.DEFAULT if elements[0] is None else Relationship.OWNER
 
 
 async def authorize(request, resource):

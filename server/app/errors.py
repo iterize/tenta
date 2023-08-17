@@ -34,6 +34,11 @@ class UnauthorizedError(_CustomError):
     DETAIL = "Unauthorized"
 
 
+class ForbiddenError(_CustomError):
+    STATUS_CODE = 403
+    DETAIL = "Forbidden"
+
+
 class NotFoundError(_CustomError):
     STATUS_CODE = 404
     DETAIL = "Not Found"

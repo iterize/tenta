@@ -120,7 +120,17 @@ async def create_session(request, values):
 
 @validation.validate(schema=validation.CreateNetworkRequest)
 async def create_network(request, values):
-    pass
+    relationship = await auth.authorize(request, auth.User(request.state.identity))
+    if relationship < auth.Relationship.DEFAULT:
+        logger.warning(
+            f"{request.method} {request.url.path} -- Insufficient authorization"
+        )
+        raise errors.UnauthorizedError
+    if relationship < auth.Relationship.OWNER:
+        logger.warning(
+            f"{request.method} {request.url.path} -- Insufficient permissions"
+        )
+        raise errors.ForbiddenError
 
 
 @validation.validate(schema=validation.ReadNetworkRequest)
@@ -166,11 +176,16 @@ async def create_sensor(request, values):
     relationship = await auth.authorize(
         request, auth.Network(values.path["network_identifier"])
     )
-    if relationship != "default":
+    if relationship < auth.Relationship.DEFAULT:
         logger.warning(
             f"{request.method} {request.url.path} -- Insufficient authorization"
         )
         raise errors.UnauthorizedError
+    if relationship < auth.Relationship.OWNER:
+        logger.warning(
+            f"{request.method} {request.url.path} -- Insufficient permissions"
+        )
+        raise errors.ForbiddenError
     query, arguments = database.parametrize(
         identifier="create-sensor",
         arguments={
@@ -209,11 +224,16 @@ async def update_sensor(request, values):
             }
         ),
     )
-    if relationship != "default":
+    if relationship < auth.Relationship.DEFAULT:
         logger.warning(
             f"{request.method} {request.url.path} -- Insufficient authorization"
         )
         raise errors.UnauthorizedError
+    if relationship < auth.Relationship.OWNER:
+        logger.warning(
+            f"{request.method} {request.url.path} -- Insufficient permissions"
+        )
+        raise errors.ForbiddenError
     query, arguments = database.parametrize(
         identifier="update-sensor",
         arguments={
@@ -250,11 +270,16 @@ async def create_configuration(request, values):
             }
         ),
     )
-    if relationship != "default":
+    if relationship < auth.Relationship.DEFAULT:
         logger.warning(
             f"{request.method} {request.url.path} -- Insufficient authorization"
         )
         raise errors.UnauthorizedError
+    if relationship < auth.Relationship.OWNER:
+        logger.warning(
+            f"{request.method} {request.url.path} -- Insufficient permissions"
+        )
+        raise errors.ForbiddenError
     query, arguments = database.parametrize(
         identifier="create-configuration",
         arguments={
