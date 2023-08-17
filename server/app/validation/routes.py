@@ -238,6 +238,12 @@ class CreateSessionRequest(types.StrictModel):
     body: _CreateSessionRequestBody
 
 
+class CreateNetworkRequest(types.StrictModel):
+    path: _CreateNetworkRequestPath
+    query: _CreateNetworkRequestQuery
+    body: _CreateNetworkRequestBody
+
+
 class ReadNetworkRequest(types.StrictModel):
     path: _ReadNetworkRequestPath
     query: _ReadNetworkRequestQuery

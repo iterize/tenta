@@ -27,7 +27,6 @@ WITH aggregation AS (
     WHERE bucket_timestamp > now() - INTERVAL '28 days'
     GROUP BY sensor_identifier
 )
-
 -- Filter by sensors belonging to the given network
 SELECT
     sensor.identifier AS sensor_identifier,
@@ -42,6 +41,33 @@ FROM network
 INNER JOIN sensor ON network.identifier = sensor.network_identifier
 LEFT JOIN aggregation ON sensor.identifier = aggregation.sensor_identifier
 WHERE network.identifier = ${network_identifier};
+
+
+-- name: create-network
+INSERT INTO network (
+    identifier,
+    name,
+    creation_timestamp
+)
+VALUES (
+    uuid_generate_v4(),
+    ${network_name},
+    now()
+)
+RETURNING identifier AS network_identifier;
+
+
+-- name: create-permission
+INSERT INTO permission (
+    user_identifier,
+    network_identifier,
+    creation_timestamp
+)
+VALUES (
+    ${user_identifier},
+    ${network_identifier},
+    now()
+);
 
 
 -- name: create-log
@@ -243,7 +269,6 @@ WITH interim AS (
     FROM permission
     WHERE user_identifier = ${user_identifier}
 )
-
 SELECT user_identifier
 FROM network
 LEFT JOIN interim ON network.identifier = interim.network_identifier

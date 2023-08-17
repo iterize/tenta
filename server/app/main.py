@@ -122,15 +122,51 @@ async def create_session(request, values):
 async def create_network(request, values):
     relationship = await auth.authorize(request, auth.User(request.state.identity))
     if relationship < auth.Relationship.DEFAULT:
+        # We don't need to check for < OWNER because a user is always it's own owner
         logger.warning(
             f"{request.method} {request.url.path} -- Insufficient authorization"
         )
         raise errors.UnauthorizedError
-    if relationship < auth.Relationship.OWNER:
-        logger.warning(
-            f"{request.method} {request.url.path} -- Insufficient permissions"
-        )
-        raise errors.ForbiddenError
+    async with request.state.dbpool.acquire() as connection:
+        async with connection.transaction():
+            # Create new network
+            query, arguments = database.parametrize(
+                identifier="create-network",
+                arguments={"network_name": values.body["network_name"]},
+            )
+            try:
+                elements = await request.state.dbpool.fetch(query, *arguments)
+            except asyncpg.exceptions.UniqueViolationError:
+                logger.warning(
+                    f"{request.method} {request.url.path} -- Uniqueness violation"
+                )
+                raise errors.ConflictError
+            except Exception as e:  # pragma: no cover
+                logger.error(e, exc_info=True)
+                raise errors.InternalServerError
+            network_identifier = database.dictify(elements)[0]["network_identifier"]
+            # Create new permission
+            query, arguments = database.parametrize(
+                identifier="create-permission",
+                arguments={
+                    "user_identifier": request.state.identity,
+                    "network_identifier": network_identifier,
+                },
+            )
+            try:
+                await connection.execute(query, *arguments)
+            except asyncpg.ForeignKeyViolationError:
+                # This can happen if the user is deleted after the permissions check
+                logger.warning(f"{request.method} {request.url.path} -- User not found")
+                raise errors.UnauthorizedError
+            except Exception as e:  # pragma: no cover
+                logger.error(e, exc_info=True)
+                raise errors.InternalServerError
+    # Return successful response
+    return starlette.responses.JSONResponse(
+        status_code=201,
+        content={"network_identifier": network_identifier},
+    )
 
 
 @validation.validate(schema=validation.ReadNetworkRequest)
@@ -416,6 +452,11 @@ ROUTES = [
     starlette.routing.Route(
         path="/authentication",
         endpoint=create_session,
+        methods=["POST"],
+    ),
+    starlette.routing.Route(
+        path="/networks",
+        endpoint=create_network,
         methods=["POST"],
     ),
     starlette.routing.Route(
