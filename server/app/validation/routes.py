@@ -60,6 +60,15 @@ class _CreateSessionRequestPath(types.StrictModel):
     pass
 
 
+class _CreateNetworkRequestPath(types.StrictModel):
+    pass
+
+
+class _ReadNetworkRequestPath(types.StrictModel):
+    network_identifier: types.Identifier
+    network_identifier: types.Identifier
+
+
 class _CreateSensorRequestPath(types.StrictModel):
     network_identifier: types.Identifier
 
@@ -94,11 +103,6 @@ class _ReadLogsAggregatesRequestPath(types.StrictModel):
     sensor_identifier: types.Identifier
 
 
-class _StreamNetworkRequestPath(types.StrictModel):
-    network_identifier: types.Identifier
-    network_identifier: types.Identifier
-
-
 ########################################################################################
 # Query models
 ########################################################################################
@@ -116,7 +120,11 @@ class _CreateSessionRequestQuery(types.LooseModel):
     pass
 
 
-class _StreamNetworkRequestQuery(types.LooseModel):
+class _CreateNetworkRequestQuery(types.LooseModel):
+    pass
+
+
+class _ReadNetworkRequestQuery(types.LooseModel):
     pass
 
 
@@ -170,7 +178,11 @@ class _CreateSessionRequestBody(types.StrictModel):
     password: types.Password
 
 
-class _StreamNetworkRequestBody(types.StrictModel):
+class _CreateNetworkRequestBody(types.StrictModel):
+    network_name: types.Name
+
+
+class _ReadNetworkRequestBody(types.StrictModel):
     pass
 
 
@@ -226,10 +238,10 @@ class CreateSessionRequest(types.StrictModel):
     body: _CreateSessionRequestBody
 
 
-class StreamNetworkRequest(types.StrictModel):
-    path: _StreamNetworkRequestPath
-    query: _StreamNetworkRequestQuery
-    body: _StreamNetworkRequestBody
+class ReadNetworkRequest(types.StrictModel):
+    path: _ReadNetworkRequestPath
+    query: _ReadNetworkRequestQuery
+    body: _ReadNetworkRequestBody
 
 
 class CreateSensorRequest(types.StrictModel):

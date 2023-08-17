@@ -118,7 +118,12 @@ async def create_session(request, values):
     )
 
 
-@validation.validate(schema=validation.StreamNetworkRequest)
+@validation.validate(schema=validation.CreateNetworkRequest)
+async def create_network(request, values):
+    pass
+
+
+@validation.validate(schema=validation.ReadNetworkRequest)
 async def read_network(request, values):
     """Read information about the network and its sensors.
 

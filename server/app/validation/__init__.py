@@ -13,7 +13,7 @@ from .routes import (
     ReadLogsRequest,
     ReadMeasurementsRequest,
     ReadStatusRequest,
-    StreamNetworkRequest,
+    ReadNetworkRequest,
     UpdateSensorRequest,
     validate,
 )
@@ -32,7 +32,7 @@ __all__ = [
     "ReadConfigurationsRequest",
     "ReadMeasurementsRequest",
     "ReadStatusRequest",
-    "StreamNetworkRequest",
+    "ReadNetworkRequest",
     "UpdateSensorRequest",
     "validate",
 ]
