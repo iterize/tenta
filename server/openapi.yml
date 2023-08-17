@@ -1,6 +1,10 @@
 openapi: 3.0.2
 info:
   title: Tenta
+  description: |
+    Tenta is a remote and real-time management system for distributed IoT networks. It enables you to collect and store data from your IoT devices, and supervise and configure them remotely from anywhere in the world.
+
+    This documentation describes Tenta's REST API. In most cases, you won't need to call these endpoints directly; The dashboard provides a user-friendly interface. However, you might use this API to integrate Tenta with your own systems or to automate some tasks.
   version: "0.1"
 servers:
   - url: "https://sea-turtle-app-38sco.ondigitalocean.app"
