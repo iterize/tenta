@@ -2,6 +2,11 @@ import starlette.exceptions
 import starlette.responses
 
 
+########################################################################################
+# Custom starlette error handlers
+########################################################################################
+
+
 async def handler(request, exc):
     """Return JSON instead of the default text/plain for handled exceptions."""
     return starlette.responses.JSONResponse(
@@ -19,9 +24,19 @@ async def panic(request, exc):
     )
 
 
+########################################################################################
+# Custom error class to reduce duplication when raising errors
+########################################################################################
+
+
 class _CustomError(starlette.exceptions.HTTPException):
     def __init__(self):
         super().__init__(self.STATUS_CODE, self.DETAIL)
+
+
+########################################################################################
+# Standard HTTP errors
+########################################################################################
 
 
 class BadRequestError(_CustomError):

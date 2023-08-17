@@ -276,7 +276,7 @@ WHERE network.identifier = ${network_identifier};
 
 
 -- name: authorize-resource-sensor
--- Return no elements if the network or thing doesn't exist and NULL if permissions are missing
+-- Return no elements if the network or sensor doesn't exist and NULL if permissions are missing
 -- Could be extended to support finer grained permission relationships
 WITH interim AS (
     SELECT
