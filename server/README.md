@@ -1,4 +1,4 @@
-The server exposes a REST API. You can find the documentation at [https://bump.sh/empicano/doc/server](https://bump.sh/empicano/doc/server).
+The server exposes a REST API. You can find the documentation at [https://bump.sh/empicano/doc/tenta](https://bump.sh/empicano/doc/tenta).
 
 ## MQTT communication
 

@@ -415,7 +415,7 @@ components:
       description: "The regex means: lowercase letters and numbers, separated by dashes, with no leading, trailing, or double dashes."
       type: string
       example: example
-      pattern: "^(?!-)(?!.*--)[a-z0-9-]{1,64}(?<!-)$"
+      pattern: "^[a-z0-9](-?[a-z0-9])*$"
     password:
       type: string
       example: "12345678"
