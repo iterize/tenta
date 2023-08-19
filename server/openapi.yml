@@ -416,6 +416,7 @@ components:
       type: string
       example: example
       pattern: "^[a-z0-9](-?[a-z0-9])*$"
+      maxLength: 64
     password:
       type: string
       example: "12345678"
