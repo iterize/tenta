@@ -1,6 +1,6 @@
+import enum
 import hashlib
 import secrets
-import enum
 
 import passlib.context
 import starlette.authentication

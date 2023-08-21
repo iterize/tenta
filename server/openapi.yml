@@ -53,6 +53,9 @@ paths:
                   $ref: "#/components/schemas/name"
                 password:
                   $ref: "#/components/schemas/password"
+              required:
+                - user_name
+                - password
       responses:
         "201":
           description: Created
@@ -85,10 +88,9 @@ paths:
                   $ref: "#/components/schemas/name"
                 password:
                   $ref: "#/components/schemas/password"
-          application/xml:
-            schema:
-              type: object
-              properties: {}
+              required:
+                - user_name
+                - password
       responses:
         "201":
           description: Created
@@ -119,6 +121,8 @@ paths:
               properties:
                 network_name:
                   $ref: "#/components/schemas/name"
+              required:
+                - network_name
       responses:
         "201":
           description: Created
@@ -134,11 +138,11 @@ paths:
         "409":
           $ref: "#/components/responses/409"
   "/networks/{network_identifier}":
-    parameters:
-      - $ref: "#/components/parameters/network_identifier"
     get:
       tags: [Networks]
       summary: Read network
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
       responses:
         "200":
           description: OK
@@ -162,13 +166,13 @@ paths:
                       items:
                         type: integer
   "/networks/{network_identifier}/sensors":
-    parameters:
-      - $ref: "#/components/parameters/network_identifier"
     post:
       tags: [Sensors]
       summary: Create sensor
       security:
         - "Bearer token": []
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
       requestBody:
         content:
           application/json:
@@ -177,6 +181,8 @@ paths:
               properties:
                 sensor_name:
                   $ref: "#/components/schemas/name"
+              required:
+                - sensor_name
       responses:
         "201":
           description: Created
@@ -196,14 +202,14 @@ paths:
         "409":
           $ref: "#/components/responses/409"
   "/networks/{network_identifier}/sensors/{sensor_identifier}":
-    parameters:
-      - $ref: "#/components/parameters/network_identifier"
-      - $ref: "#/components/parameters/sensor_identifier"
     put:
       tags: [Sensors]
       summary: Update sensor
       security:
         - "Bearer token": []
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
       requestBody:
         content:
           application/json:
@@ -212,6 +218,8 @@ paths:
               properties:
                 sensor_name:
                   $ref: "#/components/schemas/name"
+              required:
+                - sensor_name
       responses:
         "200":
           description: OK
@@ -231,9 +239,6 @@ paths:
         "409":
           $ref: "#/components/responses/409"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/configurations":
-    parameters:
-      - $ref: "#/components/parameters/network_identifier"
-      - $ref: "#/components/parameters/sensor_identifier"
     post:
       tags: [Sensors]
       summary: Create configuration
@@ -243,6 +248,9 @@ paths:
         Configurations are an optional feature. Sensors don't need to implement configuration updates and can nevertheless send measurements and logs unidirectionally to the server.
       security:
         - "Bearer token": []
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
       requestBody:
         content:
           application/json:
@@ -269,6 +277,8 @@ paths:
       summary: Read configurations
       description: "Return a sensor's configurations in pages of 64 elements sorted ascendingly by `revision`."
       parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
         - $ref: "#/components/parameters/direction"
         - $ref: "#/components/parameters/revision"
       responses:
@@ -296,14 +306,13 @@ paths:
                     success:
                       type: boolean
   "/networks/{network_identifier}/sensors/{sensor_identifier}/measurements":
-    parameters:
-      - $ref: "#/components/parameters/network_identifier"
-      - $ref: "#/components/parameters/sensor_identifier"
     get:
       tags: [Measurements]
       summary: Read measurements
       description: "Return a sensor's measurements in pages of 64 elements sorted ascendingly by `creation_timestamp`."
       parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
         - $ref: "#/components/parameters/direction"
         - $ref: "#/components/parameters/creation_timestamp"
       responses:
@@ -317,20 +326,19 @@ paths:
                   type: object
                   properties:
                     value:
-                      type: object
+                      $ref: "#/components/schemas/measurement"
                     revision:
                       $ref: "#/components/schemas/revision"
                     creation_timestamp:
                       $ref: "#/components/schemas/timestamp"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs":
-    parameters:
-      - $ref: "#/components/parameters/network_identifier"
-      - $ref: "#/components/parameters/sensor_identifier"
     get:
       tags: [Logs]
       summary: Read logs
       description: "Return a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`."
       parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
         - $ref: "#/components/parameters/direction"
         - $ref: "#/components/parameters/creation_timestamp"
       responses:
@@ -354,13 +362,13 @@ paths:
                     details:
                       type: string
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
-    parameters:
-      - $ref: "#/components/parameters/network_identifier"
-      - $ref: "#/components/parameters/sensor_identifier"
     get:
       tags: [Logs]
       summary: Read logs aggregation
       description: "Read an aggregation of a sensor's logs that have a severity of warning or error."
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
       responses:
         "200":
           description: OK
@@ -426,12 +434,17 @@ components:
       description: "Configurations are JSON objects that are relayed to the sensors over MQTT. Sensors are expected to validate the configurations they receive and respond with positive or negative acknowledgements."
       type: object
       example:
-        somewhere: 8.5
-        what: true
-        tomorrow: "value"
+        measurement_interval: 8.5
+        calibrate: true
+        log_level: "info"
     revision:
       description: "Configurations are assigned monotonically increasing revision numbers. The revision is used as an identifier in the communication with the sensors and can clearly match configurations to measurements and logs."
       type: integer
+    measurement:
+      type: object
+      example:
+        temperature: 23.1
+        humidity: 0.62
     severity:
       type: string
       enum: [info, warning, error]

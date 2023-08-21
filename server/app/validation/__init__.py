@@ -5,6 +5,7 @@ from .mqtt import (
 )
 from .routes import (
     CreateConfigurationRequest,
+    CreateNetworkRequest,
     CreateSensorRequest,
     CreateSessionRequest,
     CreateUserRequest,
@@ -12,9 +13,8 @@ from .routes import (
     ReadLogsAggregatesRequest,
     ReadLogsRequest,
     ReadMeasurementsRequest,
-    ReadStatusRequest,
     ReadNetworkRequest,
-    CreateNetworkRequest,
+    ReadStatusRequest,
     UpdateSensorRequest,
     validate,
 )
