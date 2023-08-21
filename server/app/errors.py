@@ -31,7 +31,7 @@ async def panic(request, exc):
 
 class _CustomError(starlette.exceptions.HTTPException):
     def __init__(self):
-        super().__init__(self.STATUS_CODE, self.DETAIL)
+        super().__init__(self.STATUS_CODE, self.DETAILS)
 
 
 ########################################################################################
@@ -41,34 +41,34 @@ class _CustomError(starlette.exceptions.HTTPException):
 
 class BadRequestError(_CustomError):
     STATUS_CODE = 400
-    DETAIL = "Bad Request"
+    DETAILS = "Bad Request"
 
 
 class UnauthorizedError(_CustomError):
     STATUS_CODE = 401
-    DETAIL = "Unauthorized"
+    DETAILS = "Unauthorized"
 
 
 class ForbiddenError(_CustomError):
     STATUS_CODE = 403
-    DETAIL = "Forbidden"
+    DETAILS = "Forbidden"
 
 
 class NotFoundError(_CustomError):
     STATUS_CODE = 404
-    DETAIL = "Not Found"
+    DETAILS = "Not Found"
 
 
 class ConflictError(_CustomError):
     STATUS_CODE = 409
-    DETAIL = "Conflict"
+    DETAILS = "Conflict"
 
 
 class InternalServerError(_CustomError):
     STATUS_CODE = 500
-    DETAIL = "Internal Server Error"
+    DETAILS = "Internal Server Error"
 
 
 class NotImplementedError(_CustomError):
     STATUS_CODE = 501
-    DETAIL = "Not Implemented"
+    DETAILS = "Not Implemented"

@@ -20,7 +20,7 @@ def returns(response, check):
         return response.status_code == check
     return (
         response.status_code == check.STATUS_CODE
-        and response.json()["detail"] == check.DETAIL
+        and response.json()["details"] == check.DETAILS
     )
 
 
@@ -401,3 +401,4 @@ async def test_read_measurements_with_previous_page(
 # TODO check create sensor when network exists but user does not have permission
 # TODO check missing/wrong authentication
 # TODO differences between 401 and 404
+# TODO test validation of measurements with 1.5, 1.0, 0.0, True
