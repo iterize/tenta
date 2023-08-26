@@ -204,8 +204,7 @@ async def test_update_sensor(
         json={"sensor_name": "rattata"},
     )
     assert returns(response, 200)
-    assert keys(response, {"sensor_identifier"})
-    assert response.json()["sensor_identifier"] == sensor_identifier
+    assert keys(response, {})
 
 
 @pytest.mark.anyio

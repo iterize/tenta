@@ -289,10 +289,7 @@ async def update_sensor(request, values):
         logger.warning(f"{request.method} {request.url.path} -- Sensor not found")
         raise errors.NotFoundError
     # Return successful response
-    return starlette.responses.JSONResponse(
-        status_code=200,
-        content={"sensor_identifier": values.path["sensor_identifier"]},
-    )
+    return starlette.responses.JSONResponse(status_code=200, content={})
 
 
 @validation.validate(schema=validation.CreateConfigurationRequest)
