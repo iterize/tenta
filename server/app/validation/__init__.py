@@ -1,5 +1,5 @@
 from .mqtt import (
-    AcknowledgementsMessage,
+    AcknowledgmentsMessage,
     LogsMessage,
     MeasurementsMessage,
 )
@@ -21,7 +21,7 @@ from .routes import (
 
 
 __all__ = [
-    "AcknowledgementsMessage",
+    "AcknowledgmentsMessage",
     "MeasurementsMessage",
     "LogsMessage",
     "CreateSensorRequest",

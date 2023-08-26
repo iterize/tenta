@@ -95,14 +95,14 @@ async def publish_configuration(
     task.add_done_callback(task_references.remove)
 
 
-async def _process_acknowledgements(sensor_identifier, payload, dbpool):
+async def _process_acknowledgments(sensor_identifier, payload, dbpool):
     query, arguments = database.parametrize(
-        identifier="update-configuration-on-acknowledgement",
+        identifier="update-configuration-on-acknowledgment",
         arguments=[
             {
                 "sensor_identifier": sensor_identifier,
                 "revision": element.revision,
-                "acknowledgement_timestamp": element.timestamp,
+                "acknowledgment_timestamp": element.timestamp,
                 "success": element.success,
             }
             for element in payload.values
@@ -113,11 +113,6 @@ async def _process_acknowledgements(sensor_identifier, payload, dbpool):
     except asyncpg.ForeignKeyViolationError:
         logger.warning(
             f"[MQTT] Failed to process; Sensor not found: {sensor_identifier}"
-        )
-    else:
-        logger.info(
-            f"[MQTT] Processed {len(payload.values)} acknowledgements from"
-            f" {sensor_identifier}"
         )
 
 
@@ -165,14 +160,10 @@ async def _process_logs(sensor_identifier, payload, dbpool):
         logger.warning(
             f"[MQTT] Failed to process; Sensor not found: {sensor_identifier}"
         )
-    else:
-        logger.info(
-            f"[MQTT] Processed {len(payload.values)} logs from {sensor_identifier}"
-        )
 
 
 SUBSCRIPTIONS = {
-    "heartbeats/+": (_process_acknowledgements, validation.AcknowledgementsMessage),
+    "acknowledgments/+": (_process_acknowledgments, validation.AcknowledgmentsMessage),
     "measurements/+": (_process_measurements, validation.MeasurementsMessage),
     "logs/+": (_process_logs, validation.LogsMessage),
 }
@@ -205,11 +196,11 @@ async def listen(mqttc, dbpool):
                 logger.warning(f"[MQTT] Malformed message: {message.payload!r}")
                 continue
             # Call the appropriate processor; First match wins
-            for wildcard, (processor, validator) in SUBSCRIPTIONS.items():
+            for wildcard, (process, validate) in SUBSCRIPTIONS.items():
                 if message.topic.matches(wildcard):
                     try:
-                        payload = validator(**payload)
-                        await processor(sensor_identifier, payload, dbpool)
+                        payload = validate(**payload)
+                        await process(sensor_identifier, payload, dbpool)
                     # Errors are logged and ignored as we can't give feedback
                     except pydantic.ValidationError:
                         logger.warning(f"[MQTT] Malformed message: {message.payload!r}")

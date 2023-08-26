@@ -6,15 +6,15 @@ import app.validation.constants as constants
 import app.validation.types as types
 
 
-class Acknowledgement(types.StrictModel):
+class Acknowledgment(types.StrictModel):
     timestamp: types.Timestamp
     revision: types.Revision
     success: bool  # Records if the configuration was processed successfully
 
 
-class AcknowledgementsMessage(types.StrictModel):
-    values: pydantic.conlist(item_type=Acknowledgement, min_length=1) = pydantic.Field(
-        ..., alias="heartbeats"
+class AcknowledgmentsMessage(types.StrictModel):
+    values: pydantic.conlist(item_type=Acknowledgment, min_length=1) = pydantic.Field(
+        ..., alias="acknowledgments"
     )
 
 
@@ -36,7 +36,7 @@ class Log(types.StrictModel):
 
 class LogsMessage(types.StrictModel):
     values: pydantic.conlist(item_type=Log, min_length=1) = pydantic.Field(
-        ..., alias="log_messages"
+        ..., alias="logs"
     )
 
 

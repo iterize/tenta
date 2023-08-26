@@ -161,7 +161,7 @@ SELECT
     revision,
     creation_timestamp,
     publication_timestamp,
-    acknowledgement_timestamp,
+    acknowledgment_timestamp,
     receipt_timestamp,
     success
 FROM configuration
@@ -322,16 +322,16 @@ WHERE
     AND publication_timestamp IS NULL;
 
 
--- name: update-configuration-on-acknowledgement
+-- name: update-configuration-on-acknowledgment
 UPDATE configuration
 SET
-    acknowledgement_timestamp = ${acknowledgement_timestamp},
+    acknowledgment_timestamp = ${acknowledgment_timestamp},
     receipt_timestamp = now(),
     success = ${success}
 WHERE
     sensor_identifier = ${sensor_identifier}
     AND revision = ${revision}
-    AND acknowledgement_timestamp IS NULL;
+    AND acknowledgment_timestamp IS NULL;
 
 
 -- name: update-sensor

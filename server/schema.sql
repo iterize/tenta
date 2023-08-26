@@ -54,7 +54,7 @@ CREATE TABLE configuration (
     revision INT NOT NULL,
     creation_timestamp TIMESTAMPTZ NOT NULL,
     publication_timestamp TIMESTAMPTZ,
-    acknowledgement_timestamp TIMESTAMPTZ,
+    acknowledgment_timestamp TIMESTAMPTZ,
     receipt_timestamp TIMESTAMPTZ,
     success BOOLEAN
 

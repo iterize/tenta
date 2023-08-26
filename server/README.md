@@ -5,9 +5,9 @@ The server exposes a REST API. You can find the documentation at [https://bump.s
 The communication between the sensors and the server runs over four MQTT topics:
 
 - `configurations/<sensor-identifier>` for configurations from the server
-- `heartbeats/<sensor-identifier>` for heartbeats and system messages from sensors
+- `acknowledgments/<sensor-identifier>` for configuration acknowledgments from sensors
 - `measurements/<sensor-identifier>` for measurements from sensors
-- `log-messages/<sensor-identifier>` for log messages from sensors
+- `logs/<sensor-identifier>` for logs from sensors
 
 ### Payloads
 
@@ -22,12 +22,12 @@ The payloads are JSON encoded and have the following structure:
 }
 ```
 
-**`heartbeats/<sensor-identifier>`:**
+**`acknowledgments/<sensor-identifier>`:**
 
 ```json
 {
   // the array structure allows to batch messages
-  "heartbeats": [
+  "acknowledgments": [
     {
       "revision": 0,
       "timestamp": 1683645000.0,
@@ -52,12 +52,12 @@ The payloads are JSON encoded and have the following structure:
 }
 ```
 
-**`log-messages/<sensor-identifier>`:**
+**`logs/<sensor-identifier>`:**
 
 ```json
 {
   // the array structure allows to batch messages
-  "log_messages": [
+  "logs": [
     {
       "severity": "error", // one of info, warning, error
       "revision": 0, // optional parameter
