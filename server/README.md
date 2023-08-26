@@ -18,55 +18,53 @@ The payloads are JSON encoded and have the following structure:
 ```json
 {
   "revision": 0,
-  "configuration": {} // this can be any valid JSON
+  "configuration": {} // This can be any valid JSON object
 }
 ```
 
 **`acknowledgments/<sensor-identifier>`:**
 
 ```json
-{
-  // the array structure allows to batch messages
-  "acknowledgments": [
-    {
-      "revision": 0,
-      "timestamp": 1683645000.0,
-      "success": true // did the sensor successfully process the configuration?
-    }
-  ]
-}
+// The array structure allows to batch messages
+[
+  {
+    "revision": 0,
+    "timestamp": 1683645000.0,
+    "success": true // Did the sensor successfully process the configuration?
+  }
+]
 ```
 
 **`measurements/<sensor-identifier>`:**
 
 ```json
-{
-  // the array structure allows to batch messages
-  "measurements": [
-    {
-      "revision": 0, // optional parameter
-      "timestamp": 1683645000.0,
-      "value": {} // this contains data points with type double
+// The array structure allows to batch messages
+[
+  {
+    "revision": 0, // Optional
+    "timestamp": 1683645000.0,
+    "value": {
+      // Data points have type double
+      "temperature": 23.1,
+      "humidity": 0.62
     }
-  ]
-}
+  }
+]
 ```
 
 **`logs/<sensor-identifier>`:**
 
 ```json
-{
-  // the array structure allows to batch messages
-  "logs": [
-    {
-      "severity": "error", // one of info, warning, error
-      "revision": 0, // optional parameter
-      "timestamp": 1683645000.0,
-      "subject": "The CPU is burning",
-      "details": "Please call the fire department" // optional parameter
-    }
-  ]
-}
+// The array structure allows to batch messages
+[
+  {
+    "severity": "error", // One of info, warning, error
+    "revision": 0, // Optional
+    "timestamp": 1683645000.0,
+    "subject": "The CPU is burning",
+    "details": "Please call the fire department" // Optional
+  }
+]
 ```
 
 ## Development Setup

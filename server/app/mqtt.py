@@ -105,7 +105,7 @@ async def _process_acknowledgments(sensor_identifier, payload, dbpool):
                 "acknowledgment_timestamp": element.timestamp,
                 "success": element.success,
             }
-            for element in payload.values
+            for element in payload
         ],
     )
     try:
@@ -127,7 +127,7 @@ async def _process_measurements(sensor_identifier, payload, dbpool):
                 "revision": element.revision,
                 "creation_timestamp": element.timestamp,
             }
-            for element in payload.values
+            for element in payload
             for attribute, value in element.value.items()
         ],
     )
@@ -151,7 +151,7 @@ async def _process_logs(sensor_identifier, payload, dbpool):
                 "subject": element.subject,
                 "details": element.details,
             }
-            for element in payload.values
+            for element in payload
         ],
     )
     try:
@@ -163,9 +163,18 @@ async def _process_logs(sensor_identifier, payload, dbpool):
 
 
 SUBSCRIPTIONS = {
-    "acknowledgments/+": (_process_acknowledgments, validation.AcknowledgmentsMessage),
-    "measurements/+": (_process_measurements, validation.MeasurementsMessage),
-    "logs/+": (_process_logs, validation.LogsMessage),
+    "acknowledgments/+": (
+        _process_acknowledgments,
+        validation.AcknowledgmentsValidator,
+    ),
+    "measurements/+": (
+        _process_measurements,
+        validation.MeasurementsValidator,
+    ),
+    "logs/+": (
+        _process_logs,
+        validation.LogsValidator,
+    ),
 }
 
 
@@ -184,22 +193,14 @@ async def listen(mqttc, dbpool):
                     f"[MQTT] Received message: {message.payload!r} on topic:"
                     f" {message.topic}"
                 )
-            # Get sensor identifier from the topic and decode the payload
+            # Get sensor identifier from the topic
             # TODO validate that identifier is a valid UUID format
             sensor_identifier = str(message.topic).split("/")[-1]
-            try:
-                payload = json.loads(message.payload.decode())
-            except json.decoder.JSONDecodeError:
-                logger.warning(f"[MQTT] Malformed message: {message.payload!r}")
-                continue
-            if not isinstance(payload, dict):
-                logger.warning(f"[MQTT] Malformed message: {message.payload!r}")
-                continue
             # Call the appropriate processor; First match wins
-            for wildcard, (process, validate) in SUBSCRIPTIONS.items():
+            for wildcard, (process, validator) in SUBSCRIPTIONS.items():
                 if message.topic.matches(wildcard):
                     try:
-                        payload = validate(**payload)
+                        payload = validator.validate_json(message.payload)
                         await process(sensor_identifier, payload, dbpool)
                     # Errors are logged and ignored as we can't give feedback
                     except pydantic.ValidationError:

@@ -6,16 +6,21 @@ import app.validation.constants as constants
 import app.validation.types as types
 
 
+########################################################################################
+# Base types
+########################################################################################
+
+
 class Acknowledgment(types.StrictModel):
     timestamp: types.Timestamp
     revision: types.Revision
     success: bool  # Records if the configuration was processed successfully
 
 
-class AcknowledgmentsMessage(types.StrictModel):
-    values: pydantic.conlist(item_type=Acknowledgment, min_length=1) = pydantic.Field(
-        ..., alias="acknowledgments"
-    )
+class Measurement(types.StrictModel):
+    timestamp: types.Timestamp
+    revision: types.Revision | None = None
+    value: types.Measurement
 
 
 class Log(types.StrictModel):
@@ -34,19 +39,16 @@ class Log(types.StrictModel):
         return v[: constants.Limit.LARGE]
 
 
-class LogsMessage(types.StrictModel):
-    values: pydantic.conlist(item_type=Log, min_length=1) = pydantic.Field(
-        ..., alias="logs"
-    )
+########################################################################################
+# Validators for the batched messages
+########################################################################################
 
-
-class Measurement(types.StrictModel):
-    timestamp: types.Timestamp
-    revision: types.Revision | None = None
-    value: types.Measurement
-
-
-class MeasurementsMessage(types.StrictModel):
-    values: pydantic.conlist(item_type=Measurement, min_length=1) = pydantic.Field(
-        ..., alias="measurements"
-    )
+AcknowledgmentsValidator = pydantic.TypeAdapter(
+    pydantic.conlist(item_type=Acknowledgment, min_length=1),
+)
+MeasurementsValidator = pydantic.TypeAdapter(
+    pydantic.conlist(item_type=Measurement, min_length=1),
+)
+LogsValidator = pydantic.TypeAdapter(
+    pydantic.conlist(item_type=Log, min_length=1),
+)

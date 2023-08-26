@@ -1,8 +1,4 @@
-from .mqtt import (
-    AcknowledgmentsMessage,
-    LogsMessage,
-    MeasurementsMessage,
-)
+from .mqtt import AcknowledgmentsValidator, LogsValidator, MeasurementsValidator
 from .routes import (
     CreateConfigurationRequest,
     CreateNetworkRequest,
@@ -21,9 +17,9 @@ from .routes import (
 
 
 __all__ = [
-    "AcknowledgmentsMessage",
-    "MeasurementsMessage",
-    "LogsMessage",
+    "AcknowledgmentsValidator",
+    "MeasurementsValidator",
+    "LogsValidator",
     "CreateSensorRequest",
     "CreateUserRequest",
     "CreateSessionRequest",
