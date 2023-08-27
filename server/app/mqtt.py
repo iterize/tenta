@@ -145,11 +145,10 @@ async def _process_logs(sensor_identifier, payload, dbpool):
         arguments=[
             {
                 "sensor_identifier": sensor_identifier,
+                "message": element.message,
                 "revision": element.revision,
                 "creation_timestamp": element.timestamp,
                 "severity": element.severity,
-                "subject": element.subject,
-                "details": element.details,
             }
             for element in payload
         ],

@@ -27,15 +27,10 @@ class Log(types.StrictModel):
     timestamp: types.Timestamp
     revision: types.Revision | None = None
     severity: typing.Literal["info", "warning", "error"]
-    subject: str
-    details: str | None = None
+    message: str  # Can be empty, but must not be None
 
-    @pydantic.field_validator("subject")
-    def trim_subject(cls, v):
-        return v[: constants.Limit.MEDIUM]
-
-    @pydantic.field_validator("details")
-    def trim_details(cls, v):
+    @pydantic.field_validator("message")
+    def trim(cls, v):
         return v[: constants.Limit.LARGE]
 
 

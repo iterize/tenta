@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: Tenta
   description: |
-    Tenta is a remote and real-time management system for distributed sensor networks. It enables you to collect and store data from your sensors, and supervise and configure them remotely from anywhere in the world.
+    Tenta is a remote and real-time management system for distributed sensor networks. It allows you to collect and store data from your sensors, and supervise and configure them remotely from anywhere in the world.
 
     This documentation describes Tenta's REST API. In most cases, you won't need to call these endpoints directly, as the dashboard provides a user-friendly interface. However, you might use this API to integrate Tenta with your own systems or to automate certain tasks.
   version: "0.1"
@@ -346,14 +346,12 @@ paths:
                   properties:
                     severity:
                       $ref: "#/components/schemas/severity"
-                    subject:
-                      type: string
                     revision:
                       $ref: "#/components/schemas/revision"
                     creation_timestamp:
                       $ref: "#/components/schemas/timestamp"
-                    details:
-                      type: string
+                    message:
+                      $ref: "#/components/schemas/message"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
     get:
       tags: [Logs]
@@ -374,8 +372,8 @@ paths:
                   properties:
                     severity:
                       $ref: "#/components/schemas/severity"
-                    subject:
-                      type: string
+                    message:
+                      $ref: "#/components/schemas/message"
                     min_revision:
                       $ref: "#/components/schemas/revision"
                     max_revision:
@@ -415,7 +413,7 @@ components:
     name:
       description: "The regex means: lowercase letters and numbers, separated by dashes, with no leading, trailing, or double dashes."
       type: string
-      example: example
+      example: happy-un1c0rn
       pattern: "^[a-z0-9](-?[a-z0-9])*$"
       maxLength: 64
     password:
@@ -441,6 +439,10 @@ components:
     severity:
       type: string
       enum: [info, warning, error]
+      example: warning
+    message:
+      type: string
+      example: "The CPU is toasty; Get the marshmallows ready!"
     count:
       type: integer
       minimum: 0

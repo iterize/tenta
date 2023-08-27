@@ -95,7 +95,7 @@ WITH (timescaledb.continuous, timescaledb.materialized_only = true) AS
     SELECT
         sensor_identifier,
         time_bucket('4 hours', creation_timestamp) AS bucket_timestamp,
-        COUNT(*) AS measurement_count
+        count(*) AS measurement_count
     FROM measurement
     GROUP BY sensor_identifier, bucket_timestamp
 WITH DATA;
@@ -112,11 +112,10 @@ SELECT add_continuous_aggregate_policy(
 CREATE TABLE log (
     sensor_identifier UUID NOT NULL REFERENCES sensor (identifier) ON DELETE CASCADE,
     severity TEXT NOT NULL,
-    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
     revision INT,
     creation_timestamp TIMESTAMPTZ NOT NULL,
-    receipt_timestamp TIMESTAMPTZ NOT NULL,
-    details TEXT
+    receipt_timestamp TIMESTAMPTZ NOT NULL
 );
 
 SELECT create_hypertable('log', 'creation_timestamp');

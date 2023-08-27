@@ -4,10 +4,10 @@ The server exposes a REST API. You can find the documentation at [https://bump.s
 
 The communication between the sensors and the server runs over four MQTT topics:
 
-- `configurations/<sensor-identifier>` for configurations from the server
-- `acknowledgments/<sensor-identifier>` for configuration acknowledgments from sensors
-- `measurements/<sensor-identifier>` for measurements from sensors
-- `logs/<sensor-identifier>` for logs from sensors
+- `configurations/<sensor-identifier>`: Configurations TO sensors
+- `acknowledgments/<sensor-identifier>`: Configuration acknowledgments FROM sensors
+- `measurements/<sensor-identifier>`: Measurements FROM sensors
+- `logs/<sensor-identifier>`: Logs FROM sensors
 
 ### Payloads
 
@@ -18,14 +18,14 @@ The payloads are JSON encoded and have the following structure:
 ```json
 {
   "revision": 0,
-  "configuration": {} // This can be any valid JSON object
+  "configuration": {} // Can be any valid JSON object
 }
 ```
 
 **`acknowledgments/<sensor-identifier>`:**
 
 ```json
-// The array structure allows to batch messages
+// Array structure allows to batch messages
 [
   {
     "revision": 0,
@@ -38,7 +38,7 @@ The payloads are JSON encoded and have the following structure:
 **`measurements/<sensor-identifier>`:**
 
 ```json
-// The array structure allows to batch messages
+// Array structure allows to batch messages
 [
   {
     "revision": 0, // Optional
@@ -55,14 +55,13 @@ The payloads are JSON encoded and have the following structure:
 **`logs/<sensor-identifier>`:**
 
 ```json
-// The array structure allows to batch messages
+// Array structure allows to batch messages
 [
   {
-    "severity": "error", // One of info, warning, error
+    "severity": "error", // One of: info, warning, error
     "revision": 0, // Optional
     "timestamp": 1683645000.0,
-    "subject": "The CPU is burning",
-    "details": "Please call the fire department" // Optional
+    "message": "The CPU is burning; Please call the fire department."
   }
 ]
 ```

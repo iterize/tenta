@@ -162,47 +162,42 @@
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "severity": "info",
-            "subject": "Everything is fine",
+            "message": "Everything is fine.",
             "revision": null,
             "creation_timestamp": 0,
-            "receipt_timestamp": 200,
-            "details": null
+            "receipt_timestamp": 200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "severity": "info",
-            "subject": "Everything is fine",
+            "message": "Everything is fine.",
             "revision": 0,
             "creation_timestamp": 100,
-            "receipt_timestamp": 200,
-            "details": null
+            "receipt_timestamp": 200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "severity": "warning",
-            "subject": "The CPU is toasty",
+            "message": "The CPU is toasty; Get the marshmallows ready!",
             "revision": 0,
             "creation_timestamp": 200,
-            "receipt_timestamp": 200,
-            "details": "Get the marshmallows ready!"
+            "receipt_timestamp": 200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "severity": "warning",
-            "subject": "The CPU is toasty",
+            "message": "The CPU is toasty; Get the marshmallows ready!",
             "revision": 1,
             "creation_timestamp": 300,
-            "receipt_timestamp": 300,
-            "details": "Get the marshmallows ready!"
+            "receipt_timestamp": 300
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "severity": "error",
-            "subject": "The CPU is burning",
+            "message": "The CPU is burning; Please call the fire department.",
             "revision": 2,
             "creation_timestamp": 400,
-            "receipt_timestamp": 400,
-            "details": "Please call the fire department."
+            "receipt_timestamp": 400
         }
     ]
 }

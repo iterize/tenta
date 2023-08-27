@@ -1,7 +1,7 @@
 -- name: aggregate-logs
 SELECT
     severity,
-    subject,
+    message,
     first(revision, creation_timestamp) AS min_revision,
     last(revision, creation_timestamp) AS max_revision,
     min(creation_timestamp) AS min_creation_timestamp,
@@ -12,7 +12,7 @@ WHERE
     sensor_identifier = ${sensor_identifier} AND severity = any(
         ARRAY['warning', 'error']
     )
-GROUP BY sensor_identifier, severity, subject
+GROUP BY sensor_identifier, severity, message
 ORDER BY max_creation_timestamp ASC;
 
 
@@ -74,20 +74,18 @@ VALUES (
 INSERT INTO log (
     sensor_identifier,
     severity,
-    subject,
+    message,
     revision,
     creation_timestamp,
-    receipt_timestamp,
-    details
+    receipt_timestamp
 )
 VALUES (
     ${sensor_identifier},
     ${severity},
-    ${subject},
+    ${message},
     ${revision},
     ${creation_timestamp},
-    now(),
-    ${details}
+    now()
 );
 
 
@@ -219,10 +217,9 @@ LIMIT 64;
 -- name: read-logs
 SELECT
     severity,
-    subject,
+    message,
     revision,
-    creation_timestamp,
-    details
+    creation_timestamp
 FROM log
 WHERE
     sensor_identifier = ${sensor_identifier}
@@ -269,7 +266,7 @@ WITH interim AS (
     FROM permission
     WHERE user_identifier = ${user_identifier}
 )
-SELECT user_identifier
+SELECT interim.user_identifier
 FROM network
 LEFT JOIN interim ON network.identifier = interim.network_identifier
 WHERE network.identifier = ${network_identifier};
@@ -285,7 +282,7 @@ WITH interim AS (
     FROM permission
     WHERE user_identifier = ${user_identifier}
 )
-SELECT user_identifier
+SELECT interim.user_identifier
 FROM sensor
 LEFT JOIN interim USING (network_identifier)
 WHERE

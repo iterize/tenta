@@ -63,10 +63,9 @@ value = 3.14
 configuration = "'{}'"
 revision = 0
 creation_timestamp = "'1970-01-01T00:00:00+00:00'"
-acknowledgement_timestamp = "'1970-01-01T00:00:00+00:00'"
+acknowledgment_timestamp = "'1970-01-01T00:00:00+00:00'"
 severity = "'info'"
-subject = "'subject'"
-details = "'details'"
+message= "'message'"
 direction = "'next'"
 success = "TRUE"
 
