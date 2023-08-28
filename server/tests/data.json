@@ -48,6 +48,12 @@
             "name": "squirtle",
             "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
             "creation_timestamp": 0
+        },
+        {
+            "identifier": "23825517-4631-4beb-acd4-5545c57a9928",
+            "name": "pikachu",
+            "network_identifier": "2f9a5285-4ce1-4ddb-a268-0164c70f4826",
+            "creation_timestamp": 0
         }
     ],
     "permission": [

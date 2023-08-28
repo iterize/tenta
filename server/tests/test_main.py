@@ -188,7 +188,7 @@ async def test_create_sensor(setup, client, network_identifier, access_token):
     response = await client.post(
         url=f"/networks/{network_identifier}/sensors",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "rattata"},
+        json={"sensor_name": "pikachu"},
     )
     assert returns(response, 201)
     assert keys(response, {"sensor_identifier"})
@@ -215,9 +215,63 @@ async def test_create_sensor_with_nonexistent_network(
     response = await client.post(
         url=f"/networks/{identifier}/sensors",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "rattata"},
+        json={"sensor_name": "pikachu"},
     )
     assert returns(response, errors.NotFoundError)
+
+
+########################################################################################
+# Route: GET /networks/<network_identifier>/sensors
+########################################################################################
+
+
+@pytest.mark.anyio
+async def test_read_sensors(setup, client, network_identifier, access_token):
+    """Test reading the sensors that are part of a network."""
+    response = await client.get(
+        url=f"/networks/{network_identifier}/sensors",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert returns(response, 200)
+    assert isinstance(response.json(), list)
+    assert len(response.json()) == 3
+    assert keys(response, {"sensor_identifier", "sensor_name"})
+
+
+@pytest.mark.anyio
+async def test_read_sensors_with_nonexistent_network(
+    setup, client, identifier, access_token
+):
+    """Test reading the sensors of a network that does not exist."""
+    response = await client.get(
+        url=f"/networks/{identifier}/sensors",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert returns(response, errors.NotFoundError)
+
+
+@pytest.mark.anyio
+async def test_read_sensors_with_invalid_authentication(
+    setup, client, network_identifier, token
+):
+    """Test reading the sensors with an invalid access token."""
+    response = await client.get(
+        url=f"/networks/{network_identifier}/sensors",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert returns(response, errors.UnauthorizedError)
+
+
+@pytest.mark.anyio
+async def test_read_sensors_with_invalid_authorization(
+    setup, client, network_identifier, access_token
+):
+    """Test reading the sensors having unsufficient permissions."""
+    response = await client.get(
+        url="/networks/2f9a5285-4ce1-4ddb-a268-0164c70f4826/sensors",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert returns(response, errors.ForbiddenError)
 
 
 ########################################################################################
@@ -233,7 +287,7 @@ async def test_update_sensor(
     response = await client.put(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "rattata"},
+        json={"sensor_name": "pikachu"},
     )
     assert returns(response, 200)
     assert keys(response, {})
@@ -247,7 +301,7 @@ async def test_update_sensor_with_nonexistent_sensor(
     response = await client.put(
         url=f"/networks/{network_identifier}/sensors/{identifier}",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "rattata"},
+        json={"sensor_name": "pikachu"},
     )
     assert returns(response, errors.NotFoundError)
 
