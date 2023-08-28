@@ -1,6 +1,6 @@
 openapi: 3.0.2
 info:
-  title: Tenta
+  title: Tenta's API
   description: |
     Tenta is a remote and real-time management system for distributed sensor networks. It allows you to collect and store data from your sensors, and supervise and configure them remotely from anywhere in the world.
 
@@ -41,6 +41,8 @@ paths:
     post:
       tags: [Users]
       summary: Create user
+      description: |
+        Creates a new user from a username and password. Immediately returns a valid access token for that user.
       requestBody:
         content:
           application/json:
@@ -73,9 +75,7 @@ paths:
       tags: [Users]
       summary: Authenticate
       description: |
-        Authenticate a user from a username and password and return an access token. Use this access token in all requests to protected routes.
-
-        The access token is valid indefinitely.
+        Authenticates a user from a username and password and return an access token. Use this access token in all requests to protected routes.
       requestBody:
         content:
           application/json:
@@ -109,6 +109,8 @@ paths:
     post:
       tags: [Networks]
       summary: Create network
+      description: |
+        Creates a new network with the given name. The user automatically becomes a member of the network.
       security:
         - "Bearer token": []
       requestBody:
@@ -138,6 +140,8 @@ paths:
     get:
       tags: [Networks]
       summary: Read networks
+      description: |
+        Returns a list of all networks the user is a member of.
       security:
         - "Bearer token": []
       responses:
@@ -160,6 +164,8 @@ paths:
     post:
       tags: [Networks]
       summary: Create sensor
+      description: |
+        Creates a new sensor with the given name in the given network.
       security:
         - "Bearer token": []
       parameters:
@@ -195,6 +201,8 @@ paths:
     get:
       tags: [Networks]
       summary: Read sensors
+      description: |
+        Returns a list of all sensors in the given network.
       security:
         - "Bearer token": []
       parameters:
@@ -223,6 +231,8 @@ paths:
     put:
       tags: [Networks]
       summary: Update sensor
+      description: |
+        Updates the metadata of the given sensor.
       security:
         - "Bearer token": []
       parameters:
@@ -254,7 +264,7 @@ paths:
       tags: [Sensors]
       summary: Create configuration
       description: |
-        Create or update a sensor's configuration. Each configuration is assigned a monotonically increasing `revision` number. The new configuration is stored in the database and relayed to the sensor over MQTT.
+        Creates or updates a sensor's configuration. Each configuration is assigned a monotonically increasing `revision` number. The new configuration is stored in the database and relayed to the sensor over MQTT.
 
         Configurations are an optional feature. Sensors don't need to implement configuration updates and can nevertheless send measurements and logs unidirectionally to the server.
       security:
@@ -286,7 +296,8 @@ paths:
     get:
       tags: [Sensors]
       summary: Read configurations
-      description: "Return a sensor's configurations in pages of 64 elements sorted ascendingly by `revision`."
+      description: |
+        Returns a sensor's configurations in pages of 64 elements sorted ascendingly by `revision`.
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"
@@ -320,7 +331,8 @@ paths:
     get:
       tags: [Sensors]
       summary: Read measurements
-      description: "Return a sensor's measurements in pages of 64 elements sorted ascendingly by `creation_timestamp`."
+      description: |
+        Returns a sensor's measurements in pages of 64 elements sorted ascendingly by `creation_timestamp`.
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"
@@ -346,7 +358,8 @@ paths:
     get:
       tags: [Sensors]
       summary: Read logs
-      description: "Return a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`."
+      description: |
+        Returns a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`.
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"
@@ -374,7 +387,8 @@ paths:
     get:
       tags: [Sensors]
       summary: Read logs aggregation
-      description: "Read an aggregation of a sensor's logs that have a severity of warning or error."
+      description: |
+        Returns an aggregation of a sensor's logs that have a severity of warning or error.
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"
