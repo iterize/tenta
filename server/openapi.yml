@@ -13,8 +13,6 @@ tags:
   - name: Users
   - name: Networks
   - name: Sensors
-  - name: Measurements
-  - name: Logs
 paths:
   "/status":
     get:
@@ -158,37 +156,9 @@ paths:
                       $ref: "#/components/schemas/name"
         "401":
           $ref: "#/components/responses/401"
-  "/networks/{network_identifier}":
-    get:
-      tags: [Networks]
-      summary: Read network
-      parameters:
-        - $ref: "#/components/parameters/network_identifier"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    sensor_identifier:
-                      $ref: "#/components/schemas/identifier"
-                    sensor_name:
-                      $ref: "#/components/schemas/name"
-                    bucket_timestamps:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/timestamp"
-                    measurement_counts:
-                      type: array
-                      items:
-                        type: integer
   "/networks/{network_identifier}/sensors":
     post:
-      tags: [Sensors]
+      tags: [Networks]
       summary: Create sensor
       security:
         - "Bearer token": []
@@ -222,9 +192,36 @@ paths:
           $ref: "#/components/responses/404"
         "409":
           $ref: "#/components/responses/409"
+    get:
+      tags: [Networks]
+      summary: Read sensors
+      security:
+        - "Bearer token": []
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    sensor_identifier:
+                      $ref: "#/components/schemas/identifier"
+                    sensor_name:
+                      $ref: "#/components/schemas/name"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
   "/networks/{network_identifier}/sensors/{sensor_identifier}":
     put:
-      tags: [Sensors]
+      tags: [Networks]
       summary: Update sensor
       security:
         - "Bearer token": []
@@ -321,7 +318,7 @@ paths:
                       type: boolean
   "/networks/{network_identifier}/sensors/{sensor_identifier}/measurements":
     get:
-      tags: [Measurements]
+      tags: [Sensors]
       summary: Read measurements
       description: "Return a sensor's measurements in pages of 64 elements sorted ascendingly by `creation_timestamp`."
       parameters:
@@ -347,7 +344,7 @@ paths:
                       $ref: "#/components/schemas/timestamp"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs":
     get:
-      tags: [Logs]
+      tags: [Sensors]
       summary: Read logs
       description: "Return a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`."
       parameters:
@@ -375,7 +372,7 @@ paths:
                       $ref: "#/components/schemas/timestamp"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
     get:
-      tags: [Logs]
+      tags: [Sensors]
       summary: Read logs aggregation
       description: "Read an aggregation of a sensor's logs that have a severity of warning or error."
       parameters:

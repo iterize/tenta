@@ -84,12 +84,13 @@ CREATE TABLE measurement (
     creation_timestamp TIMESTAMPTZ NOT NULL,
     receipt_timestamp TIMESTAMPTZ NOT NULL
 
-    -- Add lat/long parameters here? -> could then be visualized in the dashboard (in a map)
+    -- Add lat/lon/alt parameters here? -> could then be visualized in the dashboard (in a map)
 );
 
 SELECT create_hypertable('measurement', 'creation_timestamp');
 
 
+-- TODO: refactor, see also removed 'aggregate-network' query for access example
 CREATE MATERIALIZED VIEW measurement_aggregation_4_hours
 WITH (timescaledb.continuous, timescaledb.materialized_only = true) AS
     SELECT
