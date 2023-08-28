@@ -137,6 +137,27 @@ paths:
           $ref: "#/components/responses/401"
         "409":
           $ref: "#/components/responses/409"
+    get:
+      tags: [Networks]
+      summary: Read networks
+      security:
+        - "Bearer token": []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    network_identifier:
+                      $ref: "#/components/schemas/identifier"
+                    network_name:
+                      $ref: "#/components/schemas/name"
+        "401":
+          $ref: "#/components/responses/401"
   "/networks/{network_identifier}":
     get:
       tags: [Networks]
@@ -346,12 +367,12 @@ paths:
                   properties:
                     severity:
                       $ref: "#/components/schemas/severity"
+                    message:
+                      $ref: "#/components/schemas/message"
                     revision:
                       $ref: "#/components/schemas/revision"
                     creation_timestamp:
                       $ref: "#/components/schemas/timestamp"
-                    message:
-                      $ref: "#/components/schemas/message"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
     get:
       tags: [Logs]
