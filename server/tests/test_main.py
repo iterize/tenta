@@ -14,21 +14,6 @@ async def client():
             yield client
 
 
-def returns(response, check):
-    """Check that a httpx request returns with a specific status code or error."""
-    if isinstance(check, int):
-        return response.status_code == check
-    return (
-        response.status_code == check.STATUS_CODE
-        and response.json()["details"] == check.DETAILS
-    )
-
-
-def sorts(response, key):
-    """Check that a https request body array is sorted by the given key."""
-    return response.json() == sorted(response.json(), key=key)
-
-
 def keys(response, keys):
     """Check that a httpx request body contains a specific set of keys.
 
@@ -37,6 +22,22 @@ def keys(response, keys):
     if isinstance(response.json(), dict):
         return set(response.json().keys()) == set(keys)
     return all([set(element.keys()) == set(keys) for element in response.json()])
+
+
+def sorts(response, key):
+    """Check that a https request body array is sorted by the given key."""
+    return response.json() == sorted(response.json(), key=key)
+
+
+def returns(response, check):
+    """Check that a httpx request returns with a specific status code or error."""
+    if isinstance(check, int):
+        return response.status_code == check
+    return (
+        response.status_code == check.STATUS_CODE
+        and keys(response, {"details"})
+        and response.json()["details"] == check.DETAILS
+    )
 
 
 ########################################################################################
@@ -62,6 +63,11 @@ def network_identifier():
 @pytest.fixture(scope="session")
 def sensor_identifier():
     return "81bf7042-e20f-4a97-ac44-c15853e3618f"
+
+
+@pytest.fixture(scope="session")
+def token():
+    return "0000000000000000000000000000000000000000000000000000000000000000"
 
 
 @pytest.fixture(scope="session")
@@ -93,7 +99,7 @@ async def test_read_status(client):
 async def test_create_user(setup, client):
     """Test creating a user."""
     response = await client.post(
-        url="/users", json={"user_name": "red", "password": "12345678"}
+        url="/users", json={"user_name": "example", "password": "12345678"}
     )
     assert returns(response, 201)
     assert keys(response, {"user_identifier", "access_token"})
@@ -103,7 +109,7 @@ async def test_create_user(setup, client):
 async def test_create_user_with_existent_user_name(setup, client):
     """Test creating a user that already exists."""
     response = await client.post(
-        url="/users", json={"user_name": "ash", "password": "12345678"}
+        url="/users", json={"user_name": "happy-un1c0rn", "password": "12345678"}
     )
     assert returns(response, errors.ConflictError)
 
@@ -118,7 +124,7 @@ async def test_create_session(setup, client, user_identifier):
     """Test authenticating an existing user with a valid password."""
     response = await client.post(
         url="/authentication",
-        json={"user_name": "ash", "password": "12345678"},
+        json={"user_name": "happy-un1c0rn", "password": "12345678"},
     )
     assert returns(response, 201)
     assert keys(response, {"user_identifier", "access_token"})
@@ -130,7 +136,7 @@ async def test_create_session_with_invalid_password(setup, client):
     """Test authenticating an existing user with an invalid password."""
     response = await client.post(
         url="/authentication",
-        json={"user_name": "ash", "password": "00000000"},
+        json={"user_name": "happy-un1c0rn", "password": "00000000"},
     )
     assert returns(response, errors.UnauthorizedError)
 
@@ -140,9 +146,35 @@ async def test_create_session_with_nonexistent_user(setup, client):
     """Test authenticating a user that doesn't exist."""
     response = await client.post(
         url="/authentication",
-        json={"user_name": "red", "password": "12345678"},
+        json={"user_name": "example", "password": "12345678"},
     )
     assert returns(response, errors.NotFoundError)
+
+
+########################################################################################
+# Route: GET /networks
+########################################################################################
+
+
+@pytest.mark.anyio
+async def test_read_networks(setup, client, access_token):
+    """Test reading the networks the user has permissions for."""
+    response = await client.get(
+        url="/networks", headers={"Authorization": f"Bearer {access_token}"}
+    )
+    assert returns(response, 200)
+    assert isinstance(response.json(), list)
+    assert len(response.json()) == 2
+    assert keys(response, {"network_identifier", "network_name"})
+
+
+@pytest.mark.anyio
+async def test_read_networks_with_invalid_authentication(setup, client, token):
+    """Test reading the networks with an invalid access token."""
+    response = await client.get(
+        url="/networks", headers={"Authorization": f"Bearer {token}"}
+    )
+    assert returns(response, errors.UnauthorizedError)
 
 
 ########################################################################################
@@ -248,7 +280,7 @@ async def test_create_configuration(
             f"/networks/{network_identifier}/sensors/{sensor_identifier}/configurations"
         ),
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"something": 42, "else": {}, "entirely": "", "further": 1.23},
+        json={"measurement_interval": 8.5, "cache": True, "technique": "default"},
     )
     assert returns(response, 201)
     assert keys(response, {"revision"})

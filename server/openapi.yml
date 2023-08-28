@@ -313,7 +313,7 @@ paths:
                       $ref: "#/components/schemas/timestamp"
                     publication_timestamp:
                       $ref: "#/components/schemas/timestamp"
-                    acknowledgement_timestamp:
+                    acknowledgment_timestamp:
                       $ref: "#/components/schemas/timestamp"
                     receipt_timestamp:
                       $ref: "#/components/schemas/timestamp"
@@ -443,12 +443,12 @@ components:
       minLength: 8
       maxLength: 256
     configuration:
-      description: "Configurations are JSON objects that are relayed to the sensors over MQTT. Sensors are expected to validate the configurations they receive and respond with positive or negative acknowledgements."
+      description: "Configurations are JSON objects that are relayed to the sensors over MQTT. Sensors are expected to validate the configurations they receive and respond with positive or negative acknowledgments."
       type: object
       example:
         measurement_interval: 8.5
-        calibrate: true
-        log_level: "info"
+        cache: true
+        technique: "default"
     revision:
       description: "Configurations are assigned monotonically increasing revision numbers. The revision is used as an identifier in the communication with the sensors and can clearly match configurations to measurements and logs."
       type: integer
