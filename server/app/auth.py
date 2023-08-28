@@ -142,7 +142,11 @@ class Network(Resource):
         elements = database.dictify(elements)
         if len(elements) == 0:
             raise errors.NotFoundError
-        return Relationship.DEFAULT if elements[0] is None else Relationship.OWNER
+        return (
+            Relationship.DEFAULT
+            if elements[0]["user_identifier"] is None
+            else Relationship.OWNER
+        )
 
 
 class Sensor(Resource):
@@ -161,7 +165,11 @@ class Sensor(Resource):
         elements = database.dictify(elements)
         if len(elements) == 0:
             raise errors.NotFoundError
-        return Relationship.DEFAULT if elements[0] is None else Relationship.OWNER
+        return (
+            Relationship.DEFAULT
+            if elements[0]["user_identifier"] is None
+            else Relationship.OWNER
+        )
 
 
 async def authorize(request, resource):

@@ -68,11 +68,11 @@ class _ReadNetworksRequestPath(types.StrictModel):
     pass
 
 
-class _ReadNetworkRequestPath(types.StrictModel):
+class _CreateSensorRequestPath(types.StrictModel):
     network_identifier: types.Identifier
 
 
-class _CreateSensorRequestPath(types.StrictModel):
+class _ReadSensorsRequestPath(types.StrictModel):
     network_identifier: types.Identifier
 
 
@@ -131,11 +131,11 @@ class _ReadNetworksRequestQuery(types.LooseModel):
     pass
 
 
-class _ReadNetworkRequestQuery(types.LooseModel):
+class _CreateSensorRequestQuery(types.LooseModel):
     pass
 
 
-class _CreateSensorRequestQuery(types.LooseModel):
+class _ReadSensorsRequestQuery(types.LooseModel):
     pass
 
 
@@ -193,12 +193,12 @@ class _ReadNetworksRequestBody(types.StrictModel):
     pass
 
 
-class _ReadNetworkRequestBody(types.StrictModel):
-    pass
-
-
 class _CreateSensorRequestBody(types.StrictModel):
     sensor_name: types.Name
+
+
+class _ReadSensorsRequestBody(types.StrictModel):
+    pass
 
 
 class _UpdateSensorRequestBody(types.StrictModel):
@@ -261,16 +261,16 @@ class ReadNetworksRequest(types.StrictModel):
     body: _ReadNetworksRequestBody
 
 
-class ReadNetworkRequest(types.StrictModel):
-    path: _ReadNetworkRequestPath
-    query: _ReadNetworkRequestQuery
-    body: _ReadNetworkRequestBody
-
-
 class CreateSensorRequest(types.StrictModel):
     path: _CreateSensorRequestPath
     query: _CreateSensorRequestQuery
     body: _CreateSensorRequestBody
+
+
+class ReadSensorsRequest(types.StrictModel):
+    path: _ReadSensorsRequestPath
+    query: _ReadSensorsRequestQuery
+    body: _ReadSensorsRequestBody
 
 
 class UpdateSensorRequest(types.StrictModel):

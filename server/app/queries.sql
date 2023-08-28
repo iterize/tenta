@@ -16,31 +16,12 @@ GROUP BY sensor_identifier, severity, message
 ORDER BY max_creation_timestamp ASC;
 
 
--- name: aggregate-network
--- Aggregate information about sensors
-WITH aggregation AS (
-    SELECT
-        sensor_identifier,
-        array_agg(bucket_timestamp) AS bucket_timestamps,
-        array_agg(measurement_count) AS measurement_counts
-    FROM measurement_aggregation_4_hours
-    WHERE bucket_timestamp > now() - INTERVAL '28 days'
-    GROUP BY sensor_identifier
-)
--- Filter by sensors belonging to the given network
+-- name: read-sensors
 SELECT
     sensor.identifier AS sensor_identifier,
-    sensor.name AS sensor_name,
-    coalesce(
-        aggregation.bucket_timestamps, ARRAY[]::TIMESTAMPTZ []
-    ) AS bucket_timestamps,
-    coalesce(
-        aggregation.measurement_counts, ARRAY[]::INT []
-    ) AS measurement_counts
-FROM network
-INNER JOIN sensor ON network.identifier = sensor.network_identifier
-LEFT JOIN aggregation ON sensor.identifier = aggregation.sensor_identifier
-WHERE network.identifier = ${network_identifier};
+    sensor.name AS sensor_name
+FROM sensor
+WHERE sensor.network_identifier = ${network_identifier};
 
 
 -- name: create-network
@@ -275,6 +256,7 @@ WITH interim AS (
     FROM permission
     WHERE user_identifier = ${user_identifier}
 )
+
 SELECT interim.user_identifier
 FROM network
 LEFT JOIN interim ON network.identifier = interim.network_identifier
@@ -291,6 +273,7 @@ WITH interim AS (
     FROM permission
     WHERE user_identifier = ${user_identifier}
 )
+
 SELECT interim.user_identifier
 FROM sensor
 LEFT JOIN interim USING (network_identifier)

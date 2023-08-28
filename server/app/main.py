@@ -187,44 +187,6 @@ async def read_networks(request, values):
     )
 
 
-@validation.validate(schema=validation.ReadNetworkRequest)
-async def read_network(request, values):
-    """Read information about the network and its sensors.
-
-    This includes:
-      - the identifiers of the sensors in the network
-      - per sensor the number of measurements in 4 hour intervals over the last 28 days
-    Ideas:
-      - metadata about the network
-        - name
-        - how many sensors are online
-        - description?
-      - move aggregation to request per sensor instead of per network
-        - last sensor heartbeats
-        - last measurement timestamps
-
-    TODO offer choice between different time periods -> adapt interval accordingly (or
-         better: let the frontend choose from a list of predefined intervals)
-    TODO use JSON array instead of nested lists, with naming of values
-         [{timestamp: 123, value1: 456, value2: 252}, ...] instead of [[123, 456], ...]
-    """
-
-    query, arguments = database.parametrize(
-        identifier="aggregate-network",
-        arguments={"network_identifier": values.path["network_identifier"]},
-    )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
-    # Return successful response
-    return starlette.responses.JSONResponse(
-        status_code=200,
-        content=database.dictify(elements),
-    )
-
-
 @validation.validate(schema=validation.CreateSensorRequest)
 async def create_sensor(request, values):
     relationship = await auth.authorize(
@@ -264,6 +226,29 @@ async def create_sensor(request, values):
     return starlette.responses.JSONResponse(
         status_code=201,
         content={"sensor_identifier": sensor_identifier},
+    )
+
+
+@validation.validate(schema=validation.ReadSensorsRequest)
+async def read_sensors(request, values):
+    relationship = await auth.authorize(
+        request, auth.Network(values.path["network_identifier"])
+    )
+    if relationship < auth.Relationship.DEFAULT:
+        raise errors.UnauthorizedError
+    if relationship < auth.Relationship.OWNER:
+        raise errors.ForbiddenError
+    query, arguments = database.parametrize(
+        identifier="read-sensors",
+        arguments={"network_identifier": values.path["network_identifier"]},
+    )
+    try:
+        elements = await request.state.dbpool.fetch(query, *arguments)
+    except Exception as e:  # pragma: no cover
+        logger.error(e, exc_info=True)
+        raise errors.InternalServerError
+    return starlette.responses.JSONResponse(
+        status_code=200, content=database.dictify(elements)
     )
 
 
@@ -480,14 +465,14 @@ ROUTES = [
         methods=["GET"],
     ),
     starlette.routing.Route(
-        path="/networks/{network_identifier}",
-        endpoint=read_network,
-        methods=["GET"],
-    ),
-    starlette.routing.Route(
         path="/networks/{network_identifier}/sensors",
         endpoint=create_sensor,
         methods=["POST"],
+    ),
+    starlette.routing.Route(
+        path="/networks/{network_identifier}/sensors",
+        endpoint=read_sensors,
+        methods=["GET"],
     ),
     starlette.routing.Route(
         path="/networks/{network_identifier}/sensors/{sensor_identifier}",
