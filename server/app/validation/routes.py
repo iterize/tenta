@@ -64,8 +64,11 @@ class _CreateNetworkRequestPath(types.StrictModel):
     pass
 
 
+class _ReadNetworksRequestPath(types.StrictModel):
+    pass
+
+
 class _ReadNetworkRequestPath(types.StrictModel):
-    network_identifier: types.Identifier
     network_identifier: types.Identifier
 
 
@@ -121,6 +124,10 @@ class _CreateSessionRequestQuery(types.LooseModel):
 
 
 class _CreateNetworkRequestQuery(types.LooseModel):
+    pass
+
+
+class _ReadNetworksRequestQuery(types.LooseModel):
     pass
 
 
@@ -180,6 +187,10 @@ class _CreateSessionRequestBody(types.StrictModel):
 
 class _CreateNetworkRequestBody(types.StrictModel):
     network_name: types.Name
+
+
+class _ReadNetworksRequestBody(types.StrictModel):
+    pass
 
 
 class _ReadNetworkRequestBody(types.StrictModel):
@@ -242,6 +253,12 @@ class CreateNetworkRequest(types.StrictModel):
     path: _CreateNetworkRequestPath
     query: _CreateNetworkRequestQuery
     body: _CreateNetworkRequestBody
+
+
+class ReadNetworksRequest(types.StrictModel):
+    path: _ReadNetworksRequestPath
+    query: _ReadNetworksRequestQuery
+    body: _ReadNetworksRequestBody
 
 
 class ReadNetworkRequest(types.StrictModel):

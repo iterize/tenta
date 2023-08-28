@@ -57,6 +57,15 @@ VALUES (
 RETURNING identifier AS network_identifier;
 
 
+-- name: read-networks
+SELECT
+    network.identifier AS network_identifier,
+    network.name AS network_name
+FROM permission
+INNER JOIN network ON permission.network_identifier = network.identifier
+WHERE user_identifier = ${user_identifier};
+
+
 -- name: create-permission
 INSERT INTO permission (
     user_identifier,

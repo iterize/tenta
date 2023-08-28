@@ -122,10 +122,7 @@ async def create_session(request, values):
 async def create_network(request, values):
     relationship = await auth.authorize(request, auth.User(request.state.identity))
     if relationship < auth.Relationship.DEFAULT:
-        # We don't need to check for < OWNER because a user is always it's own owner
-        logger.warning(
-            f"{request.method} {request.url.path} -- Insufficient authorization"
-        )
+        # We don't check for < OWNER because a user is always it's own owner
         raise errors.UnauthorizedError
     async with request.state.dbpool.acquire() as connection:
         async with connection.transaction():
@@ -166,6 +163,27 @@ async def create_network(request, values):
     return starlette.responses.JSONResponse(
         status_code=201,
         content={"network_identifier": network_identifier},
+    )
+
+
+@validation.validate(schema=validation.ReadNetworksRequest)
+async def read_networks(request, values):
+    """Read the networks the user has permissions for."""
+    relationship = await auth.authorize(request, auth.User(request.state.identity))
+    if relationship < auth.Relationship.DEFAULT:
+        # We don't check for < OWNER because a user is always it's own owner
+        raise errors.UnauthorizedError
+    query, arguments = database.parametrize(
+        identifier="read-networks",
+        arguments={"user_identifier": request.state.identity},
+    )
+    try:
+        elements = await request.state.dbpool.fetch(query, *arguments)
+    except Exception as e:  # pragma: no cover
+        logger.error(e, exc_info=True)
+        raise errors.InternalServerError
+    return starlette.responses.JSONResponse(
+        status_code=200, content=database.dictify(elements)
     )
 
 
@@ -455,6 +473,11 @@ ROUTES = [
         path="/networks",
         endpoint=create_network,
         methods=["POST"],
+    ),
+    starlette.routing.Route(
+        path="/networks",
+        endpoint=read_networks,
+        methods=["GET"],
     ),
     starlette.routing.Route(
         path="/networks/{network_identifier}",

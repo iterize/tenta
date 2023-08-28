@@ -10,6 +10,7 @@ from .routes import (
     ReadLogsRequest,
     ReadMeasurementsRequest,
     ReadNetworkRequest,
+    ReadNetworksRequest,
     ReadStatusRequest,
     UpdateSensorRequest,
     validate,
@@ -31,6 +32,7 @@ __all__ = [
     "ReadMeasurementsRequest",
     "ReadStatusRequest",
     "ReadNetworkRequest",
+    "ReadNetworksRequest",
     "UpdateSensorRequest",
     "validate",
 ]
