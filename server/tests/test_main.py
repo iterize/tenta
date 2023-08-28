@@ -334,7 +334,7 @@ async def test_create_configuration(
             f"/networks/{network_identifier}/sensors/{sensor_identifier}/configurations"
         ),
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"measurement_interval": 8.5, "cache": True, "technique": "default"},
+        json={"measurement_interval": 8.5, "cache": True, "strategy": "default"},
     )
     assert returns(response, 201)
     assert keys(response, {"revision"})
