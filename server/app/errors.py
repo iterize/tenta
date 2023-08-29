@@ -62,13 +62,3 @@ class NotFoundError(_CustomError):
 class ConflictError(_CustomError):
     STATUS_CODE = 409
     DETAILS = "Conflict"
-
-
-class InternalServerError(_CustomError):
-    STATUS_CODE = 500
-    DETAILS = "Internal Server Error"
-
-
-class NotImplementedError(_CustomError):
-    STATUS_CODE = 501
-    DETAILS = "Not Implemented"

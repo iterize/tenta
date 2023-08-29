@@ -52,9 +52,6 @@ async def create_user(request, values):
                     f"{request.method} {request.url.path} -- Uniqueness violation"
                 )
                 raise errors.ConflictError
-            except Exception as e:  # pragma: no cover
-                logger.error(e, exc_info=True)
-                raise errors.InternalServerError
             user_identifier = database.dictify(elements)[0]["user_identifier"]
             # Create new session
             query, arguments = database.parametrize(
@@ -64,11 +61,7 @@ async def create_user(request, values):
                     "user_identifier": user_identifier,
                 },
             )
-            try:
-                await connection.execute(query, *arguments)
-            except Exception as e:  # pragma: no cover
-                logger.error(e, exc_info=True)
-                raise errors.InternalServerError
+            await connection.execute(query, *arguments)
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=201,
@@ -82,11 +75,7 @@ async def create_session(request, values):
     query, arguments = database.parametrize(
         identifier="read-user", arguments={"user_name": values.body["user_name"]}
     )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    elements = await request.state.dbpool.fetch(query, *arguments)
     elements = database.dictify(elements)
     if len(elements) == 0:
         logger.warning(f"{request.method} {request.url.path} -- User not found")
@@ -106,11 +95,7 @@ async def create_session(request, values):
             "user_identifier": user_identifier,
         },
     )
-    try:
-        await request.state.dbpool.execute(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    await request.state.dbpool.execute(query, *arguments)
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=201,
@@ -138,9 +123,6 @@ async def create_network(request, values):
                     f"{request.method} {request.url.path} -- Uniqueness violation"
                 )
                 raise errors.ConflictError
-            except Exception as e:  # pragma: no cover
-                logger.error(e, exc_info=True)
-                raise errors.InternalServerError
             network_identifier = database.dictify(elements)[0]["network_identifier"]
             # Create new permission
             query, arguments = database.parametrize(
@@ -156,9 +138,6 @@ async def create_network(request, values):
                 # This can happen if the user is deleted after the permissions check
                 logger.warning(f"{request.method} {request.url.path} -- User not found")
                 raise errors.UnauthorizedError
-            except Exception as e:  # pragma: no cover
-                logger.error(e, exc_info=True)
-                raise errors.InternalServerError
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=201,
@@ -177,11 +156,7 @@ async def read_networks(request, values):
         identifier="read-networks",
         arguments={"user_identifier": request.state.identity},
     )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    elements = await request.state.dbpool.fetch(query, *arguments)
     return starlette.responses.JSONResponse(
         status_code=200, content=database.dictify(elements)
     )
@@ -218,9 +193,6 @@ async def create_sensor(request, values):
     except asyncpg.exceptions.UniqueViolationError:
         logger.warning(f"{request.method} {request.url.path} -- Uniqueness violation")
         raise errors.ConflictError
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
     sensor_identifier = database.dictify(elements)[0]["sensor_identifier"]
     # Return successful response
     return starlette.responses.JSONResponse(
@@ -242,11 +214,7 @@ async def read_sensors(request, values):
         identifier="read-sensors",
         arguments={"network_identifier": values.path["network_identifier"]},
     )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    elements = await request.state.dbpool.fetch(query, *arguments)
     return starlette.responses.JSONResponse(
         status_code=200, content=database.dictify(elements)
     )
@@ -285,9 +253,6 @@ async def update_sensor(request, values):
     except asyncpg.exceptions.UniqueViolationError:
         logger.warning(f"{request.method} {request.url.path} -- Uniqueness violation")
         raise errors.ConflictError
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
     if response != "UPDATE 1":
         logger.warning(f"{request.method} {request.url.path} -- Sensor not found")
         raise errors.NotFoundError
@@ -322,9 +287,6 @@ async def create_configuration(request, values):
     except asyncpg.ForeignKeyViolationError:
         logger.warning(f"{request.method} {request.url.path} -- Sensor not found")
         raise errors.NotFoundError
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
     revision = database.dictify(elements)[0]["revision"]
     # Send MQTT message with configuration
     await mqtt.publish_configuration(
@@ -364,11 +326,7 @@ async def read_configurations(request, values):
             "direction": values.query["direction"],
         },
     )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    elements = await request.state.dbpool.fetch(query, *arguments)
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -401,11 +359,7 @@ async def read_measurements(request, values):
             "direction": values.query["direction"],
         },
     )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    elements = await request.state.dbpool.fetch(query, *arguments)
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -438,11 +392,7 @@ async def read_logs(request, values):
             "direction": values.query["direction"],
         },
     )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    elements = await request.state.dbpool.fetch(query, *arguments)
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
@@ -471,11 +421,7 @@ async def read_logs_aggregates(request, values):
         identifier="aggregate-logs",
         arguments={"sensor_identifier": values.path["sensor_identifier"]},
     )
-    try:
-        elements = await request.state.dbpool.fetch(query, *arguments)
-    except Exception as e:  # pragma: no cover
-        logger.error(e, exc_info=True)
-        raise errors.InternalServerError
+    elements = await request.state.dbpool.fetch(query, *arguments)
     # Return successful response
     return starlette.responses.JSONResponse(
         status_code=200,
