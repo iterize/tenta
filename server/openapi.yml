@@ -349,6 +349,10 @@ paths:
                       type: boolean
         "400":
           $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/measurements":
     get:
       tags: [Sensors]
@@ -380,6 +384,10 @@ paths:
                       $ref: "#/components/schemas/timestamp"
         "400":
           $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs":
     get:
       tags: [Sensors]
@@ -413,6 +421,10 @@ paths:
                       $ref: "#/components/schemas/timestamp"
         "400":
           $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
     get:
       tags: [Sensors]
@@ -450,6 +462,10 @@ paths:
                       $ref: "#/components/schemas/count"
         "400":
           $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
 components:
   securitySchemes:
     "Bearer token":
