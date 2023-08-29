@@ -316,6 +316,8 @@ paths:
       summary: Read configurations
       description: |
         Returns a sensor's configurations in pages of 64 elements sorted ascendingly by `revision`.
+      security:
+        - "Bearer token": []
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"
@@ -353,6 +355,8 @@ paths:
       summary: Read measurements
       description: |
         Returns a sensor's measurements in pages of 64 elements sorted ascendingly by `creation_timestamp`.
+      security:
+        - "Bearer token": []
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"
@@ -382,6 +386,8 @@ paths:
       summary: Read logs
       description: |
         Returns a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`.
+      security:
+        - "Bearer token": []
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"
@@ -413,6 +419,8 @@ paths:
       summary: Read logs aggregation
       description: |
         Returns an aggregation of a sensor's logs that have a severity of warning or error.
+      security:
+        - "Bearer token": []
       parameters:
         - $ref: "#/components/parameters/network_identifier"
         - $ref: "#/components/parameters/sensor_identifier"

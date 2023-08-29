@@ -376,13 +376,14 @@ async def test_create_configuration_with_nonexistent_sensor(
 
 @pytest.mark.anyio
 async def test_read_configurations(
-    setup, client, network_identifier, sensor_identifier
+    setup, client, network_identifier, sensor_identifier, access_token
 ):
     """Test reading the oldest configurations."""
     response = await client.get(
         url=(
             f"/networks/{network_identifier}/sensors/{sensor_identifier}/configurations"
         ),
+        headers={"Authorization": f"Bearer {access_token}"},
     )
     assert returns(response, 200)
     assert isinstance(response.json(), list)
@@ -404,13 +405,14 @@ async def test_read_configurations(
 
 @pytest.mark.anyio
 async def test_read_configurations_with_next_page(
-    setup, client, network_identifier, sensor_identifier
+    setup, client, network_identifier, sensor_identifier, access_token
 ):
     """Test reading configurations after a given timestamp."""
     response = await client.get(
         url=(
             f"/networks/{network_identifier}/sensors/{sensor_identifier}/configurations"
         ),
+        headers={"Authorization": f"Bearer {access_token}"},
         params={"direction": "next", "revision": 0},
     )
     assert returns(response, 200)
@@ -437,10 +439,13 @@ async def test_read_configurations_with_next_page(
 
 
 @pytest.mark.anyio
-async def test_read_measurements(setup, client, network_identifier, sensor_identifier):
+async def test_read_measurements(
+    setup, client, network_identifier, sensor_identifier, access_token
+):
     """Test reading the oldest measurements."""
     response = await client.get(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/measurements",
+        headers={"Authorization": f"Bearer {access_token}"},
     )
     assert returns(response, 200)
     assert isinstance(response.json(), list)
@@ -451,11 +456,12 @@ async def test_read_measurements(setup, client, network_identifier, sensor_ident
 
 @pytest.mark.anyio
 async def test_read_measurements_with_next_page(
-    setup, client, network_identifier, sensor_identifier
+    setup, client, network_identifier, sensor_identifier, access_token
 ):
     """Test reading measurements after a given timestamp."""
     response = await client.get(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/measurements",
+        headers={"Authorization": f"Bearer {access_token}"},
         params={"direction": "next", "creation_timestamp": 100},
     )
     assert returns(response, 200)
@@ -467,11 +473,12 @@ async def test_read_measurements_with_next_page(
 
 @pytest.mark.anyio
 async def test_read_measurements_with_previous_page(
-    setup, client, network_identifier, sensor_identifier
+    setup, client, network_identifier, sensor_identifier, access_token
 ):
     """Test reading measurements before a given timestamp."""
     response = await client.get(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/measurements",
+        headers={"Authorization": f"Bearer {access_token}"},
         params={"direction": "previous", "creation_timestamp": 200},
     )
     assert returns(response, 200)
