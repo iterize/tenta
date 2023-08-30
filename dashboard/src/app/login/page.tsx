@@ -9,8 +9,6 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-// ------------
-
 export default function Page() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,6 +34,8 @@ export default function Page() {
   } else if (userData !== undefined) {
     redirect("/networks");
   }
+
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
 
   return (
     <>
@@ -84,6 +84,14 @@ export default function Page() {
           >
             {isSubmitting ? "..." : "Login"}
           </Button>
+          {contactEmail !== undefined && (
+            <div className="mt-4 text-sm text-center text-slate-800">
+              If you have questions about this Tenta instance, please contact{" "}
+              <Link href="mailto:${contactEmail}" className="underline">
+                {contactEmail}
+              </Link>
+            </div>
+          )}
         </div>
       </main>
     </>
