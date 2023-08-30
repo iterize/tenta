@@ -37,18 +37,20 @@ export default function NetworkPageLayout(props: {
         <Link href="/networks">
           <IconSquareChevronLeftFilled className="w-12 h-12 p-3.5 hover:bg-slate-200 text-slate-800 hover:text-slate-950 border-r border-slate-100 hover:border-slate-300" />
         </Link>
-        <h1 className="flex flex-row items-baseline px-2 m-0 font-regular">
-          <div>
-            {network ? (
-              <span>
-                <span className="font-bold">{network.name}</span> network{" "}
-                <span className="text-xs">({network.identifier})</span>
-              </span>
-            ) : (
-              "..."
-            )}
-          </div>
-        </h1>
+        <Link href={`/networks/${props.params.networkIdentifier}`}>
+          <h1 className="flex flex-row items-baseline px-2 m-0 font-regular">
+            <div>
+              {network ? (
+                <span>
+                  <span className="font-bold">{network.name}</span> network{" "}
+                  <span className="text-xs">({network.identifier})</span>
+                </span>
+              ) : (
+                "..."
+              )}
+            </div>
+          </h1>
+        </Link>
       </div>
       <div className="grid grid-cols-3 h-[calc(100vh-6rem)] grid-rows-1">
         <div className="w-full h-full overflow-hidden border-r border-slate-300">
