@@ -1,5 +1,6 @@
 import asyncio
 import contextlib
+import logging
 
 import asyncpg
 import starlette.applications
@@ -11,10 +12,10 @@ import starlette.routing
 import app.auth as auth
 import app.database as database
 import app.errors as errors
+import app.logs as logs
 import app.mqtt as mqtt
 import app.settings as settings
 import app.validation as validation
-from app.logs import logger
 
 
 @validation.validate(schema=validation.ReadStatusRequest)
@@ -516,6 +517,9 @@ async def lifespan(app):
         except asyncio.CancelledError:
             pass
 
+
+logger = logging.getLogger(__name__)
+logs.configure()
 
 app = starlette.applications.Starlette(
     routes=ROUTES,

@@ -26,4 +26,4 @@ ENV COMMIT_SHA=${commit_sha} BRANCH_NAME=${branch_name}
 
 COPY /app /app
 
-CMD poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000
+CMD poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-level info

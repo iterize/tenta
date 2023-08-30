@@ -1,10 +1,13 @@
 import functools
 import json
+import logging
 import typing
 
 import app.errors as errors
 import app.validation.types as types
-from app.logs import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 ########################################################################################

@@ -1,5 +1,6 @@
 import enum
 import hashlib
+import logging
 import secrets
 
 import passlib.context
@@ -8,7 +9,6 @@ import starlette.requests
 
 import app.database as database
 import app.errors as errors
-from app.logs import logger
 
 
 ########################################################################################
@@ -57,6 +57,7 @@ class AuthenticationMiddleware:
 
     def __init__(self, app):
         self.app = app
+        self.logger = logging.getLogger(__name__)
 
     async def _authenticate(self, request):
         # Extract the access token from the authorization header
@@ -65,10 +66,10 @@ class AuthenticationMiddleware:
         try:
             scheme, access_token = request.headers["authorization"].split()
         except ValueError:
-            logger.warning("[auth] Malformed authorization header")
+            self.logger.warning("Malformed authorization header")
             return None
         if scheme.lower() != "bearer":
-            logger.warning("[auth] Malformed authorization header")
+            self.logger.warning("Malformed authorization header")
             return None
         # Check if we have the access token in the database
         query, arguments = database.parametrize(
@@ -79,7 +80,7 @@ class AuthenticationMiddleware:
         elements = database.dictify(elements)
         # If the result set is empty, the access token is invalid
         if len(elements) == 0:
-            logger.warning("[auth] Invalid access token")
+            self.logger.warning("Invalid access token")
             return None
         # Return the requester's identity
         return elements[0]["user_identifier"]
