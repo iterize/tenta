@@ -1,7 +1,6 @@
 "use client";
 
 import { AuthLoadingScreen } from "@/components/custom/auth-loading-screen";
-import { NavigationBar } from "@/components/custom/navigation-bar";
 import { useNetworks } from "@/requests/networks";
 import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
