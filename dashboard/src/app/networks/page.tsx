@@ -1,7 +1,7 @@
 "use client";
 
 import { AuthLoadingScreen } from "@/components/custom/auth-loading-screen";
-import { Button } from "@/components/ui/button";
+import { NavigationBar } from "@/components/custom/navigation-bar";
 import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
 
@@ -15,12 +15,10 @@ export default function Page() {
   }
 
   return (
-    <main className="flex items-center justify-center w-screen h-screen">
+    <main className="w-screen min-h-screen">
+      <NavigationBar />
       <div className="flex flex-col items-center justify-center">
         <div>Networks</div>
-        <Button className="mt-2" onClick={logoutUser}>
-          {"Logout"}
-        </Button>
       </div>
     </main>
   );
