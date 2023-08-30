@@ -3,11 +3,12 @@ import time
 
 
 class Color:
-    white = "\x1b[38m"
-    yellow = "\x1b[33m"
     red = "\x1b[31m"
+    yellow = "\x1b[33m"
     blue = "\x1b[34m"
+    magenta = "\x1b[35m"
     cyan = "\x1b[36m"
+    white = "\x1b[38m"
 
 
 class Style:
@@ -17,20 +18,25 @@ class Style:
 
 class CustomFormatter(logging.Formatter):
     _FMTS = {
+        logging.DEBUG: (
+            f"{Color.cyan}%(asctime)s{Style.reset} | "
+            f"{Style.bold}{Color.blue}%(levelname)-8s{Style.reset} | "
+            f"{Color.magenta}%(name)s:%(lineno)s{Style.reset} - %(message)s"
+        ),
         logging.INFO: (
             f"{Color.cyan}%(asctime)s{Style.reset} | "
             f"{Style.bold}{Color.white}%(levelname)-8s{Style.reset} | "
-            f"{Color.blue}%(name)s:%(lineno)s{Style.reset} - %(message)s"
+            f"{Color.magenta}%(name)s:%(lineno)s{Style.reset} - %(message)s"
         ),
         logging.WARNING: (
             f"{Color.cyan}%(asctime)s{Style.reset} | "
             f"{Style.bold}{Color.yellow}%(levelname)-8s{Style.reset} | "
-            f"{Color.blue}%(name)s:%(lineno)s{Style.reset} - %(message)s"
+            f"{Color.magenta}%(name)s:%(lineno)s{Style.reset} - %(message)s"
         ),
         logging.ERROR: (
             f"{Color.cyan}%(asctime)s{Style.reset} | "
             f"{Style.bold}{Color.red}%(levelname)-8s{Style.reset} | "
-            f"{Color.blue}%(name)s:%(lineno)s{Style.reset} - %(message)s"
+            f"{Color.magenta}%(name)s:%(lineno)s{Style.reset} - %(message)s"
         ),
     }
 
