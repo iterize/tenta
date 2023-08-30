@@ -54,7 +54,7 @@ export function NetworkCard(props: {
       href={`/networks/${props.networkIdentifier}/sensors`}
       className="group"
     >
-      <div className="flex flex-col w-full overflow-hidden bg-white border rounded-lg shadow group-hover:bg-slate-50 border-slate-200 group-hover:shadow-md group-hover:border-slate-300">
+      <div className="flex flex-col w-full overflow-hidden bg-white border rounded-lg shadow group-hover:bg-slate-50 border-slate-300 group-hover:shadow-md group-hover:border-slate-400">
         <h2 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-lg font-bold border-b border-slate-200">
           <div>{props.networkName}</div>
           <div className="flex-grow" />
