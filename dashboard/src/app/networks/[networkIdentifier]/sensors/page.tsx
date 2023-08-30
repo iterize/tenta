@@ -30,8 +30,7 @@ export default function Page(props: { params: { networkIdentifier: string } }) {
   );
 
   return (
-    <main className="flex flex-col w-screen min-h-screen">
-      <NavigationBar />
+    <>
       <div className="flex flex-row items-center justify-start w-full h-12 overflow-hidden border-b border-slate-300 bg-slate-100">
         <Link href="/networks">
           <IconSquareChevronLeftFilled className="w-12 h-12 p-3.5 hover:bg-slate-200 text-slate-800 hover:text-slate-950 border-r border-slate-100 hover:border-slate-300" />
@@ -81,7 +80,7 @@ export default function Page(props: { params: { networkIdentifier: string } }) {
         </div>
         <div className="col-span-2 p-3">col2</div>
       </div>
-    </main>
+    </>
   );
 }
 
