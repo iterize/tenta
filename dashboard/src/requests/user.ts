@@ -28,10 +28,7 @@ async function userFetcher(): Promise<UserDataType> {
     };
   }
 
-  // not authorized
-  const error: any = new Error("Not authorized!");
-  error.status = 403;
-  throw error;
+  throw new Error("Not authorized!");
 }
 
 export function useUser() {
@@ -54,19 +51,9 @@ export function useUser() {
     mutate(userData);
   };
 
-  const authenticationState: "loading" | "loggedIn" | "loggedOut" = (() => {
-    if (userData) {
-      return "loggedIn";
-    }
-    if (error) {
-      return "loggedOut";
-    }
-    return "loading";
-  })();
-
   return {
     userData,
-    authenticationState,
+    userDataIsloading: !userData && !error,
     logoutUser: () => {
       Cookies.remove("userIdentifier");
       Cookies.remove("accessToken");
