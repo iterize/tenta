@@ -1,10 +1,11 @@
+import { useSensors } from "@/requests/sensors";
+
 export function NetworkCard(props: {
   networkName: string;
   networkIdentifier: string;
+  accessToken: string;
 }) {
-  // TODO: pull sensorCount from SWR
-
-  const sensorCount: number = 17;
+  const sensorsData = useSensors(props.networkIdentifier, props.accessToken);
 
   return (
     <div className="flex flex-col w-full overflow-hidden bg-white border rounded-lg shadow border-slate-200">
@@ -12,8 +13,16 @@ export function NetworkCard(props: {
         <div>{props.networkName}</div>
         <div className="flex-grow" />
         <div className="px-1 text-sm font-medium text-teal-800 bg-teal-200 rounded">
-          <span className="font-bold text-teal-900">{sensorCount}</span> sensor
-          {sensorCount === 1 ? "" : "s"}
+          {sensorsData === undefined && "..."}
+          {sensorsData !== undefined && (
+            <>
+              <span className="font-bold text-teal-900">
+                {sensorsData.length}
+              </span>{" "}
+              sensor
+              {sensorsData.length === 1 ? "" : "s"}
+            </>
+          )}
         </div>
       </h2>
       <div className="flex flex-col w-full p-3 bg-white">

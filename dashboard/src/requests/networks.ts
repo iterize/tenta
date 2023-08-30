@@ -3,9 +3,8 @@
 import useSWR from "swr";
 import axios from "axios";
 import { z } from "zod";
-import { UserDataType } from "./user";
 
-const networksSchema = z.array(
+const schema = z.array(
   z
     .object({
       network_identifier: z.string(),
@@ -17,11 +16,9 @@ const networksSchema = z.array(
     }))
 );
 
-export type NetworksType = z.infer<typeof networksSchema>;
+export type NetworksType = z.infer<typeof schema>;
 
-async function networkFetcher(
-  accessToken: string | undefined
-): Promise<NetworksType> {
+async function fetcher(accessToken: string | undefined): Promise<NetworksType> {
   if (!accessToken) {
     throw new Error("Not authorized!");
   }
@@ -34,14 +31,13 @@ async function networkFetcher(
       },
     }
   );
-  return networksSchema.parse(data);
+  return schema.parse(data);
 }
 
-export function useNetworks(userData: UserDataType | undefined) {
-  const { data: networksData } = useSWR(
-    ["/networks", userData?.accessToken],
-    ([url, accessToken]) => networkFetcher(accessToken)
+export function useNetworks(accessToken: string | undefined) {
+  const { data } = useSWR(["/networks", accessToken], ([url, accessToken]) =>
+    fetcher(accessToken)
   );
 
-  return networksData;
+  return data;
 }

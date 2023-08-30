@@ -5,13 +5,12 @@ import { NavigationBar } from "@/components/custom/navigation-bar";
 import { NetworkCard } from "@/components/custom/network-card";
 import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
-import { IconTopologyComplex } from "@tabler/icons-react";
 import { useNetworks } from "@/requests/networks";
 
 export default function Page() {
   const { userData, userDataIsloading } = useUser();
 
-  const networksData = useNetworks(userData);
+  const networksData = useNetworks(userData?.accessToken);
 
   if (userDataIsloading) {
     return <AuthLoadingScreen />;
@@ -33,6 +32,7 @@ export default function Page() {
               key={network.identifier}
               networkName={network.name}
               networkIdentifier={network.identifier}
+              accessToken={userData.accessToken}
             />
           ))}
         </div>

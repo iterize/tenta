@@ -26,7 +26,7 @@ export function NavigationBar() {
         />
       </Link>
       <Link href="/">
-        <h1 className="hidden pl-5 font-light uppercase text-slate-950 xl:block xl:text-lg 2xl:text-xl">
+        <h1 className="hidden pl-5 font-light uppercase text-slate-950 xl:block xl:text-lg">
           <span className="font-medium">Demo Sensor Network</span> &nbsp;|&nbsp;
           Professorship of Environmental Sensing and Modeling
         </h1>
