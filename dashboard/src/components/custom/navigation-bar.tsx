@@ -27,8 +27,12 @@ export function NavigationBar() {
       </Link>
       <Link href="/">
         <h1 className="hidden pl-5 font-light uppercase text-slate-950 xl:block xl:text-lg">
-          <span className="font-medium">Demo Sensor Network</span> &nbsp;|&nbsp;
-          Professorship of Environmental Sensing and Modeling
+          <span className="font-medium">
+            {process.env.NEXT_PUBLIC_INSTANCE_TITLE || "Tenta Dashboard"}
+          </span>{" "}
+          {process.env.NEXT_PUBLIC_INSTANCE_SUBTITLE !== undefined && (
+            <>&nbsp;|&nbsp; {process.env.NEXT_PUBLIC_INSTANCE_SUBTITLE}</>
+          )}
         </h1>
       </Link>
       <div className="flex-grow" />
