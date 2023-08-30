@@ -41,10 +41,13 @@ export function useUser() {
   });
 
   const loginUser = async (username: string, password: string) => {
-    const { data } = await axios.post("http://127.0.0.1:8000/authentication", {
-      user_name: username,
-      password,
-    });
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/authentication`,
+      {
+        user_name: username,
+        password,
+      }
+    );
     const userData = userDataSchema.parse(data);
     Cookies.set("userIdentifier", userData.userIdentifier);
     Cookies.set("accessToken", userData.accessToken);
