@@ -13,10 +13,10 @@ export function NavigationBar() {
   }
 
   return (
-    <header className="flex flex-row items-center justify-start flex-shrink-0 w-full px-6 border-b h-14 border-slate-300">
+    <header className="flex flex-row items-center justify-start flex-shrink-0 w-full h-12 px-6 border-b border-slate-300">
       <Link
         href="/"
-        className="flex items-center w-24 px-4 -ml-6 overflow-hidden bg-blue-600 border-b border-r h-14 text-slate-100"
+        className="flex items-center w-20 h-12 px-4 -ml-6 overflow-hidden border-b border-r bg-slate-900 text-slate-100"
       >
         <Image
           src="/tenta-icon-v2-square.svg"

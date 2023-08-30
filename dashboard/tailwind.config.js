@@ -2,9 +2,6 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
   ],
   theme: {
@@ -50,7 +47,7 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        blue: {
+        /*blue: {
           100: "#a5e1ff",
           200: "#4bc3ff",
           300: "#00a0f1",
@@ -104,7 +101,7 @@ module.exports = {
           700: "#c7ab3a",
           800: "#867226",
           900: "#433913",
-        },
+        },*/
       },
       borderRadius: {
         lg: "var(--radius)",
