@@ -32,13 +32,7 @@ async function userFetcher(): Promise<UserDataType> {
 }
 
 export function useUser() {
-  const {
-    data: userData,
-    error,
-    mutate,
-  } = useSWR("userData", userFetcher, {
-    refreshInterval: 0.01,
-  });
+  const { data: userData, error, mutate } = useSWR("userData", userFetcher);
 
   const loginUser = async (username: string, password: string) => {
     const { data } = await axios.post(
