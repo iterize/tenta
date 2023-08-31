@@ -4,14 +4,18 @@ import { AuthLoadingScreen } from "@/components/custom/auth-loading-screen";
 import { useNetworks } from "@/requests/networks";
 import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
-import { redirect } from "next/navigation";
-import { IconSquareChevronLeftFilled } from "@tabler/icons-react";
+import { redirect, usePathname } from "next/navigation";
+import {
+  IconSquareChevronLeftFilled,
+  IconSquareChevronRightFilled,
+} from "@tabler/icons-react";
 import { IconAppsFilled } from "@tabler/icons-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function NetworkPageLayout(props: {
   children: React.ReactNode;
-  params: { networkIdentifier: string };
+  params: { networkIdentifier: string; sensorIdentifier: string };
 }) {
   const { userData, userDataIsloading } = useUser();
 
@@ -93,15 +97,28 @@ function SensorListItem(props: {
   sensorName: string;
   sensorIdentifier: string;
 }) {
+  const pathname = usePathname();
+  const isActive = pathname.includes(`/sensors/${props.sensorIdentifier}`);
+
   return (
     <Link
       href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}`}
+      className={isActive ? "cursor-default" : "cursor-pointer"}
     >
-      <div className="w-full p-3 border-b border-slate-200 hover:bg-sky-100 hover:text-sky-950">
-        <span>
+      <div
+        className={
+          "flex flex-row items-center justify-center w-full p-3 border-b border-slate-200 gap-x-1 " +
+          (isActive ? "bg-slate-100" : "hover:bg-sky-100 hover:text-sky-950")
+        }
+      >
+        <div>
           <span className="font-bold">{props.sensorName}</span>{" "}
           <span className="text-xs">({props.sensorIdentifier})</span>
-        </span>
+        </div>
+        <div className="flex-grow" />
+        {isActive && (
+          <IconSquareChevronRightFilled className="w-4 text-slate-400" />
+        )}
       </div>
     </Link>
   );
