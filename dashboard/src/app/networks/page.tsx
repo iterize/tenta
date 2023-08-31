@@ -51,11 +51,11 @@ export function NetworkCard(props: {
         <h2 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-lg font-bold border-b border-slate-200">
           <div>{props.networkName}</div>
           <div className="flex-grow" />
-          <div className="px-1 text-sm font-medium text-teal-800 bg-teal-200 rounded">
+          <div className="px-1 text-sm font-medium rounded text-emerald-800 bg-emerald-200">
             {sensorsData === undefined && "..."}
             {sensorsData !== undefined && (
               <>
-                <span className="font-bold text-teal-900">
+                <span className="font-bold text-emerald-900">
                   {sensorsData.length}
                 </span>{" "}
                 sensor

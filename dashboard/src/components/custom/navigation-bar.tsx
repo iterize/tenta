@@ -6,11 +6,7 @@ import { useUser } from "@/requests/user";
 import { Button } from "@/components/ui/button";
 
 export function NavigationBar() {
-  const { userDataIsloading, logoutUser } = useUser();
-
-  if (userDataIsloading) {
-    return null;
-  }
+  const { userData, userDataIsloading, logoutUser } = useUser();
 
   return (
     <header className="flex flex-row items-center justify-start flex-shrink-0 w-full h-12 px-6 overflow-hidden border-b border-slate-300">
@@ -26,8 +22,8 @@ export function NavigationBar() {
         />
       </Link>
       <Link href="/">
-        <h1 className="hidden pl-5 font-light uppercase text-slate-950 xl:block xl:text-lg">
-          <span className="font-medium">
+        <h1 className="hidden pl-5 font-light text-slate-950 xl:block xl:text-lg">
+          <span className="font-semibold">
             {process.env.NEXT_PUBLIC_INSTANCE_TITLE || "Tenta Dashboard"}
           </span>{" "}
           {process.env.NEXT_PUBLIC_INSTANCE_SUBTITLE !== undefined && (
@@ -46,9 +42,11 @@ export function NavigationBar() {
           github.com/tum-esm/tenta
         </Link>
       </p>
-      <Button className="ml-4" onClick={logoutUser}>
-        {"Logout"}
-      </Button>
+      {userData !== undefined && (
+        <Button className="ml-4" onClick={logoutUser}>
+          {"Logout"}
+        </Button>
+      )}
     </header>
   );
 }

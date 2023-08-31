@@ -60,9 +60,9 @@ export default function NetworkPageLayout(props: {
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (
             <>
-              <div className="flex items-center justify-center w-full h-10 text-sm font-medium text-center text-teal-800 bg-teal-200 border-b border-slate-300">
+              <div className="flex items-center justify-center w-full h-10 text-sm font-medium text-center border-b text-emerald-800 bg-emerald-200 border-slate-300">
                 <span>
-                  <span className="font-bold text-teal-900">
+                  <span className="font-bold text-emerald-900">
                     {sensorsData.length}
                   </span>{" "}
                   sensor

@@ -5,8 +5,8 @@ import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
 import { redirect, usePathname } from "next/navigation";
 
-import { IconFileSettings } from "@tabler/icons-react";
-import { IconTimelineEventText } from "@tabler/icons-react";
+import { IconSettings } from "@tabler/icons-react";
+import { IconMessage2 } from "@tabler/icons-react";
 import { IconChartDots } from "@tabler/icons-react";
 
 import Link from "next/link";
@@ -51,7 +51,7 @@ export default function Page(props: {
                 : "bg-slate-300")
             }
           >
-            <IconFileSettings
+            <IconSettings
               className={
                 "w-6 " +
                 (pathname.endsWith("configurations")
@@ -67,7 +67,7 @@ export default function Page(props: {
               (pathname.endsWith("logs") ? "bg-rose-500" : "bg-slate-300")
             }
           >
-            <IconTimelineEventText
+            <IconMessage2
               className={
                 "w-6 " +
                 (pathname.endsWith("logs") ? "text-rose-50" : "text-white")
