@@ -29,10 +29,5 @@ export default function Page(props: {
     return "unknown sensor id";
   }
 
-  return (
-    <div>
-      network: {props.params.networkIdentifier}, sensor:{" "}
-      {props.params.sensorIdentifier}
-    </div>
-  );
+  return <div>Measurements</div>;
 }

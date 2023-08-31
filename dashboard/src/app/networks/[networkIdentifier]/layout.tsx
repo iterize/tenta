@@ -11,7 +11,6 @@ import {
 } from "@tabler/icons-react";
 import { IconAppsFilled } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function NetworkPageLayout(props: {
   children: React.ReactNode;
@@ -86,7 +85,7 @@ export default function NetworkPageLayout(props: {
             </>
           )}
         </div>
-        <div className="col-span-2 p-3">{props.children}</div>
+        <div className="col-span-2">{props.children}</div>
       </div>
     </>
   );
@@ -102,7 +101,7 @@ function SensorListItem(props: {
 
   return (
     <Link
-      href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}`}
+      href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/configurations`}
       className={isActive ? "cursor-default" : "cursor-pointer"}
     >
       <div
