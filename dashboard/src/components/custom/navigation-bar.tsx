@@ -6,7 +6,7 @@ import { useUser } from "@/requests/user";
 import { Button } from "@/components/ui/button";
 
 export function NavigationBar() {
-  const { userData, userDataIsloading, logoutUser } = useUser();
+  const { userData, logoutUser } = useUser();
 
   return (
     <header className="flex flex-row items-center justify-start flex-shrink-0 w-full h-12 px-6 overflow-hidden border-b border-slate-300">

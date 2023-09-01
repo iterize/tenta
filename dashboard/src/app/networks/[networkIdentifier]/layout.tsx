@@ -46,7 +46,9 @@ export default function NetworkPageLayout(props: {
               {network ? (
                 <span>
                   <span className="font-bold">{network.name}</span> network{" "}
-                  <span className="text-xs">({network.identifier})</span>
+                  <span className="font-mono text-xs opacity-60">
+                    ({network.identifier})
+                  </span>
                 </span>
               ) : (
                 "..."
@@ -99,25 +101,95 @@ function SensorListItem(props: {
   const pathname = usePathname();
   const isActive = pathname.includes(`/sensors/${props.sensorIdentifier}`);
 
+  let currentlyActiveLabel = pathname.split("/").pop();
+  if (
+    currentlyActiveLabel === undefined ||
+    !["configurations", "measurements", "logs"].includes(currentlyActiveLabel)
+  ) {
+    currentlyActiveLabel = "configurations";
+  }
+
   return (
-    <Link
-      href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/configurations`}
-      className={isActive ? "cursor-default" : "cursor-pointer"}
-    >
+    <div className="border-b border-slate-300 group">
       <div
         className={
-          "flex flex-row items-center justify-center w-full p-3 border-b border-slate-200 gap-x-1 " +
-          (isActive ? "bg-slate-100" : "hover:bg-sky-100 hover:text-sky-950")
+          "flex flex-col border-slate-600 " +
+          (isActive
+            ? "bg-slate-50 border-r-4"
+            : "hover:bg-sky-100 hover:text-sky-900")
         }
       >
-        <div>
-          <span className="font-bold">{props.sensorName}</span>{" "}
-          <span className="text-xs">({props.sensorIdentifier})</span>
-        </div>
-        <div className="flex-grow" />
+        <Link
+          href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${currentlyActiveLabel}`}
+          className={isActive ? "cursor-default" : "cursor-pointer"}
+        >
+          <div
+            className={
+              "flex flex-row items-center justify-start w-full h-12 px-3 gap-x-1 "
+            }
+          >
+            <div
+              className={
+                isActive
+                  ? "text-slate-950"
+                  : "text-slate-500 group-hover:text-sky-900"
+              }
+            >
+              <span className="font-bold">{props.sensorName}</span>{" "}
+              <span className="font-mono text-xs opacity-60">
+                ({props.sensorIdentifier})
+              </span>
+            </div>
+          </div>
+        </Link>
         {isActive && (
-          <IconSquareChevronRightFilled className="w-4 text-slate-400" />
+          <div className="grid grid-cols-3 grid-rows-1 text-sm text-center border-t divide-x border-slate-200 divide-slate-200">
+            <SensorListItemLink
+              networkIdentifier={props.networkIdentifier}
+              sensorIdentifier={props.sensorIdentifier}
+              label="configurations"
+            />
+            <SensorListItemLink
+              networkIdentifier={props.networkIdentifier}
+              sensorIdentifier={props.sensorIdentifier}
+              label="measurements"
+            />
+            <SensorListItemLink
+              networkIdentifier={props.networkIdentifier}
+              sensorIdentifier={props.sensorIdentifier}
+              label="logs"
+            />
+          </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function SensorListItemLink(props: {
+  networkIdentifier: string;
+  sensorIdentifier: string;
+  label: "configurations" | "measurements" | "logs";
+}) {
+  const pathname = usePathname();
+  const isActive = pathname.includes(
+    `/sensors/${props.sensorIdentifier}/${props.label}`
+  );
+
+  return (
+    <Link
+      href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${props.label}`}
+      className={
+        isActive
+          ? "bg-slate-250 text-slate-950"
+          : "bg-slate-100 hover:bg-sky-100 hover:text-sky-900 text-slate-500"
+      }
+    >
+      <div className="flex flex-row items-center justify-center h-8 px-3 gap-x-1.5 font-medium text-[0.8rem]">
+        <span>
+          {props.label.slice(0, 1).toUpperCase()}
+          {props.label.slice(1)}
+        </span>
       </div>
     </Link>
   );
