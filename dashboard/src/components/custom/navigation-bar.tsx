@@ -32,7 +32,7 @@ export function NavigationBar() {
         </h1>
       </Link>
       <div className="flex-grow" />
-      <p className="text-slate-800">
+      <p className="text-sm text-slate-800">
         powered by{" "}
         <Link
           href="https://github.com/tum-esm/hermes"
