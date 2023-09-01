@@ -33,15 +33,14 @@ export default function Page() {
   if (userDataIsloading) {
     return <AuthLoadingScreen />;
   } else if (userData !== undefined) {
-    redirect("/networks");
+    redirect("/");
   }
 
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL;
 
   return (
     <>
-      <NavigationBar />
-      <main className="grid w-screen h-[calc(100vh-3rem)] grid-cols-2 grid-rows-1">
+      <div className="grid w-screen h-[calc(100vh-3rem)] grid-cols-2 grid-rows-1">
         <div className="flex items-center justify-center">
           <Image
             src="/tenta-artwork-compressed.png"
@@ -81,7 +80,7 @@ export default function Page() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </>
   );
 }

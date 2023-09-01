@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { SWRProvider } from "@/app/swr-provider";
+import { NavigationBar } from "@/components/custom/navigation-bar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SWRProvider>{children}</SWRProvider>
+        <SWRProvider>
+          <main className="flex flex-col w-screen min-h-screen">
+            <NavigationBar />
+            {children}
+          </main>
+        </SWRProvider>
       </body>
     </html>
   );
