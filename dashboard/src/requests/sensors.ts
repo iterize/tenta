@@ -38,8 +38,8 @@ async function fetcher(
 }
 
 export function useSensors(
-  networkIdentifier: string,
-  accessToken: string | undefined
+  accessToken: string | undefined,
+  networkIdentifier: string
 ) {
   const { data } = useSWR(
     [`/networks/${networkIdentifier}/sensors`, accessToken],

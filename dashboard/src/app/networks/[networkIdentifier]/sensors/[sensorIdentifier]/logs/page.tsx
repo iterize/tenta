@@ -11,8 +11,8 @@ export default function Page(props: {
   const { userData, userDataIsloading } = useUser();
 
   const sensorsData = useSensors(
-    props.params.networkIdentifier,
-    userData?.accessToken
+    userData?.accessToken,
+    props.params.networkIdentifier
   );
 
   if (userDataIsloading) {

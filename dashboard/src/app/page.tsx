@@ -38,12 +38,12 @@ export default function Page() {
   );
 }
 
-export function NetworkCard(props: {
+function NetworkCard(props: {
   networkName: string;
   networkIdentifier: string;
   accessToken: string;
 }) {
-  const sensorsData = useSensors(props.networkIdentifier, props.accessToken);
+  const sensorsData = useSensors(props.accessToken, props.networkIdentifier);
 
   return (
     <Link href={`/networks/${props.networkIdentifier}`} className="group">

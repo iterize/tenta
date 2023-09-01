@@ -20,8 +20,8 @@ export default function NetworkPageLayout(props: {
 
   const networksData = useNetworks(userData?.accessToken);
   const sensorsData = useSensors(
-    props.params.networkIdentifier,
-    userData?.accessToken
+    userData?.accessToken,
+    props.params.networkIdentifier
   );
 
   if (userDataIsloading) {
