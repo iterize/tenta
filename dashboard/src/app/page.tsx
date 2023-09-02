@@ -43,7 +43,7 @@ export default function Page() {
           />
         ))}
       </div>
-      <h2 className="flex flex-row items-center mt-8 text-2xl text-slate-800">
+      <h2 className="flex flex-row items-center mt-16 mb-4 text-2xl font-bold gap-x-1 text-slate-800">
         Server Status
       </h2>
       <ServerStatus />
@@ -66,7 +66,7 @@ function NetworkCard(props: {
   return (
     <Link href={`/networks/${props.networkIdentifier}`} className="group">
       <div className="flex flex-col w-full overflow-hidden bg-white border rounded-lg shadow group-hover:bg-slate-50 border-slate-300 group-hover:shadow-md group-hover:border-slate-400">
-        <h2 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-lg font-bold border-b border-slate-200">
+        <h3 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-lg font-bold border-b border-slate-200">
           <div>{props.networkName}</div>
           <div className="flex-grow" />
           <div className="px-1 text-sm font-medium rounded text-emerald-800 bg-emerald-200">
@@ -81,7 +81,7 @@ function NetworkCard(props: {
               </>
             )}
           </div>
-        </h2>
+        </h3>
         <div className="flex flex-col w-full p-3">
           <p className="text-xs">identifier: {props.networkIdentifier}</p>
         </div>
@@ -94,21 +94,23 @@ function ServerStatus() {
   const serverStatus = useStatus();
 
   return (
-    <div className="flex flex-col max-w-3xl p-4 mx-auto overflow-hidden bg-white border rounded shadow border-slate-300">
+    <div className="flex flex-col max-w-3xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded shadow border-slate-300">
       <div>
-        <span className="inline-flex w-28">Environment:</span>{" "}
+        <span className="inline-flex font-medium w-28">Environment:</span>{" "}
         {serverStatus?.environment || "..."}
       </div>
       <div>
-        <span className="inline-flex w-28">Commit SHA:</span>{" "}
-        {serverStatus?.commitSha || "..."}
+        <span className="inline-flex font-medium w-28">Commit SHA:</span>{" "}
+        <span className="font-mono bg-slate-150 rounded-sm py-0.5 px-1 text-slate-700">
+          {serverStatus?.commitSha || "..."}
+        </span>
       </div>
       <div>
-        <span className="inline-flex w-28">Branch Name:</span>{" "}
+        <span className="inline-flex font-medium w-28">Branch Name:</span>{" "}
         {serverStatus?.branchName || "..."}
       </div>
       <div>
-        <span className="inline-flex w-28">Last Boot:</span>{" "}
+        <span className="inline-flex font-medium w-28">Last Boot:</span>{" "}
         {serverStatus?.startTimestamp !== undefined && (
           <TooltipProvider>
             <Tooltip>
