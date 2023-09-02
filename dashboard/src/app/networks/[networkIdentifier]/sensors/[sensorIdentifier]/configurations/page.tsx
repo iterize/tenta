@@ -32,11 +32,6 @@ export default function Page(props: {
     props.params.sensorIdentifier
   );
 
-  console.log({
-    at: userData?.accessToken,
-    cd: configurationsData,
-  });
-
   if (userDataIsloading || configurationsData === undefined) {
     return <AuthLoadingScreen />;
   } else if (userData === undefined) {

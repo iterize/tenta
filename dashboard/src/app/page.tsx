@@ -6,6 +6,14 @@ import { redirect } from "next/navigation";
 import { useNetworks } from "@/requests/networks";
 import { useSensors } from "@/requests/sensors";
 import Link from "next/link";
+import { useStatus } from "@/requests/status";
+import { formatDistanceToNow } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Page() {
   const { userData, userDataIsloading, logoutUser } = useUser();
@@ -20,9 +28,9 @@ export default function Page() {
 
   return (
     <div className="flex flex-col items-center flex-grow p-8 bg-slate-50">
-      <h1 className="flex flex-row items-center mb-4 text-2xl font-bold gap-x-1 text-slate-800">
+      <h2 className="flex flex-row items-center mb-4 text-2xl font-bold gap-x-1 text-slate-800">
         Networks
-      </h1>
+      </h2>
       <div className="grid w-full max-w-4xl grid-cols-2 gap-4">
         {networksData === undefined && "..."}
         {networksData?.map((network) => (
@@ -35,6 +43,10 @@ export default function Page() {
           />
         ))}
       </div>
+      <h2 className="flex flex-row items-center mt-8 text-2xl text-slate-800">
+        Server Status
+      </h2>
+      <ServerStatus />
     </div>
   );
 }
@@ -75,5 +87,46 @@ function NetworkCard(props: {
         </div>
       </div>
     </Link>
+  );
+}
+
+function ServerStatus() {
+  const serverStatus = useStatus();
+
+  return (
+    <div className="flex flex-col max-w-3xl p-4 mx-auto overflow-hidden bg-white border rounded shadow border-slate-300">
+      <div>
+        <span className="inline-flex w-28">Environment:</span>{" "}
+        {serverStatus?.environment || "..."}
+      </div>
+      <div>
+        <span className="inline-flex w-28">Commit SHA:</span>{" "}
+        {serverStatus?.commitSha || "..."}
+      </div>
+      <div>
+        <span className="inline-flex w-28">Branch Name:</span>{" "}
+        {serverStatus?.branchName || "..."}
+      </div>
+      <div>
+        <span className="inline-flex w-28">Last Boot:</span>{" "}
+        {serverStatus?.startTimestamp !== undefined && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                {formatDistanceToNow(
+                  new Date(serverStatus.startTimestamp * 1000),
+                  {
+                    addSuffix: true,
+                  }
+                )}
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>{new Date(serverStatus.startTimestamp).toISOString()}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
+    </div>
   );
 }
