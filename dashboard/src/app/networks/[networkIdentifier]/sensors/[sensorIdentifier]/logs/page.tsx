@@ -8,10 +8,11 @@ import { redirect } from "next/navigation";
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
 }) {
-  const { userData, userDataIsloading } = useUser();
+  const { userData, userDataIsloading, logoutUser } = useUser();
 
   const sensorsData = useSensors(
     userData?.accessToken,
+    logoutUser,
     props.params.networkIdentifier
   );
 

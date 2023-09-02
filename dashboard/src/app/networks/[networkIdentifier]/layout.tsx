@@ -16,11 +16,12 @@ export default function NetworkPageLayout(props: {
   children: React.ReactNode;
   params: { networkIdentifier: string; sensorIdentifier: string };
 }) {
-  const { userData, userDataIsloading } = useUser();
+  const { userData, userDataIsloading, logoutUser } = useUser();
 
-  const networksData = useNetworks(userData?.accessToken);
+  const networksData = useNetworks(userData?.accessToken, logoutUser);
   const sensorsData = useSensors(
     userData?.accessToken,
+    logoutUser,
     props.params.networkIdentifier
   );
 

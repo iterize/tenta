@@ -1,9 +1,10 @@
 "use client";
 
 import useSWR from "swr";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { z } from "zod";
 import { min } from "lodash";
+import toast from "react-hot-toast";
 
 const schema = z.array(
   z
@@ -32,7 +33,8 @@ export type ConfigurationsType = z.infer<typeof schema>;
 async function getSinglePage(
   url: string,
   accessToken: string,
-  maxRevision: number | undefined
+  maxRevision: number | undefined,
+  logoutUser: () => void
 ): Promise<ConfigurationsType> {
   const fullUrl =
     process.env.NEXT_PUBLIC_SERVER_URL +
@@ -40,18 +42,35 @@ async function getSinglePage(
     "?direction=previous" +
     (maxRevision !== undefined ? `&revision=${maxRevision}` : "");
 
-  const { data } = await axios.get(fullUrl, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+  const { data } = await axios
+    .get(fullUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+    .then((res: AxiosResponse) => res.data)
+    .catch((err: AxiosError) => {
+      console.log("Error while fetching configurations");
+      console.log(err);
+      if (err.response?.status === 401) {
+        toast("Session expired", { icon: "🔑" });
+        logoutUser();
+      } else if (err.response?.status.toString().startsWith("5")) {
+        toast("Server error", { icon: "🔥" });
+        logoutUser();
+      } else {
+        toast("Client error", { icon: "❓" });
+        logoutUser();
+      }
+    });
 
   return schema.parse(data);
 }
 
 async function fetcher(
   url: string,
-  accessToken: string | undefined
+  accessToken: string | undefined,
+  logoutUser: () => void
 ): Promise<ConfigurationsType> {
   if (!accessToken) {
     throw new Error("Not authorized!");
@@ -63,7 +82,8 @@ async function fetcher(
     let newData = await getSinglePage(
       url,
       accessToken,
-      min(data.map((d) => d.revision))
+      min(data.map((d) => d.revision)),
+      logoutUser
     );
     data = [...data, ...newData];
     if (newData.length < 64) {
@@ -76,6 +96,7 @@ async function fetcher(
 
 export function useConfigurations(
   accessToken: string | undefined,
+  logoutUser: () => void,
   networkIdentifier: string,
   sensorIdentifier: string
 ) {
@@ -84,7 +105,7 @@ export function useConfigurations(
       `/networks/${networkIdentifier}/sensors/${sensorIdentifier}/configurations`,
       accessToken,
     ],
-    ([url, accessToken]) => fetcher(url, accessToken)
+    ([url, accessToken]) => fetcher(url, accessToken, logoutUser)
   );
 
   return data;

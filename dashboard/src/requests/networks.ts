@@ -1,8 +1,9 @@
 "use client";
 
 import useSWR from "swr";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { z } from "zod";
+import toast from "react-hot-toast";
 
 const schema = z.array(
   z
@@ -18,25 +19,44 @@ const schema = z.array(
 
 export type NetworksType = z.infer<typeof schema>;
 
-async function fetcher(accessToken: string | undefined): Promise<NetworksType> {
+async function fetcher(
+  accessToken: string | undefined,
+  logoutUser: () => void
+): Promise<NetworksType> {
   if (!accessToken) {
     throw new Error("Not authorized!");
   }
 
-  const { data } = await axios.get(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/networks`,
-    {
+  const { data } = await axios
+    .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/networks`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    }
-  );
+    })
+    .then((res: AxiosResponse) => res.data)
+    .catch((err: AxiosError) => {
+      console.log("Error while fetching configurations");
+      console.log(err);
+      if (err.response?.status === 401) {
+        toast("Session expired", { icon: "🔑" });
+        logoutUser();
+      } else if (err.response?.status.toString().startsWith("5")) {
+        toast("Server error", { icon: "🔥" });
+        logoutUser();
+      } else {
+        toast("Client error", { icon: "❓" });
+        logoutUser();
+      }
+    });
   return schema.parse(data);
 }
 
-export function useNetworks(accessToken: string | undefined) {
+export function useNetworks(
+  accessToken: string | undefined,
+  logoutUser: () => void
+) {
   const { data } = useSWR(["/networks", accessToken], ([url, accessToken]) =>
-    fetcher(accessToken)
+    fetcher(accessToken, logoutUser)
   );
 
   return data;

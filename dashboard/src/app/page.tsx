@@ -8,9 +8,9 @@ import { useSensors } from "@/requests/sensors";
 import Link from "next/link";
 
 export default function Page() {
-  const { userData, userDataIsloading } = useUser();
+  const { userData, userDataIsloading, logoutUser } = useUser();
 
-  const networksData = useNetworks(userData?.accessToken);
+  const networksData = useNetworks(userData?.accessToken, logoutUser);
 
   if (userDataIsloading) {
     return <AuthLoadingScreen />;
@@ -31,6 +31,7 @@ export default function Page() {
             networkName={network.name}
             networkIdentifier={network.identifier}
             accessToken={userData.accessToken}
+            logoutUser={logoutUser}
           />
         ))}
       </div>
@@ -42,8 +43,13 @@ function NetworkCard(props: {
   networkName: string;
   networkIdentifier: string;
   accessToken: string;
+  logoutUser: () => void;
 }) {
-  const sensorsData = useSensors(props.accessToken, props.networkIdentifier);
+  const sensorsData = useSensors(
+    props.accessToken,
+    props.logoutUser,
+    props.networkIdentifier
+  );
 
   return (
     <Link href={`/networks/${props.networkIdentifier}`} className="group">
