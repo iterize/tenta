@@ -35,20 +35,20 @@ async function getSinglePage(
   accessToken: string,
   maxRevision: number | undefined,
   logoutUser: () => void
-): Promise<ConfigurationsType> {
+): Promise<ConfigurationsType | undefined> {
   const fullUrl =
     process.env.NEXT_PUBLIC_SERVER_URL +
     url +
     "?direction=previous" +
     (maxRevision !== undefined ? `&revision=${maxRevision}` : "");
 
-  const { data } = await axios
+  return await axios
     .get(fullUrl, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .then((res: AxiosResponse) => res.data)
+    .then((res: AxiosResponse) => schema.parse(res.data))
     .catch((err: AxiosError) => {
       console.error("Error while fetching configurations");
       console.log(err);
@@ -65,16 +65,15 @@ async function getSinglePage(
         logoutUser();
         window.location.reload();
       }
+      return undefined;
     });
-
-  return schema.parse(data);
 }
 
 async function fetcher(
   url: string,
   accessToken: string | undefined,
   logoutUser: () => void
-): Promise<ConfigurationsType> {
+): Promise<ConfigurationsType | undefined> {
   if (!accessToken) {
     throw new Error("Not authorized!");
   }
@@ -88,6 +87,9 @@ async function fetcher(
       min(data.map((d) => d.revision)),
       logoutUser
     );
+    if (newData === undefined) {
+      return undefined;
+    }
     data = [...data, ...newData];
     if (newData.length < 64) {
       break;

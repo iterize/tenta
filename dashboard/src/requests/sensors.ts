@@ -23,18 +23,18 @@ async function fetcher(
   url: string,
   accessToken: string | undefined,
   logoutUser: () => void
-): Promise<SensorsType> {
+): Promise<SensorsType | undefined> {
   if (!accessToken) {
-    throw new Error("Not authorized!");
+    return undefined;
   }
 
-  const { data } = await axios
+  return await axios
     .get(`${process.env.NEXT_PUBLIC_SERVER_URL}${url}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .then((res: AxiosResponse) => res.data)
+    .then((res: AxiosResponse) => schema.parse(res.data))
     .catch((err: AxiosError) => {
       console.error("Error while fetching sensors");
       console.log(err);
@@ -51,8 +51,8 @@ async function fetcher(
         logoutUser();
         window.location.reload();
       }
+      return undefined;
     });
-  return schema.parse(data);
 }
 
 export function useSensors(

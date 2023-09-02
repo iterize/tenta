@@ -22,18 +22,18 @@ export type NetworksType = z.infer<typeof schema>;
 async function fetcher(
   accessToken: string | undefined,
   logoutUser: () => void
-): Promise<NetworksType> {
+): Promise<NetworksType | undefined> {
   if (!accessToken) {
-    throw new Error("Not authorized!");
+    return undefined;
   }
 
-  const { data } = await axios
+  return await axios
     .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/networks`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
-    .then((res: AxiosResponse) => res.data)
+    .then((res: AxiosResponse) => schema.parse(res.data))
     .catch((err: AxiosError) => {
       console.error("Error while fetching networks");
       console.log(err);
@@ -50,8 +50,8 @@ async function fetcher(
         logoutUser();
         window.location.reload();
       }
+      return undefined;
     });
-  return schema.parse(data);
 }
 
 export function useNetworks(
