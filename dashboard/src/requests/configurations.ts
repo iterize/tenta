@@ -50,17 +50,20 @@ async function getSinglePage(
     })
     .then((res: AxiosResponse) => res.data)
     .catch((err: AxiosError) => {
-      console.log("Error while fetching configurations");
+      console.error("Error while fetching configurations");
       console.log(err);
       if (err.response?.status === 401) {
         toast("Session expired", { icon: "🔑" });
         logoutUser();
+        window.location.reload();
       } else if (err.response?.status.toString().startsWith("5")) {
         toast("Server error", { icon: "🔥" });
         logoutUser();
+        window.location.reload();
       } else {
         toast("Client error", { icon: "❓" });
         logoutUser();
+        window.location.reload();
       }
     });
 
