@@ -3,6 +3,7 @@
 import useSWR from "swr";
 import axios from "axios";
 import { z } from "zod";
+import { min } from "lodash";
 
 const schema = z.array(
   z
@@ -31,12 +32,13 @@ export type ConfigurationsType = z.infer<typeof schema>;
 async function getSinglePage(
   url: string,
   accessToken: string,
-  fromRevision: number
+  maxRevision: number | undefined
 ): Promise<ConfigurationsType> {
   const fullUrl =
     process.env.NEXT_PUBLIC_SERVER_URL +
     url +
-    (fromRevision > 0 ? `?direction=next&revision=${fromRevision + 1}` : "");
+    "?direction=previous" +
+    (maxRevision !== undefined ? `&revision=${maxRevision}` : "");
 
   const { data } = await axios.get(fullUrl, {
     headers: {
@@ -58,7 +60,11 @@ async function fetcher(
   let data: ConfigurationsType = [];
 
   while (1) {
-    let newData = await getSinglePage(url, accessToken, data.length);
+    let newData = await getSinglePage(
+      url,
+      accessToken,
+      min(data.map((d) => d.revision))
+    );
     data = [...data, ...newData];
     if (newData.length < 64) {
       break;

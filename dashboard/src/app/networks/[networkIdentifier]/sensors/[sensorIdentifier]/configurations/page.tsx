@@ -183,7 +183,7 @@ function TimestepLabel(props: {
                 addSuffix: true,
               })}
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent side="bottom">
               <p>{new Date(props.timestamp * 1000).toISOString()}</p>
             </TooltipContent>
           </Tooltip>
