@@ -27,7 +27,7 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col items-center flex-grow p-8 bg-slate-50">
+    <div className="flex flex-col items-center flex-grow w-full p-8 bg-slate-50">
       <h2 className="flex flex-row items-center mb-4 text-2xl font-bold gap-x-1 text-slate-800">
         Networks
       </h2>
@@ -47,6 +47,10 @@ export default function Page() {
         Server Status
       </h2>
       <ServerStatus />
+      <h2 className="flex flex-row items-center mt-16 mb-4 text-2xl font-bold gap-x-1 text-slate-800">
+        Dashboard Status
+      </h2>
+      <DashboardStatus />
     </div>
   );
 }
@@ -94,7 +98,7 @@ function ServerStatus() {
   const serverStatus = useStatus();
 
   return (
-    <div className="flex flex-col max-w-3xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded shadow border-slate-300">
+    <div className="flex flex-col w-full max-w-xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded shadow border-slate-300">
       <div>
         <span className="inline-flex font-medium w-28">Environment:</span>{" "}
         {serverStatus?.environment || "..."}
@@ -123,7 +127,62 @@ function ServerStatus() {
                 )}
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                <p>{new Date(serverStatus.startTimestamp).toISOString()}</p>
+                <p>
+                  {new Date(serverStatus.startTimestamp * 1000).toISOString()}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DashboardStatus() {
+  return (
+    <div className="flex flex-col w-full max-w-xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded shadow border-slate-300">
+      <div>
+        <span className="inline-flex font-medium w-28">Environment:</span>{" "}
+        {process.env.NEXT_PUBLIC_BRANCH_NAME === undefined && "..."}
+        {process.env.NEXT_PUBLIC_BRANCH_NAME !== undefined && (
+          <>
+            {process.env.NEXT_PUBLIC_BRANCH_NAME === "main" && "production"}
+            {process.env.NEXT_PUBLIC_BRANCH_NAME !== "main" && "development"}
+          </>
+        )}
+      </div>
+      <div>
+        <span className="inline-flex font-medium w-28">Commit SHA:</span>{" "}
+        <span className="font-mono bg-slate-150 rounded-sm py-0.5 px-1 text-slate-700">
+          {process.env.NEXT_PUBLIC_COMMIT_SHA}
+        </span>
+      </div>
+      <div>
+        <span className="inline-flex font-medium w-28">Branch Name:</span>{" "}
+        {process.env.NEXT_PUBLIC_BRANCH_NAME}
+      </div>
+      <div>
+        <span className="inline-flex font-medium w-28">Last Build:</span>{" "}
+        {process.env.NEXT_PUBLIC_BUILD_TIMESTAMP !== undefined && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                {formatDistanceToNow(
+                  new Date(
+                    parseInt(process.env.NEXT_PUBLIC_BUILD_TIMESTAMP) * 1000
+                  ),
+                  {
+                    addSuffix: true,
+                  }
+                )}
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>
+                  {new Date(
+                    parseInt(process.env.NEXT_PUBLIC_BUILD_TIMESTAMP) * 1000
+                  ).toISOString()}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
