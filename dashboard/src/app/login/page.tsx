@@ -8,7 +8,7 @@ import { AuthLoadingScreen } from "@/components/custom/auth-loading-screen";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { NavigationBar } from "@/components/custom/navigation-bar";
+import toast from "react-hot-toast";
 
 export default function Page() {
   const [username, setUsername] = useState("");
@@ -20,7 +20,11 @@ export default function Page() {
   async function submit() {
     setIsSubmitting(true);
     try {
-      await loginUser(username, password);
+      await toast.promise(loginUser(username, password), {
+        loading: "Authenticating",
+        success: "Successfully authenticated",
+        error: "Failed to authenticate",
+      });
       setUsername("");
       setPassword("");
     } catch (error) {
