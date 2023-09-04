@@ -4,10 +4,10 @@ The server exposes a REST API. You can find the documentation at [https://bump.s
 
 The communication between the sensors and the server runs over four MQTT topics:
 
-- `configurations/<sensor-identifier>`: Configurations TO sensors
-- `acknowledgments/<sensor-identifier>`: Configuration acknowledgments FROM sensors
-- `measurements/<sensor-identifier>`: Measurements FROM sensors
-- `logs/<sensor-identifier>`: Logs FROM sensors
+- `configurations/<sensor-identifier>`: Configurations **to** sensors
+- `acknowledgments/<sensor-identifier>`: Configuration acknowledgments **from** sensors
+- `measurements/<sensor-identifier>`: Measurements **from** sensors
+- `logs/<sensor-identifier>`: Logs **from** sensors
 
 ### Payloads
 

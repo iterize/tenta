@@ -549,13 +549,13 @@ components:
         $ref: "#/components/schemas/identifier"
     revision:
       name: revision
-      description: "The cursor of the query. Depending on the direction, the request returns the next or previous elements. The element the cursor references is excluded from the result."
+      description: "The cursor of the query. Depending on the direction, the request returns the next or previous elements. The element the cursor references is not included in the result."
       in: query
       schema:
         $ref: "#/components/schemas/revision"
     creation_timestamp:
       name: creation_timestamp
-      description: "The cursor of the query. Depending on the direction, the request returns the next or previous elements. The element the cursor references is excluded from the result."
+      description: "The cursor of the query. Depending on the direction, the request returns the next or previous elements. The element the cursor references is not included in the result."
       in: query
       schema:
         $ref: "#/components/schemas/timestamp"

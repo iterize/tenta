@@ -47,4 +47,4 @@ Instead, Tenta implements an acknowledgment cycle to provide real-time insights 
 
 ## Configuration revision numbers
 
-Each configuration is assigned an incremental revision number. This allows us to know which configuration was active when a measurement was taken, which is also important during analysis. Revision numbers are managed by Tenta and are also used for the acknowledgment cycle.
+Each configuration is assigned a monotonically increasing revision number. This allows us to know which configuration was active when a measurement was taken, which is often important during analysis. Revision numbers are managed internally by Tenta and are also used during the acknowledgment cycle.
