@@ -366,22 +366,41 @@ paths:
         - $ref: "#/components/parameters/sensor_identifier"
         - $ref: "#/components/parameters/direction"
         - $ref: "#/components/parameters/creation_timestamp"
+        - $ref: "#/components/parameters/aggregate"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    value:
-                      $ref: "#/components/schemas/measurement"
-                    revision:
-                      $ref: "#/components/schemas/revision"
-                    creation_timestamp:
-                      $ref: "#/components/schemas/timestamp"
+                oneOf:
+                  - title: "Measurements"
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        value:
+                          $ref: "#/components/schemas/measurement"
+                        revision:
+                          $ref: "#/components/schemas/revision"
+                        creation_timestamp:
+                          $ref: "#/components/schemas/timestamp"
+                  - title: "Aggregates"
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        attribute:
+                          $ref: "#/components/schemas/attribute"
+                        values:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              bucket_timestamp:
+                                $ref: "#/components/schemas/timestamp"
+                              average:
+                                $ref: "#/components/schemas/value"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -517,9 +536,17 @@ components:
       type: integer
     measurement:
       type: object
+      additionalProperties:
+        $ref: "#/components/schemas/value"
       example:
         temperature: 23.1
         humidity: 0.62
+    attribute:
+      type: string
+      example: temperature
+    value:
+      type: number
+      example: 23.1
     severity:
       type: string
       enum: [info, warning, error]
@@ -567,3 +594,10 @@ components:
         type: string
         enum: [next, previous]
         default: next
+    aggregate:
+      name: aggregate
+      description: "Whether to aggregate the measurements. If `true`, returns the 1-hour averages over the last 4 weeks for each available attribute and ignores all other query parameters."
+      in: query
+      schema:
+        type: boolean
+        default: false
