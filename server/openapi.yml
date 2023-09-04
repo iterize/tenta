@@ -333,10 +333,6 @@ paths:
                 items:
                   type: object
                   properties:
-                    value:
-                      $ref: "#/components/schemas/configuration"
-                    revision:
-                      $ref: "#/components/schemas/revision"
                     creation_timestamp:
                       $ref: "#/components/schemas/timestamp"
                     publication_timestamp:
@@ -345,6 +341,10 @@ paths:
                       $ref: "#/components/schemas/timestamp"
                     receipt_timestamp:
                       $ref: "#/components/schemas/timestamp"
+                    revision:
+                      $ref: "#/components/schemas/revision"
+                    value:
+                      $ref: "#/components/schemas/configuration"
                     success:
                       type: boolean
         "400":
@@ -379,28 +379,27 @@ paths:
                     items:
                       type: object
                       properties:
-                        value:
-                          $ref: "#/components/schemas/measurement"
-                        revision:
-                          $ref: "#/components/schemas/revision"
                         creation_timestamp:
                           $ref: "#/components/schemas/timestamp"
+                        revision:
+                          $ref: "#/components/schemas/revision"
+                        value:
+                          $ref: "#/components/schemas/measurement"
                   - title: "Aggregates"
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        attribute:
-                          $ref: "#/components/schemas/attribute"
-                        values:
-                          type: array
-                          items:
-                            type: object
-                            properties:
-                              bucket_timestamp:
-                                $ref: "#/components/schemas/timestamp"
-                              average:
-                                $ref: "#/components/schemas/value"
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          bucket_timestamp:
+                            $ref: "#/components/schemas/timestamp"
+                          average:
+                            $ref: "#/components/schemas/value"
+                    example:
+                      temperature:
+                        - bucket_timestamp: 1683644400.0
+                          average: 23.1
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -430,14 +429,14 @@ paths:
                 items:
                   type: object
                   properties:
+                    creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    revision:
+                      $ref: "#/components/schemas/revision"
                     severity:
                       $ref: "#/components/schemas/severity"
                     message:
                       $ref: "#/components/schemas/message"
-                    revision:
-                      $ref: "#/components/schemas/revision"
-                    creation_timestamp:
-                      $ref: "#/components/schemas/timestamp"
         "400":
           $ref: "#/components/responses/400"
         "401":
@@ -465,18 +464,18 @@ paths:
                 items:
                   type: object
                   properties:
-                    severity:
-                      $ref: "#/components/schemas/severity"
-                    message:
-                      $ref: "#/components/schemas/message"
-                    min_revision:
-                      $ref: "#/components/schemas/revision"
-                    max_revision:
-                      $ref: "#/components/schemas/revision"
                     min_creation_timestamp:
                       $ref: "#/components/schemas/timestamp"
                     max_creation_timestamp:
                       $ref: "#/components/schemas/timestamp"
+                    min_revision:
+                      $ref: "#/components/schemas/revision"
+                    max_revision:
+                      $ref: "#/components/schemas/revision"
+                    severity:
+                      $ref: "#/components/schemas/severity"
+                    message:
+                      $ref: "#/components/schemas/message"
                     count:
                       $ref: "#/components/schemas/count"
         "400":
@@ -512,7 +511,7 @@ components:
       pattern: "^[0-9a-f]{64}$"
     timestamp:
       type: number
-      example: 1683644500.3
+      example: 1683644400.0
     name:
       description: "The regex means: lowercase letters and numbers, separated by dashes, with no leading, trailing, or double dashes."
       type: string
