@@ -11,6 +11,9 @@ import app.database as database
 import app.errors as errors
 
 
+logger = logging.getLogger(__name__)
+
+
 ########################################################################################
 # Password Utilities
 ########################################################################################
@@ -57,7 +60,6 @@ class AuthenticationMiddleware:
 
     def __init__(self, app):
         self.app = app
-        self.logger = logging.getLogger(__name__)
 
     async def _authenticate(self, request):
         # Extract the access token from the authorization header
@@ -66,10 +68,10 @@ class AuthenticationMiddleware:
         try:
             scheme, access_token = request.headers["authorization"].split()
         except ValueError:
-            self.logger.warning("Malformed authorization header")
+            logger.warning("Malformed authorization header")
             return None
         if scheme.lower() != "bearer":
-            self.logger.warning("Malformed authorization header")
+            logger.warning("Malformed authorization header")
             return None
         # Check if we have the access token in the database
         query, arguments = database.parametrize(
@@ -80,7 +82,7 @@ class AuthenticationMiddleware:
         elements = database.dictify(elements)
         # If the result set is empty, the access token is invalid
         if len(elements) == 0:
-            self.logger.warning("Invalid access token")
+            logger.warning("Invalid access token")
             return None
         # Return the requester's identity
         return elements[0]["user_identifier"]
@@ -175,4 +177,6 @@ class Sensor(Resource):
 
 async def authorize(request, resource):
     """Check what relationship (ReBAC) the requester has with the resource."""
-    return await resource._authorize(request)
+    relationship = await resource._authorize(request)
+    logger.debug(f"Requester has {relationship.name} relationship")
+    return relationship
