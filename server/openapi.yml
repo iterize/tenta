@@ -358,7 +358,9 @@ paths:
       tags: [Sensors]
       summary: Read measurements
       description: |
-        Returns a sensor's measurements in pages of 64 elements sorted ascendingly by `creation_timestamp`.
+        By default, returns a sensor's most recent 64 measurements sorted ascendingly by `creation_timestamp`. You can use the `creation_timestamp` and `direction` parameters to page through the collection.
+
+        If `aggregate` is set to `true`, other query parameters are ignored and the request returns an aggregation of the sensor's measurements over the last 4 weeks.
       security:
         - "Bearer token": []
       parameters:
@@ -385,7 +387,8 @@ paths:
                           $ref: "#/components/schemas/revision"
                         value:
                           $ref: "#/components/schemas/measurement"
-                  - title: "Aggregates"
+                  - title: "Aggregation"
+                    description: "Note that the result contains averages only for periods with at least one measurement."
                     type: object
                     additionalProperties:
                       type: array
@@ -526,6 +529,7 @@ components:
     configuration:
       description: "Configurations are JSON objects that are relayed to the sensors over MQTT. Sensors are expected to validate the configurations they receive and respond with positive or negative acknowledgments."
       type: object
+      additionalProperties: true
       example:
         measurement_interval: 8.5
         cache: true
@@ -595,7 +599,7 @@ components:
         default: next
     aggregate:
       name: aggregate
-      description: "Whether to aggregate the measurements. If `true`, returns the 1-hour averages over the last 4 weeks for each available attribute and ignores all other query parameters."
+      description: "Whether to aggregate the measurements. If `true`, ignores other query parameters and returns the 1-hour averages over the last 4 weeks for each available attribute."
       in: query
       schema:
         type: boolean

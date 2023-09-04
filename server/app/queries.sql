@@ -1,3 +1,17 @@
+-- name: aggregate-measurements
+SELECT
+    attribute,
+    array_agg(
+        jsonb_build_object('bucket_timestamp', bucket_timestamp, 'average', average)
+        ORDER BY bucket_timestamp ASC
+    ) AS values
+FROM measurement_aggregation_1_hour
+WHERE
+    sensor_identifier = ${sensor_identifier}
+    AND bucket_timestamp > now() - INTERVAL '4 weeks'
+GROUP BY attribute;
+
+
 -- name: aggregate-logs
 SELECT
     severity,
@@ -9,9 +23,8 @@ SELECT
     count(*) AS count
 FROM log
 WHERE
-    sensor_identifier = ${sensor_identifier} AND severity = any(
-        ARRAY['warning', 'error']
-    )
+    sensor_identifier = ${sensor_identifier}
+    AND severity = any(ARRAY['warning', 'error'])
 GROUP BY sensor_identifier, severity, message
 ORDER BY max_creation_timestamp ASC;
 
@@ -44,7 +57,7 @@ SELECT
     network.name AS network_name
 FROM permission
 INNER JOIN network ON permission.network_identifier = network.identifier
-WHERE user_identifier = ${user_identifier};
+WHERE permission.user_identifier = ${user_identifier};
 
 
 -- name: create-permission
