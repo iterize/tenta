@@ -92,7 +92,7 @@ WITH (timescaledb.continuous, timescaledb.materialized_only = true, timescaledb.
 WITH DATA;
 
 
-CREATE INDEX ON measurement_aggregation_1_hour (sensor_identifier ASC, attribute ASC, bucket_timestamp ASC);
+CREATE INDEX ON measurement_aggregation_1_hour (sensor_identifier ASC, bucket_timestamp ASC, attribute ASC);
 
 SELECT add_continuous_aggregate_policy(
     continuous_aggregate => 'measurement_aggregation_1_hour',

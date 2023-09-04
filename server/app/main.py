@@ -352,6 +352,22 @@ async def read_measurements(request, values):
         raise errors.UnauthorizedError
     if relationship < auth.Relationship.OWNER:
         raise errors.ForbiddenError
+    # Aggregate measurements
+    if values.query["aggregate"]:
+        query, arguments = database.parametrize(
+            identifier="aggregate-measurements",
+            arguments={"sensor_identifier": values.path["sensor_identifier"]},
+        )
+        elements = await request.state.dbpool.fetch(query, *arguments)
+        # Return successful response
+        return starlette.responses.JSONResponse(
+            status_code=200,
+            content={
+                element["attribute"]: element["values"]
+                for element in database.dictify(elements)
+            },
+        )
+    # Page through measurements
     query, arguments = database.parametrize(
         identifier="read-measurements",
         arguments={

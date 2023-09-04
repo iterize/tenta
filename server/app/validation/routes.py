@@ -158,6 +158,7 @@ class _ReadConfigurationsRequestQuery(types.LooseModel):
 class _ReadMeasurementsRequestQuery(types.LooseModel):
     creation_timestamp: types.Timestamp = None
     direction: typing.Literal["next", "previous"] = "next"
+    aggregate: bool = False
 
 
 class _ReadLogsRequestQuery(types.LooseModel):
