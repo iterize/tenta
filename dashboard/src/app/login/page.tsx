@@ -45,7 +45,7 @@ export default function Page() {
   return (
     <>
       <div className="grid w-screen h-[calc(100vh-3rem)] grid-cols-2 grid-rows-1 relative">
-        <div className="absolute top-0 left-0 w-full h-full" />
+        <div className="absolute top-0 left-0 w-full h-full background-paper-pattern" />
         <div className="flex items-center justify-center">
           <TheTenta className="max-w-2xl" />
         </div>
