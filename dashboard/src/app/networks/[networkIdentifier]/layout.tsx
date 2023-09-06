@@ -5,12 +5,10 @@ import { useNetworks } from "@/requests/networks";
 import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
 import { redirect, usePathname } from "next/navigation";
-import {
-  IconSquareChevronLeftFilled,
-  IconSquareChevronRightFilled,
-} from "@tabler/icons-react";
-import { IconAppsFilled } from "@tabler/icons-react";
+import { IconSquareChevronLeftFilled } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function NetworkPageLayout(props: {
   children: React.ReactNode;
@@ -63,18 +61,6 @@ export default function NetworkPageLayout(props: {
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (
             <>
-              <div className="flex items-center justify-center w-full h-10 text-sm font-medium text-center border-b text-emerald-800 bg-emerald-200 border-slate-300">
-                <span>
-                  <span className="font-bold text-emerald-900">
-                    {sensorsData.length}
-                  </span>{" "}
-                  sensor
-                </span>
-                {sensorsData.length === 1 ? "" : "s"}
-                <button className="w-10 h-10 p-2.5 cursor-pointer opacity-70 hover:opacity-100">
-                  <IconAppsFilled className="w-full h-full" />
-                </button>
-              </div>
               <div className="h-[calc(100%-2.5rem)] overflow-y-scroll">
                 {sensorsData.map((sensor) => (
                   <SensorListItem
@@ -84,6 +70,11 @@ export default function NetworkPageLayout(props: {
                     sensorIdentifier={sensor.identifier}
                   />
                 ))}{" "}
+                <div className="flex justify-center w-full p-3">
+                  <Button>
+                    <IconPlus width={18} className="mr-1.5 -ml-0.5" /> sensor
+                  </Button>
+                </div>
               </div>
             </>
           )}
