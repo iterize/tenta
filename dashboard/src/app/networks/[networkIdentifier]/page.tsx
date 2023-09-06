@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { TheTenta } from "@/components/custom/the-tenta";
 
 export default function Page(props: { params: { networkIdentifier: string } }) {
   return (
@@ -9,13 +9,7 @@ export default function Page(props: { params: { networkIdentifier: string } }) {
         please <span className="font-semibold">select a sensor</span> in the
         list on the left
       </div>
-      <Image
-        src="/tenta-artwork-compressed.png"
-        alt="Tenta Artwork"
-        width="1716"
-        height="1716"
-        className="max-w-xl"
-      />
+      <TheTenta className="max-w-xl" />
     </div>
   );
 }

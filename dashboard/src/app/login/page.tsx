@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useUser } from "@/requests/user";
 import { AuthLoadingScreen } from "@/components/custom/auth-loading-screen";
 import { redirect } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { TheTenta } from "@/components/custom/the-tenta";
 
 export default function Page() {
   const [username, setUsername] = useState("");
@@ -44,15 +44,10 @@ export default function Page() {
 
   return (
     <>
-      <div className="grid w-screen h-[calc(100vh-3rem)] grid-cols-2 grid-rows-1">
+      <div className="grid w-screen h-[calc(100vh-3rem)] grid-cols-2 grid-rows-1 relative">
+        <div className="absolute top-0 left-0 w-full h-full" />
         <div className="flex items-center justify-center">
-          <Image
-            src="/tenta-artwork-compressed.png"
-            alt="Tenta Artwork"
-            width="1716"
-            height="1716"
-            className="max-w-2xl"
-          />
+          <TheTenta className="max-w-2xl" />
         </div>
         <div className="flex flex-col items-center justify-center w-full max-w-xs mx-auto gap-y-2">
           <h1 className="mb-1 text-2xl font-bold">Login</h1>
