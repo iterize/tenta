@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useUser } from "@/requests/user";
 import { Button } from "@/components/ui/button";
+import { IconRipple } from "@tabler/icons-react";
 
 export function NavigationBar() {
   const { userData, logoutUser } = useUser();
@@ -12,14 +13,9 @@ export function NavigationBar() {
     <header className="flex flex-row items-center justify-start flex-shrink-0 w-full h-12 px-6 overflow-hidden border-b border-slate-300">
       <Link
         href="/"
-        className="flex items-center w-20 h-12 px-4 -ml-6 overflow-hidden border-r bg-slate-900 border-slate-300 text-slate-100"
+        className="flex items-center h-12 p-2.5 -ml-6 overflow-hidden border-r w-14 bg-slate-900 border-slate-300 text-slate-100"
       >
-        <Image
-          src="/tenta-icon-v2-square.svg"
-          alt="Tenta Icon"
-          width="100"
-          height="100"
-        />
+        <IconRipple className="w-full h-full" />
       </Link>
       <Link href="/">
         <h1 className="hidden pl-5 font-light text-slate-950 xl:block xl:text-lg">
