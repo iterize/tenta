@@ -32,7 +32,7 @@ async def _connection():
 
 @pytest.fixture(scope="session")
 async def connection():
-    """Provide a database connection is persistent across tests."""
+    """Provide a database connection that is persistent across tests."""
     async with _connection() as connection:
         yield connection
 
@@ -46,6 +46,8 @@ async def _populate(connection):
                 f'INSERT INTO "{table_name}" VALUES ({identifiers});',
                 [tuple(record.values()) for record in records],
             )
+    # Refresh the materialized views
+    await connection.execute("CALL refresh_continuous_aggregate('measurement_aggregation_1_hour', NULL, NULL);")  # fmt: skip
 
 
 @pytest.fixture(scope="function")
@@ -55,6 +57,5 @@ async def setup(connection):
         # Delete all the data in the database but keep the structure
         await connection.execute('DELETE FROM "user";')
         await connection.execute("DELETE FROM network;")
-        await connection.execute("DELETE FROM sensor;")
-        # Populate with the initial test data again
-        await _populate(connection)
+    # Populate with the initial test data again
+    await _populate(connection)
