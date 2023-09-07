@@ -5,6 +5,7 @@ export function Pagination(props: {
   currentPageNumber: number;
   numberOfPages: number;
   setCurrentPageNumber: (page: number) => void;
+  noDataPlaceholder: string;
 }) {
   const showLeftDots = props.numberOfPages > 5 && props.currentPageNumber > 3;
   const showRightDots =
@@ -29,7 +30,7 @@ export function Pagination(props: {
   return (
     <div className="flex flex-row items-center justify-center text-sm font-medium gap-x-2">
       <button
-        className="flex items-center justify-center w-8 h-8 border rounded-md shadow-sm border-slate-300 group hover:bg-blue-100"
+        className="flex items-center justify-center w-8 h-8 bg-white border rounded-md shadow-sm border-slate-300 group hover:bg-blue-100"
         onClick={
           props.currentPageNumber > 1
             ? () => props.setCurrentPageNumber(props.currentPageNumber - 1)
@@ -41,10 +42,16 @@ export function Pagination(props: {
           className="mr-[1.5px] text-slate-600 group-hover:text-blue-950"
         />
       </button>
-      <div className="flex h-8 overflow-hidden border divide-x rounded-md shadow-sm border-slate-300 divide-slate-200">
+      <div className="flex h-8 overflow-hidden border divide-x rounded-md shadow-sm bg-slate-50 border-slate-300 divide-slate-200">
         {showLeftDots && (
           <div className="flex items-center justify-center h-full cursor-not-allowed min-w-[3rem] text-slate-600">
             ...
+          </div>
+        )}
+
+        {visiblePages.length === 0 && (
+          <div className="flex items-center justify-center min-w-[3rem] px-3 h-full cursor-not-allowed text-slate-600">
+            {props.noDataPlaceholder}
           </div>
         )}
 
@@ -53,7 +60,7 @@ export function Pagination(props: {
             key={pageNumber}
             className={`flex items-center justify-center min-w-[3rem] h-full ${
               pageNumber === props.currentPageNumber
-                ? "bg-slate-100 text-slate-950"
+                ? "bg-white text-slate-950"
                 : "text-slate-500"
             }`}
             onClick={() => props.setCurrentPageNumber(pageNumber)}
@@ -69,7 +76,7 @@ export function Pagination(props: {
         )}
       </div>
       <button
-        className="flex items-center justify-center w-8 h-8 border rounded-md shadow-sm border-slate-300 group hover:bg-blue-100"
+        className="flex items-center justify-center w-8 h-8 bg-white border rounded-md shadow-sm border-slate-300 group hover:bg-blue-100"
         onClick={
           props.currentPageNumber < props.numberOfPages
             ? () => props.setCurrentPageNumber(props.currentPageNumber + 1)
