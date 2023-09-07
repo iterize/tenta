@@ -20,6 +20,7 @@ const schema = z.array(
 export type NetworksType = z.infer<typeof schema>;
 
 async function fetcher(
+  url: string,
   accessToken: string | undefined,
   logoutUser: () => void
 ): Promise<NetworksType | undefined> {
@@ -28,15 +29,14 @@ async function fetcher(
   }
 
   return await axios
-    .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/networks`, {
+    .get(`${process.env.NEXT_PUBLIC_SERVER_URL}${url}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     })
     .then((res: AxiosResponse) => schema.parse(res.data))
     .catch((err: AxiosError) => {
-      console.error("Error while fetching networks");
-      console.log(err);
+      console.error(`Error while fetching url ${url}: ${err}`);
       if (err.response?.status === 401) {
         toast("Session expired", { icon: "🔑" });
         logoutUser();
@@ -59,7 +59,7 @@ export function useNetworks(
   logoutUser: () => void
 ) {
   const { data } = useSWR(["/networks", accessToken], ([url, accessToken]) =>
-    fetcher(accessToken, logoutUser)
+    fetcher(url, accessToken, logoutUser)
   );
 
   return data;

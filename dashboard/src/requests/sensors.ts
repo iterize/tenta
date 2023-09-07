@@ -36,8 +36,7 @@ async function fetcher(
     })
     .then((res: AxiosResponse) => schema.parse(res.data))
     .catch((err: AxiosError) => {
-      console.error("Error while fetching sensors");
-      console.log(err);
+      console.error(`Error while fetching url ${url}: ${err}`);
       if (err.response?.status === 401) {
         toast("Session expired", { icon: "🔑" });
         logoutUser();

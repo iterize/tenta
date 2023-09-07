@@ -21,13 +21,12 @@ const schema = z
 
 export type StatusType = z.infer<typeof schema>;
 
-async function fetcher(): Promise<StatusType | undefined> {
+async function fetcher(url: string): Promise<StatusType | undefined> {
   return await axios
-    .get(`${process.env.NEXT_PUBLIC_SERVER_URL}/status`)
+    .get(`${process.env.NEXT_PUBLIC_SERVER_URL}${url}`)
     .then((res: AxiosResponse) => schema.parse(res.data))
     .catch((err: AxiosError) => {
-      console.error("Error while fetching the server status");
-      console.log(err);
+      console.error(`Error while fetching url ${url}: ${err}`);
       if (err.response?.status.toString().startsWith("5")) {
         toast("Server error", { icon: "🔥" });
       } else {
@@ -38,7 +37,7 @@ async function fetcher(): Promise<StatusType | undefined> {
 }
 
 export function useStatus() {
-  const { data } = useSWR([`/status`], (url) => fetcher());
+  const { data } = useSWR(`/status`, (url) => fetcher(url));
 
   return data;
 }
