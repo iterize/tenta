@@ -86,7 +86,7 @@ export default function Page(props: {
             measurementsDataFetchingState === "fetching" ? "..." : "no data"
           }
         />
-        <Button onClick={fetchMoreData}>load more data</Button>
+        <Button onClick={fetchMoreData}>load older data</Button>
       </div>
       <div className="flex flex-col items-center justify-center w-full mt-2 gap-y-4">
         {measurementsData === undefined && "loading"}
@@ -125,11 +125,11 @@ export default function Page(props: {
                 {new Date(measurement.creationTimestamp * 1000).toISOString()}
               </div>
             </div>
-            <div className="w-full font-mono text-xs whitespace-pre bg-slate-100 text-slate-600">
+            <div className="w-full font-mono text-xs whitespace-pre divide-y bg-slate-100 text-slate-600 divide-slate-200">
               {Object.entries(measurement.value).map(([key, value]) => (
                 <div
                   key={key}
-                  className="flex flex-row items-center justify-start w-full px-3 py-1 border-b border-slate-200 gap-x-2"
+                  className="flex flex-row items-center justify-start w-full px-3 py-1 gap-x-2"
                 >
                   <div className="flex-grow-0 w-40 font-medium break-words whitespace-break-spaces">
                     {key}:

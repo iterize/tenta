@@ -4,7 +4,7 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { z } from "zod";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
-import { max } from "lodash";
+import { max, maxBy, minBy } from "lodash";
 
 const schema = z.array(
   z
@@ -24,7 +24,8 @@ export type MeasurementsType = z.infer<typeof schema>;
 
 async function getSinglePage(
   url: string,
-  earliestPresentCreationTimestamp: number | undefined,
+  maxLocalCreationTimestamp: number | undefined,
+  minLocalCreationTimestamp: number | undefined,
   accessToken: string | undefined,
   logoutUser: () => void
 ): Promise<MeasurementsType | undefined> {
@@ -32,9 +33,33 @@ async function getSinglePage(
     return undefined;
   }
 
-  let fullUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}${url}?direction=previous`;
-  if (earliestPresentCreationTimestamp !== undefined) {
-    fullUrl += `&creation_timestamp=${earliestPresentCreationTimestamp}`;
+  let fullUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}${url}?`;
+
+  if (
+    maxLocalCreationTimestamp === undefined &&
+    minLocalCreationTimestamp === undefined
+  ) {
+    fullUrl += `direction=previous`;
+  }
+  if (
+    maxLocalCreationTimestamp !== undefined &&
+    minLocalCreationTimestamp === undefined
+  ) {
+    fullUrl += `direction=next&creation_timestamp=${maxLocalCreationTimestamp}`;
+  }
+  if (
+    maxLocalCreationTimestamp === undefined &&
+    minLocalCreationTimestamp !== undefined
+  ) {
+    fullUrl += `direction=previous&creation_timestamp=${minLocalCreationTimestamp}`;
+  }
+  if (
+    maxLocalCreationTimestamp !== undefined &&
+    minLocalCreationTimestamp !== undefined
+  ) {
+    throw new Error(
+      "maxLocalCreationTimestamp and minLocalCreationTimestamp cannot both be defined"
+    );
   }
 
   return await axios
@@ -65,7 +90,9 @@ async function getSinglePage(
 
 async function fetcher(
   url: string,
-  numberOfPages: number,
+  localData: MeasurementsType,
+  loadNewerData: boolean,
+  loadOlderData: boolean,
   accessToken: string | undefined,
   logoutUser: () => void
 ): Promise<MeasurementsType | undefined> {
@@ -73,27 +100,64 @@ async function fetcher(
     throw new Error("Not authorized!");
   }
 
-  let data: MeasurementsType = [];
+  if (localData.length === 0) {
+    return (
+      await getSinglePage(url, undefined, undefined, accessToken, logoutUser)
+    )?.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
+  } else {
+    // @ts-ignore
+    let localMaxCreationTimestamp: number = maxBy(
+      localData,
+      (d) => d.creationTimestamp
+    )?.creationTimestamp;
 
-  for (let i = 0; i < numberOfPages; i++) {
-    let nextPageData = await getSinglePage(
-      url,
-      undefined,
-      accessToken,
-      logoutUser
-    );
+    // @ts-ignore
+    let localMinCreationTimestamp: number = minBy(
+      localData,
+      (d) => d.creationTimestamp
+    )?.creationTimestamp;
 
-    if (nextPageData === undefined) {
-      return undefined;
+    if (
+      localMinCreationTimestamp === undefined ||
+      localMaxCreationTimestamp === undefined
+    ) {
+      throw new Error(
+        "localMinCreationTimestamp or localMaxCreationTimestamp undefined"
+      );
     }
 
-    data = [...data, ...nextPageData];
-    if (nextPageData.length < 64) {
-      break;
+    let data: MeasurementsType = localData;
+
+    if (loadNewerData) {
+      let newerData = await getSinglePage(
+        url,
+        localMaxCreationTimestamp,
+        undefined,
+        accessToken,
+        logoutUser
+      );
+      if (newerData === undefined) {
+        return undefined;
+      }
+      data = [...data, ...newerData];
     }
+
+    if (loadOlderData) {
+      let newerData = await getSinglePage(
+        url,
+        undefined,
+        localMinCreationTimestamp,
+        accessToken,
+        logoutUser
+      );
+      if (newerData === undefined) {
+        return undefined;
+      }
+      data = [...data, ...newerData];
+    }
+
+    return data.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
   }
-
-  return data.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
 }
 
 export function useMeasurements(
@@ -122,7 +186,9 @@ export function useMeasurements(
         const startTimestamp = new Date().getTime();
         const newData = await fetcher(
           url,
-          numberOfRequestedPages,
+          data,
+          false,
+          true,
           accessToken,
           logoutUser
         );
