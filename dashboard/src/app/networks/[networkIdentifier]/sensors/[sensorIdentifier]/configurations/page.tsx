@@ -6,13 +6,7 @@ import { useConfigurations } from "@/requests/configurations";
 import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
-import { formatDistanceToNow } from "date-fns";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TimestampLabel } from "@/components/custom/timestamp-label";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -76,7 +70,7 @@ function ConfigurationBox(props: {
     <div className="flex flex-col w-full overflow-hidden bg-white border rounded shadow-md border-slate-300">
       <div className="flex flex-row items-start justify-start p-3 border-b gap-x-4 border-slate-200">
         <div className="flex items-center flex-shrink-0 h-6 px-2 text-sm font-semibold text-blue-900 bg-blue-200 rounded">
-          Revision {props.configuration.revision}
+          Config Revision {props.configuration.revision}
         </div>
         <div className="flex flex-col w-full">
           <div className="grid flex-grow w-full h-1.5 grid-cols-4 my-2 rounded-full  relative">
@@ -129,19 +123,19 @@ function ConfigurationBox(props: {
             />
           </div>
           <div className="grid flex-grow w-full grid-cols-4 -mt-1 text-xs">
-            <TimestepLabel
+            <TimestampLabel
               label="created"
               timestamp={props.configuration.creationTimestamp}
             />
-            <TimestepLabel
+            <TimestampLabel
               label="published"
               timestamp={props.configuration.publicationTimestamp}
             />
-            <TimestepLabel
+            <TimestampLabel
               label="received"
               timestamp={props.configuration.receiptTimestamp}
             />
-            <TimestepLabel
+            <TimestampLabel
               label="acknowledged"
               timestamp={props.configuration.acknowledgmentTimestamp}
             />
@@ -153,39 +147,4 @@ function ConfigurationBox(props: {
       </div>
     </div>
   );
-}
-
-function TimestepLabel(props: {
-  label: "created" | "received" | "published" | "acknowledged";
-  timestamp: number | null;
-}) {
-  if (props.timestamp === null) {
-    return (
-      <div className="pl-1">
-        not{" "}
-        <span className="font-semibold text-emerald-800">{props.label}</span>{" "}
-        yet
-      </div>
-    );
-  } else {
-    return (
-      <div className="pl-1">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <span className="font-semibold text-emerald-900">
-                {props.label}
-              </span>{" "}
-              {formatDistanceToNow(new Date(props.timestamp * 1000), {
-                addSuffix: true,
-              })}
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>{new Date(props.timestamp * 1000).toISOString()}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-    );
-  }
 }
