@@ -95,3 +95,97 @@ async function fetcher(
 
   return data.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
 }
+
+export function useMeasurements(
+  accessToken: string | undefined,
+  logoutUser: () => void,
+  networkIdentifier: string,
+  sensorIdentifier: string
+) {
+  const [data, setData] = useState<MeasurementsType>([]);
+  const [numberOfRequestedPages, setNumberOfRequestedPages] = useState(1);
+
+  const [fetchingState, setFetchingState] = useState<
+    "idle" | "fetching" | "new data" | "no new data"
+  >("idle");
+
+  const url = `/networks/${networkIdentifier}/sensors/${sensorIdentifier}/measurements`;
+  const numberOfPages = Math.ceil(data.length / 64);
+
+  useEffect(() => {
+    if (
+      fetchingState !== "fetching" &&
+      numberOfPages < numberOfRequestedPages
+    ) {
+      const f = async () => {
+        setFetchingState("fetching");
+        const startTimestamp = new Date().getTime();
+        const newData = await fetcher(
+          url,
+          numberOfRequestedPages,
+          accessToken,
+          logoutUser
+        );
+        if (newData === undefined) {
+          setNumberOfRequestedPages(numberOfPages);
+        } else {
+          setData(newData);
+          setNumberOfRequestedPages(Math.ceil(newData.length / 64));
+        }
+        const endTimestamp = new Date().getTime();
+        console.log(
+          `fetching ${numberOfRequestedPages} measurement pages took ${
+            endTimestamp - startTimestamp
+          } ms`
+        );
+
+        const endFetchingState = () => {
+          if (data.length === newData?.length) {
+            setFetchingState("no new data");
+          } else {
+            setFetchingState("new data");
+          }
+        };
+
+        if (endTimestamp - startTimestamp < 800) {
+          console.log(
+            `retaining fetching state for ${max([
+              0,
+              800 - (endTimestamp - startTimestamp),
+            ])} ms more`
+          );
+          await new Promise((resolve) =>
+            setTimeout(
+              () => {
+                endFetchingState();
+                resolve(null);
+              },
+              800 - (endTimestamp - startTimestamp)
+            )
+          );
+        } else {
+          endFetchingState();
+        }
+      };
+
+      f();
+    }
+  }, [
+    data,
+    accessToken,
+    fetchingState,
+    logoutUser,
+    url,
+    numberOfPages,
+    numberOfRequestedPages,
+  ]);
+
+  return {
+    measurementsData: data,
+    measurementsDataFetchingState: fetchingState,
+    numberOfPages: numberOfPages,
+    fetchMoreData: () => {
+      setNumberOfRequestedPages(numberOfRequestedPages + 1);
+    },
+  };
+}
