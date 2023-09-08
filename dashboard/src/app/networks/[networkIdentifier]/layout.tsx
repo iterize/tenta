@@ -96,9 +96,11 @@ function SensorListItem(props: {
   let currentlyActiveLabel = pathname.split("/").pop();
   if (
     currentlyActiveLabel === undefined ||
-    !["configurations", "measurements", "logs"].includes(currentlyActiveLabel)
+    !["overview", "configurations", "measurements", "logs"].includes(
+      currentlyActiveLabel
+    )
   ) {
-    currentlyActiveLabel = "configurations";
+    currentlyActiveLabel = "overview";
   }
 
   return (
@@ -135,22 +137,17 @@ function SensorListItem(props: {
           </div>
         </Link>
         {isActive && (
-          <div className="grid grid-cols-3 grid-rows-1 text-sm text-center border-t divide-x border-slate-200 divide-slate-200">
-            <SensorListItemLink
-              networkIdentifier={props.networkIdentifier}
-              sensorIdentifier={props.sensorIdentifier}
-              label="configurations"
-            />
-            <SensorListItemLink
-              networkIdentifier={props.networkIdentifier}
-              sensorIdentifier={props.sensorIdentifier}
-              label="measurements"
-            />
-            <SensorListItemLink
-              networkIdentifier={props.networkIdentifier}
-              sensorIdentifier={props.sensorIdentifier}
-              label="logs"
-            />
+          <div className="grid grid-cols-4 grid-rows-1 text-sm text-center border-t divide-x border-slate-200 divide-slate-200">
+            {["overview", "configurations", "measurements", "logs"].map(
+              (label) => (
+                <SensorListItemLink
+                  key={label}
+                  networkIdentifier={props.networkIdentifier}
+                  sensorIdentifier={props.sensorIdentifier}
+                  label={label}
+                />
+              )
+            )}
           </div>
         )}
       </div>
@@ -161,19 +158,19 @@ function SensorListItem(props: {
 function SensorListItemLink(props: {
   networkIdentifier: string;
   sensorIdentifier: string;
-  label: "configurations" | "measurements" | "logs";
+  label: string;
 }) {
   const pathname = usePathname();
-  const isActive = pathname.includes(
-    `/sensors/${props.sensorIdentifier}/${props.label}`
-  );
+  const isActive =
+    pathname ==
+    `/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${props.label}`;
 
   return (
     <Link
       href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${props.label}`}
       className={
         isActive
-          ? "bg-slate-250 text-slate-950"
+          ? "bg-slate-250 text-black"
           : "bg-slate-100 hover:bg-sky-100 hover:text-sky-900 text-slate-500"
       }
     >
