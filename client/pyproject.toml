@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "tenta-client"
+version = "0.1.0"
+description = ""
+authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.*"
+
+[tool.poetry.group.dev.dependencies]
+wetterdienst = "^0.59.1"
+polars = "0.16.*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
