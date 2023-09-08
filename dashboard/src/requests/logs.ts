@@ -11,16 +11,22 @@ const schema = z.array(
     .object({
       creation_timestamp: z.number(),
       revision: z.number().nullable(),
-      value: z.record(z.string(), z.number()),
+      severity: z.union([
+        z.literal("info"),
+        z.literal("warning"),
+        z.literal("error"),
+      ]),
+      message: z.string(),
     })
     .transform((data) => ({
       creationTimestamp: data.creation_timestamp,
       revision: data.revision,
-      value: data.value,
+      severity: data.severity,
+      message: data.message,
     }))
 );
 
-export type MeasurementsType = z.infer<typeof schema>;
+export type LogsType = z.infer<typeof schema>;
 
 async function getSinglePage(
   url: string,
@@ -28,7 +34,7 @@ async function getSinglePage(
   minLocalCreationTimestamp: number | undefined,
   accessToken: string | undefined,
   logoutUser: () => void
-): Promise<MeasurementsType | undefined> {
+): Promise<LogsType | undefined> {
   if (!accessToken) {
     return undefined;
   }
@@ -90,12 +96,12 @@ async function getSinglePage(
 
 async function fetcher(
   url: string,
-  localData: MeasurementsType,
+  localData: LogsType,
   loadNewerData: boolean,
   loadOlderData: boolean,
   accessToken: string | undefined,
   logoutUser: () => void
-): Promise<MeasurementsType | undefined> {
+): Promise<LogsType | undefined> {
   if (!accessToken) {
     throw new Error("Not authorized!");
   }
@@ -126,7 +132,7 @@ async function fetcher(
       );
     }
 
-    let data: MeasurementsType = localData;
+    let data: LogsType = localData;
 
     if (loadNewerData) {
       let newerData = await getSinglePage(
@@ -160,20 +166,20 @@ async function fetcher(
   }
 }
 
-export function useMeasurements(
+export function useLogs(
   accessToken: string | undefined,
   logoutUser: () => void,
   networkIdentifier: string,
   sensorIdentifier: string
 ) {
-  const [data, setData] = useState<MeasurementsType>([]);
+  const [data, setData] = useState<LogsType>([]);
   const [numberOfRequestedPages, setNumberOfRequestedPages] = useState(1);
 
   const [fetchingState, setFetchingState] = useState<
     "idle" | "fetching" | "new data" | "no new data"
   >("idle");
 
-  const url = `/networks/${networkIdentifier}/sensors/${sensorIdentifier}/measurements`;
+  const url = `/networks/${networkIdentifier}/sensors/${sensorIdentifier}/logs`;
   const numberOfPages = Math.ceil(data.length / 64);
 
   useEffect(() => {
@@ -200,7 +206,7 @@ export function useMeasurements(
         }
         const endTimestamp = new Date().getTime();
         console.log(
-          `fetching ${numberOfRequestedPages} measurement pages took ${
+          `fetching ${numberOfRequestedPages} logs pages took ${
             endTimestamp - startTimestamp
           } ms`
         );
