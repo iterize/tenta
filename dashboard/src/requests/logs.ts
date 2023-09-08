@@ -253,10 +253,10 @@ export function useLogs(
   ]);
 
   return {
-    measurementsData: data,
-    measurementsDataFetchingState: fetchingState,
-    numberOfPages: numberOfPages,
-    fetchMoreData: () => {
+    logsData: data,
+    logsDataFetchingState: fetchingState,
+    numberOfLogsPages: numberOfPages,
+    fetchMoreLogs: () => {
       setNumberOfRequestedPages(numberOfRequestedPages + 1);
     },
   };

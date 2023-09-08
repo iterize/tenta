@@ -26,8 +26,8 @@ export default function Page(props: {
   const {
     measurementsData,
     measurementsDataFetchingState,
-    numberOfPages,
-    fetchMoreData,
+    numberOfMeasurementsPages,
+    fetchMoreMeasurements,
   } = useMeasurements(
     userData?.accessToken,
     logoutUser,
@@ -82,14 +82,16 @@ export default function Page(props: {
         <Pagination
           currentPageNumber={currentPageNumber}
           numberOfPages={
-            measurementsDataFetchingState === "fetching" ? 0 : numberOfPages
+            measurementsDataFetchingState === "fetching"
+              ? 0
+              : numberOfMeasurementsPages
           }
           setCurrentPageNumber={setCurrentPageNumber}
           noDataPlaceholder={
             measurementsDataFetchingState === "fetching" ? "..." : "no data"
           }
         />
-        <Button onClick={fetchMoreData}>load older data</Button>
+        <Button onClick={fetchMoreMeasurements}>load older data</Button>
       </div>
       <div className="flex flex-col items-center justify-center w-full mt-2 gap-y-4">
         {measurementsData === undefined && "loading"}

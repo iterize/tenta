@@ -249,8 +249,8 @@ export function useMeasurements(
   return {
     measurementsData: data,
     measurementsDataFetchingState: fetchingState,
-    numberOfPages: numberOfPages,
-    fetchMoreData: () => {
+    numberOfMeasurementsPages: numberOfPages,
+    fetchMoreMeasurements: () => {
       setNumberOfRequestedPages(numberOfRequestedPages + 1);
     },
   };
