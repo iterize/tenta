@@ -213,11 +213,11 @@ export function useMeasurements(
           }
         };
 
-        if (endTimestamp - startTimestamp < 800) {
+        if (endTimestamp - startTimestamp < 500) {
           console.log(
             `retaining fetching state for ${max([
               0,
-              800 - (endTimestamp - startTimestamp),
+              500 - (endTimestamp - startTimestamp),
             ])} ms more`
           );
           await new Promise((resolve) =>
@@ -226,7 +226,7 @@ export function useMeasurements(
                 endFetchingState();
                 resolve(null);
               },
-              800 - (endTimestamp - startTimestamp)
+              500 - (endTimestamp - startTimestamp)
             )
           );
         } else {

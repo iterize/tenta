@@ -55,9 +55,12 @@ export default function Page(props: {
         id: dataLoadingToastId,
         duration: 1500,
       });
-      setDataLoadingToastId(undefined);
     }
   }, [measurementsDataFetchingState, dataLoadingToastId]);
+
+  useEffect(() => {
+    return () => toast.dismiss();
+  }, []);
 
   if (userDataIsloading || sensorsData === undefined) {
     return <AuthLoadingScreen />;
