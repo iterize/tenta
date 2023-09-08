@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: server/.venv
-          key: ${{ runner.os }}-${{ hashFiles('server/poetry.lock') }}-1 # Increment to invalidate cache
+          key: ${{ runner.os }}-${{ hashFiles('server/poetry.lock') }}-2 # Increment to invalidate cache
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: scripts/setup
