@@ -32,7 +32,7 @@ async def _connection():
 
 @pytest.fixture(scope="session")
 async def connection():
-    """Provide a database connection that is persistent across tests."""
+    """Provide a database connection (persistent across tests)."""
     async with _connection() as connection:
         yield connection
 
@@ -51,7 +51,7 @@ async def _populate(connection):
 
 
 @pytest.fixture(scope="function")
-async def setup(connection):
+async def reset(connection):
     """Reset the database to contain the initial test data for each test."""
     async with connection.transaction():
         # Delete all the data in the database but keep the structure
