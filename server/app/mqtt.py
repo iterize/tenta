@@ -178,11 +178,7 @@ async def listen(mqttc, dbpool):
             logger.info(f"Subscribed to: {wildcard}")
         # Loop through incoming messages
         async for message in messages:
-            # TODO: Remove condition when there's no more logs limit
-            if not message.topic.matches(list(SUBSCRIPTIONS.keys())[1]):
-                logger.info(
-                    f"Received message: {message.payload!r} on topic: {message.topic}"
-                )
+            logger.debug(f"Received: {message.payload!r} on topic: {message.topic}")
             # Get sensor identifier from the topic
             # TODO validate that identifier is a valid UUID format
             sensor_identifier = str(message.topic).split("/")[-1]

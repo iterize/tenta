@@ -37,8 +37,8 @@ Key = pydantic.constr(max_length=64, pattern=constants.Pattern.KEY.value)
 
 # PostgreSQL errors if an integer is out of range, so we must validate
 Revision = pydantic.conint(ge=0, lt=constants.Limit.MAXINT4)
-Timestamp = pydantic.confloat(ge=0, lt=constants.Limit.MAXINT4)
 
 # PostgreSQL rounds if it cannot store a float in full precision, so we do not need to
 # validate min/max values here
-Measurement = typing.Annotated[dict[Key, float], pydantic.Field(min_items=1)]
+Timestamp = float
+Measurement = typing.Annotated[dict[Key, float], pydantic.Field(min_length=1)]

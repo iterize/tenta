@@ -4,9 +4,6 @@ import pytest
 import app.validation as validation
 
 
-# TODO test validation of measurements with 1.5, 1.0, 0.0, True
-
-
 ########################################################################################
 # Test data
 ########################################################################################
@@ -181,31 +178,79 @@ def test_validate_route_create_configuration_body_fail(identifier):
 ########################################################################################
 
 
+def test_validate_mqtt_acknowledgments_pass():
+    """Test that AcknowledgmentsValidator passes some valid values."""
+    validation.mqtt.AcknowledgmentsValidator.validate_python(
+        [{"success": True, "timestamp": 0, "revision": 0}]
+    )
+    validation.mqtt.AcknowledgmentsValidator.validate_python(
+        [
+            {"success": True, "timestamp": 0, "revision": 0},
+            {"success": True, "timestamp": 0, "revision": 0},
+        ]
+    )
+    validation.mqtt.AcknowledgmentsValidator.validate_python(
+        [
+            {
+                "success": False,
+                "timestamp": -9999999999999999.9999999999999999,
+                "revision": validation.constants.Limit.MAXINT4 - 1,
+            }
+        ]
+    )
+
+
+def test_validate_mqtt_acknowledgments_fail():
+    """Test that AcknowledgmentsValidator fails some invalid values."""
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.AcknowledgmentsValidator.validate_python([])
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.AcknowledgmentsValidator.validate_python(
+            {"success": True, "timestamp": 0, "revision": 0}
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.AcknowledgmentsValidator.validate_python(
+            [{"success": True, "timestamp": 0}]
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.AcknowledgmentsValidator.validate_python(
+            [{"success": 1, "timestamp": 0, "revision": 0}]
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.AcknowledgmentsValidator.validate_python(
+            [
+                {
+                    "success": True,
+                    "timestamp": 0,
+                    "revision": -1,
+                }
+            ]
+        )
+
+
 def test_validate_mqtt_measurements_pass():
     """Test that MeasurementsValidator passes some valid values."""
     validation.mqtt.MeasurementsValidator.validate_python(
+        [{"value": {"temperature": 0}, "timestamp": 0}]
+    )
+    validation.mqtt.MeasurementsValidator.validate_python(
+        [{"value": {"temperature": 0}, "timestamp": 0, "revision": None}]
+    )
+    validation.mqtt.MeasurementsValidator.validate_python(
         [
-            {
-                "value": {"temperature": 0},
-                "timestamp": 0,
-            }
+            {"value": {"temperature": 0}, "timestamp": 0},
+            {"value": {"temperature": 0}, "timestamp": 0},
         ]
+    )
+    validation.mqtt.MeasurementsValidator.validate_python(
+        [{"value": {"temperature": 0}, "timestamp": 0, "revision": 0}]
     )
     validation.mqtt.MeasurementsValidator.validate_python(
         [
             {
-                "value": {"temperature": 0},
-                "timestamp": 0,
-                "revision": 0,
-            }
-        ]
-    )
-    validation.mqtt.MeasurementsValidator.validate_python(
-        [
-            {
-                "value": {"temperature": 99999999.9999},
-                "timestamp": 99999999.9999,
-                "revision": 999999999,
+                "value": {"temperature": -9999999999999999.9999999999999999},
+                "timestamp": 9999999999999999.9999999999999999,
+                "revision": validation.constants.Limit.MAXINT4 - 1,
             }
         ]
     )
@@ -225,6 +270,10 @@ def test_validate_mqtt_measurements_fail():
         )
     with pytest.raises(pydantic.ValidationError):
         validation.mqtt.MeasurementsValidator.validate_python(
+            [{"value": {"temperature": True}, "timestamp": 0}]
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.MeasurementsValidator.validate_python(
             [{"timestamp": 0, "revision": 0}]
         )
     with pytest.raises(pydantic.ValidationError):
@@ -237,8 +286,78 @@ def test_validate_mqtt_measurements_fail():
                 {
                     "value": {"temperature": 0},
                     "timestamp": 0,
+                    "revision": validation.constants.Limit.MAXINT4,
+                }
+            ]
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.MeasurementsValidator.validate_python(
+            [
+                {
+                    "value": {"temperature": 0},
+                    "timestamp": 0,
                     "revision": 0,
                     "humidity": 0,
                 }
             ]
+        )
+
+
+def test_validate_mqtt_logs_pass():
+    """Test that LogsValidator passes some valid values."""
+    validation.mqtt.LogsValidator.validate_python(
+        [{"message": "", "severity": "info", "timestamp": 0}]
+    )
+    validation.mqtt.LogsValidator.validate_python(
+        [{"message": "", "severity": "warning", "timestamp": 0}]
+    )
+    validation.mqtt.LogsValidator.validate_python(
+        [{"message": "", "severity": "info", "timestamp": 0, "revision": None}]
+    )
+    validation.mqtt.LogsValidator.validate_python(
+        [{"message": "", "severity": "info", "timestamp": 0, "revision": 0}]
+    )
+    validation.mqtt.LogsValidator.validate_python(
+        [
+            {"message": "", "severity": "info", "timestamp": 0},
+            {"message": "", "severity": "info", "timestamp": 0},
+        ]
+    )
+    validation.mqtt.LogsValidator.validate_python(
+        [
+            {
+                "message": "x" * validation.constants.Limit.LARGE + "x",
+                "severity": "info",
+                "timestamp": 9999999999999999.9999999999999999,
+                "revision": validation.constants.Limit.MAXINT4 - 1,
+            }
+        ]
+    )
+
+
+def test_validate_mqtt_logs_fail():
+    """Test that LogsValidator fails some invalid values."""
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.LogsValidator.validate_python([])
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.LogsValidator.validate_python(
+            {"message": "", "severity": "info", "timestamp": 0}
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.LogsValidator.validate_python(
+            [{"message": None, "severity": "info", "timestamp": 0}]
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.LogsValidator.validate_python([{"message": "", "timestamp": 0}])
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.LogsValidator.validate_python(
+            [{"message": "", "severity": "example", "timestamp": 0}]
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.LogsValidator.validate_python(
+            [{"message": "", "severity": "info", "timestamp": 0, "revision": -1}]
+        )
+    with pytest.raises(pydantic.ValidationError):
+        validation.mqtt.LogsValidator.validate_python(
+            [{"message": "", "severity": "info", "timestamp": 0, "revision": 0.0}]
         )

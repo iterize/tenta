@@ -22,31 +22,22 @@ export MQTT_PASSWORD="password"
 # Path to our Mosquitto configuation
 MOSQUITTO_CONFIGURATION="$(pwd)/tests/mosquitto.conf"
 
-# Color definitions
-RESET=$(tput sgr0)
-GREEN=$(tput setaf 2)
-
 # Start PostgreSQL via docker in the background
-printf "[..] Starting PostgreSQL with Docker"
+echo "Starting PostgreSQL+TimescaleDB with Docker"
 docker run -td --rm --name postgres -p 127.0.0.1:5432:5432 --hostname default -e POSTGRES_USER="${POSTGRESQL_IDENTIFIER}" -e POSTGRES_PASSWORD="${POSTGRESQL_PASSWORD}" -e POSTGRES_DB="${POSTGRESQL_DATABASE}" timescale/timescaledb:latest-pg15 >/dev/null
-printf '\r%s[OK]%s\n' "${GREEN}" "${RESET}"
 # Start the Mosquitto MQTT broker via docker in the background
-printf "[..] Starting Mosquitto with Docker"
+echo "Starting Mosquitto with Docker"
 docker run -td --rm --name mosquitto -p 127.0.0.1:1883:1883 --volume "${MOSQUITTO_CONFIGURATION}:/mosquitto/config/mosquitto.conf" eclipse-mosquitto:latest >/dev/null
-printf '\r%s[OK]%s\n' "${GREEN}" "${RESET}"
 # Wait for PostgreSQL to be ready; Avoid the double start problem by passing the external IP address with the -h option, see: https://github.com/docker-library/postgres/issues/146#issuecomment-561557320
-printf "[..] Waiting for PostgreSQL to be ready"
+echo "Waiting for PostgreSQL+TimescaleDB to be ready"
 until docker exec postgres pg_isready --host default >/dev/null; do sleep 0.1; done
-printf '\r%s[OK]%s\n' "${GREEN}" "${RESET}"
 # Wait for Mosquitto to be ready
-printf "[..] Waiting for Mosquitto to be ready"
+echo "Waiting for Mosquitto to be ready"
 until docker exec mosquitto mosquitto_sub -E --topic "#"; do sleep 0.1; done
-printf '\r%s[OK]%s\n' "${GREEN}" "${RESET}"
 
 # Run the database initialization script
-printf "[..] Initializing the database"
+echo "Initializing the database"
 ./scripts/initialize ||:
-printf '\r%s[OK]%s\n' "${GREEN}" "${RESET}"
 
 # Run the tests
 poetry run pytest --cov=app --cov-report=term-missing tests "$@" || status=$?

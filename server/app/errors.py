@@ -18,7 +18,7 @@ async def handler(request, exc):
 
 async def panic(request, exc):
     """Return JSON instead of the default text/plain for errors."""
-    return starlette.responses.JSONResponse(
+    return starlette.responses.JSONResponse(  # pragma: no cover
         status_code=500,
         content={"details": "Internal Server Error"},
     )
