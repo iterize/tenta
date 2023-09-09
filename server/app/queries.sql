@@ -2,8 +2,10 @@
 SELECT
     attribute,
     array_agg(
-        jsonb_build_object('bucket_timestamp', bucket_timestamp, 'average', average)
-        ORDER BY bucket_timestamp ASC
+        jsonb_build_object(
+            'bucket_timestamp', bucket_timestamp,
+            'average', average
+        ) ORDER BY bucket_timestamp ASC
     ) AS values
 FROM measurement_aggregation_1_hour
 WHERE

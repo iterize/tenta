@@ -77,7 +77,9 @@ CREATE TABLE measurement (
     receipt_timestamp TIMESTAMPTZ NOT NULL
 );
 
-SELECT create_hypertable('measurement', 'creation_timestamp');
+SELECT create_hypertable(
+    relation => 'measurement',
+    time_column_name => 'creation_timestamp');
 
 
 CREATE MATERIALIZED VIEW measurement_aggregation_1_hour
@@ -117,7 +119,9 @@ CREATE TABLE log (
     receipt_timestamp TIMESTAMPTZ NOT NULL
 );
 
-SELECT create_hypertable('log', 'creation_timestamp');
+SELECT create_hypertable(
+    relation => 'log',
+    time_column_name => 'creation_timestamp');
 
 SELECT add_retention_policy(
     relation => 'log',
