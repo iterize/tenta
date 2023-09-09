@@ -15,17 +15,15 @@ async def client():
 
 
 def keys(response, keys):
-    """Check that a httpx request body contains a specific set of keys.
-
-    If the request body is an array, check that each element contains the keys.
-    """
+    """Check that a httpx response body has a specific set of keys."""
     if isinstance(response.json(), dict):
         return set(response.json().keys()) == set(keys)
+    # If the response is an array, check that each element satisfies the condition
     return all([set(element.keys()) == set(keys) for element in response.json()])
 
 
-def sorts(response, key):
-    """Check that a https request body array is sorted by the given key."""
+def order(response, key):
+    """Check that a httpx response body array is sorted by the given key."""
     return response.json() == sorted(response.json(), key=key)
 
 
@@ -152,6 +150,11 @@ async def test_create_session_with_nonexistent_user(reset, client):
 
 
 ########################################################################################
+# Route: POST /networks
+########################################################################################
+
+
+########################################################################################
 # Route: GET /networks
 ########################################################################################
 
@@ -178,7 +181,7 @@ async def test_read_networks_with_invalid_authentication(reset, client, token):
 
 
 ########################################################################################
-# Route: POST /networks/<network_identifier>/sensors
+# Route: POST /networks/+/sensors
 ########################################################################################
 
 
@@ -220,8 +223,21 @@ async def test_create_sensor_with_nonexistent_network(
     assert returns(response, errors.NotFoundError)
 
 
+@pytest.mark.anyio
+async def test_create_sensor_with_invalid_authorization(
+    reset, client, network_identifier, access_token
+):
+    """Test creating a sensor in a network with an insufficient relationship."""
+    response = await client.post(
+        url="/networks/2f9a5285-4ce1-4ddb-a268-0164c70f4826/sensors",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={"sensor_name": "pikachu"},
+    )
+    assert returns(response, errors.ForbiddenError)
+
+
 ########################################################################################
-# Route: GET /networks/<network_identifier>/sensors
+# Route: GET /networks/+/sensors
 ########################################################################################
 
 
@@ -275,7 +291,7 @@ async def test_read_sensors_with_invalid_authorization(
 
 
 ########################################################################################
-# Route: PUT /networks/<network_identifier>/sensors/<sensor_identifier>
+# Route: PUT /networks/+/sensors/+
 ########################################################################################
 
 
@@ -320,7 +336,7 @@ async def test_update_sensor_with_existent_sensor_name(
 
 
 ########################################################################################
-# Route: POST /networks/<network_identifier>/sensors/<sensor_identifier>/configurations
+# Route: POST /networks/+/sensors/+/configurations
 ########################################################################################
 
 
@@ -370,7 +386,7 @@ async def test_create_configuration_with_nonexistent_sensor(
 
 
 ########################################################################################
-# Route: GET /networks/<network_identifier>/sensors/<sensor_identifier>/configurations
+# Route: GET /networks/+/sensors/+/configurations
 ########################################################################################
 
 
@@ -400,7 +416,7 @@ async def test_read_configurations(
             "success",
         },
     )
-    assert sorts(response, lambda x: x["revision"])
+    assert order(response, lambda x: x["revision"])
 
 
 @pytest.mark.anyio
@@ -430,11 +446,11 @@ async def test_read_configurations_with_next_page(
             "success",
         },
     )
-    assert sorts(response, lambda x: x["revision"])
+    assert order(response, lambda x: x["revision"])
 
 
 ########################################################################################
-# Route: GET /networks/<network_identifier>/sensors/<sensor_identifier>/measurements
+# Route: GET /networks/+/sensors/+/measurements
 ########################################################################################
 
 
@@ -451,7 +467,7 @@ async def test_read_measurements(
     assert isinstance(response.json(), list)
     assert len(response.json()) == 4
     assert keys(response, {"value", "revision", "creation_timestamp"})
-    assert sorts(response, lambda x: x["creation_timestamp"])
+    assert order(response, lambda x: x["creation_timestamp"])
 
 
 @pytest.mark.anyio
@@ -468,7 +484,7 @@ async def test_read_measurements_with_next_page(
     assert isinstance(response.json(), list)
     assert len(response.json()) == 2
     assert keys(response, {"value", "revision", "creation_timestamp"})
-    assert sorts(response, lambda x: x["creation_timestamp"])
+    assert order(response, lambda x: x["creation_timestamp"])
 
 
 @pytest.mark.anyio
@@ -485,12 +501,24 @@ async def test_read_measurements_with_previous_page(
     assert isinstance(response.json(), list)
     assert len(response.json()) == 2
     assert keys(response, {"value", "revision", "creation_timestamp"})
-    assert sorts(response, lambda x: x["creation_timestamp"])
+    assert order(response, lambda x: x["creation_timestamp"])
+
+
+########################################################################################
+# Route: GET /networks/+/sensors/+/logs
+########################################################################################
 
 
 # TODO check logs
+
+
+########################################################################################
+# Route: GET /networks/+/sensors/+/logs/aggregates
+########################################################################################
+
+
 # TODO check log aggregation
-# TODO check create sensor when network exists but user does not have permission
+
+
 # TODO check missing/wrong authentication
 # TODO differences between 401 and 404
-# TODO test validation of measurements with 1.5, 1.0, 0.0, True
