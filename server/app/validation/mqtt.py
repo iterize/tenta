@@ -12,22 +12,22 @@ import app.validation.types as types
 
 
 class Acknowledgment(types.StrictModel):
+    success: bool  # Records if the configuration was processed successfully
     timestamp: types.Timestamp
     revision: types.Revision
-    success: bool  # Records if the configuration was processed successfully
 
 
 class Measurement(types.StrictModel):
+    value: types.Measurement
     timestamp: types.Timestamp
     revision: types.Revision | None = None
-    value: types.Measurement
 
 
 class Log(types.StrictModel):
+    message: str  # Can be empty, but must not be None
+    severity: typing.Literal["info", "warning", "error"]
     timestamp: types.Timestamp
     revision: types.Revision | None = None
-    severity: typing.Literal["info", "warning", "error"]
-    message: str  # Can be empty, but must not be None
 
     @pydantic.field_validator("message")
     def trim(cls, v):
@@ -37,6 +37,7 @@ class Log(types.StrictModel):
 ########################################################################################
 # Validators for the batched messages
 ########################################################################################
+
 
 AcknowledgmentsValidator = pydantic.TypeAdapter(
     pydantic.conlist(item_type=Acknowledgment, min_length=1),
