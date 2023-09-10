@@ -154,6 +154,51 @@ async def test_create_session_with_nonexistent_user(reset, client):
 ########################################################################################
 
 
+@pytest.mark.anyio
+async def test_create_network(reset, client, access_token):
+    """Test creating a network."""
+    response = await client.post(
+        url="/networks",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={"network_name": "something"},
+    )
+    assert returns(response, 201)
+    assert keys(response, {"network_identifier"})
+
+
+@pytest.mark.anyio
+async def test_create_network_with_existent_network_name(reset, client, access_token):
+    """Test creating a network with a name that's already taken."""
+    response = await client.post(
+        url="/networks",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={"network_name": "example"},
+    )
+    assert returns(response, errors.ConflictError)
+
+
+@pytest.mark.anyio
+async def test_create_network_with_invalid_authentication(reset, client, token):
+    """Test creating a network with an invalid access token."""
+    response = await client.post(
+        url="/networks",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"network_name": "something"},
+    )
+    assert returns(response, errors.UnauthorizedError)
+
+
+@pytest.mark.anyio
+async def test_create_network_with_invalid_request(reset, client, access_token):
+    """Test creating a network with invalid request values."""
+    response = await client.post(
+        url="/networks",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={},
+    )
+    assert returns(response, errors.BadRequestError)
+
+
 ########################################################################################
 # Route: GET /networks
 ########################################################################################
