@@ -66,10 +66,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  access_token:
-                    $ref: "#/components/schemas/token"
                   user_identifier:
                     $ref: "#/components/schemas/identifier"
+                  access_token:
+                    $ref: "#/components/schemas/token"
         "400":
           $ref: "#/components/responses/400"
         "409":
@@ -101,10 +101,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  access_token:
-                    $ref: "#/components/schemas/token"
                   user_identifier:
                     $ref: "#/components/schemas/identifier"
+                  access_token:
+                    $ref: "#/components/schemas/token"
         "400":
           $ref: "#/components/responses/400"
         "401":

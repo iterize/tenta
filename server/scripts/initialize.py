@@ -11,7 +11,7 @@ async def initialize(populate=False):
             for statement in file.read().split("\n\n\n"):
                 await connection.execute(statement)
         if populate:
-            await tests.conftest._populate(connection)
+            await tests.conftest._populate(connection, tests.conftest._offset())
 
 
 if __name__ == "__main__":

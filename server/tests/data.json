@@ -200,40 +200,40 @@
     "log": [
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "severity": "info",
             "message": "Everything is fine.",
+            "severity": "info",
             "revision": null,
             "creation_timestamp": 0,
             "receipt_timestamp": 200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "severity": "info",
             "message": "Everything is fine.",
+            "severity": "info",
             "revision": 0,
             "creation_timestamp": 100,
             "receipt_timestamp": 200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "severity": "warning",
             "message": "The CPU is toasty; Get the marshmallows ready!",
+            "severity": "warning",
             "revision": 0,
             "creation_timestamp": 200,
             "receipt_timestamp": 200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "severity": "warning",
             "message": "The CPU is toasty; Get the marshmallows ready!",
+            "severity": "warning",
             "revision": 1,
             "creation_timestamp": 300,
             "receipt_timestamp": 300
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "severity": "error",
             "message": "The CPU is burning; Please call the fire department.",
+            "severity": "error",
             "revision": 2,
             "creation_timestamp": 400,
             "receipt_timestamp": 400

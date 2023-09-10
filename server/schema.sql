@@ -112,8 +112,8 @@ SELECT add_continuous_aggregate_policy(
 -- combination unique and use that for the keyset pagination.
 CREATE TABLE log (
     sensor_identifier UUID NOT NULL REFERENCES sensor (identifier) ON DELETE CASCADE,
-    severity TEXT NOT NULL,
     message TEXT NOT NULL,
+    severity TEXT NOT NULL,
     revision INT,
     creation_timestamp TIMESTAMPTZ NOT NULL,
     receipt_timestamp TIMESTAMPTZ NOT NULL
