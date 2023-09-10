@@ -1,16 +1,26 @@
 [tool.poetry]
-name = "tenta-client"
-version = "0.1.0"
+name = "tenta"
+version = "0.0.0"
 description = ""
-authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]
+authors = [
+    "Moritz Makowski <moritz@dostuffthatmatters.dev>",
+    "Felix Böhm <felix@felixboehm.dev>",
+]
 readme = "README.md"
+packages = [{ include = "tenta", from = "." }]
+repository = "https://github.com/iterize/tenta"
+license = "AGPL-3.0-only"
 
 [tool.poetry.dependencies]
-python = "3.11.*"
+python = "^3.8"
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
-wetterdienst = "^0.59.1"
-polars = "0.16.*"
+black = "^23.9.0"
+mypy = "^1.5.1"
+pytest = "^7.4.2"
 
 [build-system]
 requires = ["poetry-core"]
