@@ -554,7 +554,54 @@ async def test_read_measurements_with_previous_page(
 ########################################################################################
 
 
-# TODO check logs
+@pytest.mark.anyio
+async def test_read_logs(
+    reset, client, network_identifier, sensor_identifier, access_token
+):
+    """Test reading the oldest logs."""
+    response = await client.get(
+        url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/logs",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert returns(response, 200)
+    assert isinstance(response.json(), list)
+    assert len(response.json()) == 5
+    assert keys(response, {"message", "severity", "revision", "creation_timestamp"})
+    assert order(response, lambda x: x["creation_timestamp"])
+
+
+@pytest.mark.anyio
+async def test_read_logs_with_next_page(
+    reset, client, network_identifier, sensor_identifier, access_token, offset
+):
+    """Test reading logs after a given timestamp."""
+    response = await client.get(
+        url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/logs",
+        headers={"Authorization": f"Bearer {access_token}"},
+        params={"direction": "next", "creation_timestamp": offset - 3600},
+    )
+    assert returns(response, 200)
+    assert isinstance(response.json(), list)
+    assert len(response.json()) == 2
+    assert keys(response, {"message", "severity", "revision", "creation_timestamp"})
+    assert order(response, lambda x: x["creation_timestamp"])
+
+
+@pytest.mark.anyio
+async def test_read_logs_with_previous_page(
+    reset, client, network_identifier, sensor_identifier, access_token, offset
+):
+    """Test reading logs before a given timestamp."""
+    response = await client.get(
+        url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/logs",
+        headers={"Authorization": f"Bearer {access_token}"},
+        params={"direction": "previous", "creation_timestamp": offset - 1800},
+    )
+    assert returns(response, 200)
+    assert isinstance(response.json(), list)
+    assert len(response.json()) == 3
+    assert keys(response, {"message", "severity", "revision", "creation_timestamp"})
+    assert order(response, lambda x: x["creation_timestamp"])
 
 
 ########################################################################################
@@ -565,6 +612,6 @@ async def test_read_measurements_with_previous_page(
 # TODO check log aggregation
 
 
-# TODO check missing/wrong authentication
+# TODO check missing/malformed authentication header
 # TODO differences between 401 and 404
 # TODO aggregate query parameter

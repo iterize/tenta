@@ -192,7 +192,7 @@
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "message": "The CPU is burning; Please call the fire department.",
             "severity": "error",
-            "revision": 2,
+            "revision": 1,
             "creation_timestamp": 0,
             "receipt_timestamp": 0
         }
