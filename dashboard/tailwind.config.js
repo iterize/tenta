@@ -48,7 +48,8 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         "slate-150": "#e9eef4",
-        "slate-250": "rgb(215, 223, 233)"
+        "slate-250": "rgb(215, 223, 233)",
+        "slate-350": "#afbccd"
         /*blue: {
           100: "#a5e1ff",
           200: "#4bc3ff",
