@@ -93,7 +93,7 @@ async def publish_configuration(
     task.add_done_callback(task_references.remove)
 
 
-async def _process_acknowledgments(sensor_identifier, payload, dbpool):
+async def _handle_acknowledgments(sensor_identifier, payload, dbpool):
     query, arguments = database.parametrize(
         identifier="update-configuration-on-acknowledgment",
         arguments=[
@@ -109,10 +109,10 @@ async def _process_acknowledgments(sensor_identifier, payload, dbpool):
     try:
         await dbpool.executemany(query, arguments)
     except asyncpg.ForeignKeyViolationError:
-        logger.warning(f"Failed to process; Sensor not found: {sensor_identifier}")
+        logger.warning(f"Failed to handle; Sensor not found: {sensor_identifier}")
 
 
-async def _process_measurements(sensor_identifier, payload, dbpool):
+async def _handle_measurements(sensor_identifier, payload, dbpool):
     query, arguments = database.parametrize(
         identifier="create-measurement",
         arguments=[
@@ -130,10 +130,10 @@ async def _process_measurements(sensor_identifier, payload, dbpool):
     try:
         await dbpool.executemany(query, arguments)
     except asyncpg.ForeignKeyViolationError:
-        logger.warning(f"Failed to process; Sensor not found: {sensor_identifier}")
+        logger.warning(f"Failed to handle; Sensor not found: {sensor_identifier}")
 
 
-async def _process_logs(sensor_identifier, payload, dbpool):
+async def _handle_logs(sensor_identifier, payload, dbpool):
     query, arguments = database.parametrize(
         identifier="create-log",
         arguments=[
@@ -150,20 +150,20 @@ async def _process_logs(sensor_identifier, payload, dbpool):
     try:
         await dbpool.executemany(query, arguments)
     except asyncpg.ForeignKeyViolationError:
-        logger.warning(f"Failed to process; Sensor not found: {sensor_identifier}")
+        logger.warning(f"Failed to handle; Sensor not found: {sensor_identifier}")
 
 
 SUBSCRIPTIONS = {
     "acknowledgments/+": (
-        _process_acknowledgments,
+        _handle_acknowledgments,
         validation.AcknowledgmentsValidator,
     ),
     "measurements/+": (
-        _process_measurements,
+        _handle_measurements,
         validation.MeasurementsValidator,
     ),
     "logs/+": (
-        _process_logs,
+        _handle_logs,
         validation.LogsValidator,
     ),
 }
@@ -182,12 +182,12 @@ async def listen(mqttc, dbpool):
             # Get sensor identifier from the topic
             # TODO validate that identifier is a valid UUID format
             sensor_identifier = str(message.topic).split("/")[-1]
-            # Call the appropriate processor; First match wins
-            for wildcard, (process, validator) in SUBSCRIPTIONS.items():
+            # Call the appropriate handler; First match wins
+            for wildcard, (handle, validator) in SUBSCRIPTIONS.items():
                 if message.topic.matches(wildcard):
                     try:
                         payload = validator.validate_json(message.payload)
-                        await process(sensor_identifier, payload, dbpool)
+                        await handle(sensor_identifier, payload, dbpool)
                     # Errors are logged and ignored as we can't give feedback
                     except pydantic.ValidationError:
                         logger.warning(f"Malformed message: {message.payload!r}")

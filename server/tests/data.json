@@ -3,13 +3,13 @@
         {
             "identifier": "575a7328-4e2e-4b88-afcc-e0b5ed3920cc",
             "name": "happy-un1c0rn",
-            "creation_timestamp": 0,
+            "creation_timestamp": -7200,
             "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$JaT0nnOuVYqx9h6jtLa21g$iRkdLMm6Pigqop5+DVzLwNRIxyE2uP3ZdYKJjHo4LhM"
         },
         {
             "identifier": "79690605-8241-44f5-9c05-f70d63c6b144",
             "name": "deerclops",
-            "creation_timestamp": 0,
+            "creation_timestamp": -3600,
             "password_hash": "$argon2id$v=19$m=65536,t=3,p=4$U+o955zz3ru39t5by9lbyw$pePvVo0ZNPLFIhcYurEzyxgCZP1QojKEucQSAcg0NdE"
         }
     ],
@@ -17,17 +17,17 @@
         {
             "identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
             "name": "default",
-            "creation_timestamp": 0
+            "creation_timestamp": -7200
         },
         {
             "identifier": "a9727106-63d2-4a2e-9bbc-3203742d0d55",
             "name": "airquality",
-            "creation_timestamp": 1375394400
+            "creation_timestamp": -3600
         },
         {
             "identifier": "2f9a5285-4ce1-4ddb-a268-0164c70f4826",
             "name": "example",
-            "creation_timestamp": 1375394400
+            "creation_timestamp": 0
         }
     ],
     "sensor": [
@@ -35,37 +35,31 @@
             "identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "name": "bulbasaur",
             "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
-            "creation_timestamp": 0
+            "creation_timestamp": -7200
         },
         {
             "identifier": "2d2a3794-2345-4500-8baa-493f88123087",
-            "name": "charmander",
-            "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
-            "creation_timestamp": 0
-        },
-        {
-            "identifier": "df1ad8d1-63ea-45b6-ae42-86febb182fe8",
             "name": "squirtle",
             "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
-            "creation_timestamp": 0
+            "creation_timestamp": -3600
         },
         {
             "identifier": "23825517-4631-4beb-acd4-5545c57a9928",
-            "name": "pikachu",
+            "name": "charmander",
             "network_identifier": "2f9a5285-4ce1-4ddb-a268-0164c70f4826",
-            "creation_timestamp": 0
+            "creation_timestamp": -3600
         }
     ],
     "permission": [
         {
             "user_identifier": "575a7328-4e2e-4b88-afcc-e0b5ed3920cc",
             "network_identifier": "1f705cc5-4242-458b-9201-4217455ea23c",
-            "creation_timestamp": 0
+            "creation_timestamp": -7200
         },
         {
             "user_identifier": "575a7328-4e2e-4b88-afcc-e0b5ed3920cc",
             "network_identifier": "a9727106-63d2-4a2e-9bbc-3203742d0d55",
-            "creation_timestamp": 0
+            "creation_timestamp": -3600
         },
         {
             "user_identifier": "79690605-8241-44f5-9c05-f70d63c6b144",
@@ -77,7 +71,7 @@
         {
             "access_token_hash": "88a2419d0d862e44e44cdf98abda5e99b7655d12c7b7d4e8a4f3731a1095eac0709e798a75b8d669158e03e5bd13ad91e100c525ec90fb619f4b575d7f219a1a",
             "user_identifier": "575a7328-4e2e-4b88-afcc-e0b5ed3920cc",
-            "creation_timestamp": 0
+            "creation_timestamp": -7200
         }
     ],
     "configuration": [
@@ -85,10 +79,10 @@
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "value": {},
             "revision": 0,
-            "creation_timestamp": 100,
-            "publication_timestamp": 100,
-            "acknowledgement_timestamp": 100,
-            "receipt_timestamp": 100,
+            "creation_timestamp": -7200,
+            "publication_timestamp": -7200,
+            "acknowledgement_timestamp": -7200,
+            "receipt_timestamp": -7200,
             "success": true
         },
         {
@@ -98,10 +92,10 @@
                 "strategy": "default"
             },
             "revision": 1,
-            "creation_timestamp": 200,
-            "publication_timestamp": 200,
-            "acknowledgement_timestamp": 200,
-            "receipt_timestamp": 200,
+            "creation_timestamp": -5400,
+            "publication_timestamp": -5400,
+            "acknowledgement_timestamp": -5400,
+            "receipt_timestamp": -5400,
             "success": false
         },
         {
@@ -112,31 +106,11 @@
                 "strategy": "default"
             },
             "revision": 2,
-            "creation_timestamp": 300,
-            "publication_timestamp": 300,
+            "creation_timestamp": -3600,
+            "publication_timestamp": -3600,
             "acknowledgement_timestamp": null,
             "receipt_timestamp": null,
             "success": null
-        },
-        {
-            "sensor_identifier": "2d2a3794-2345-4500-8baa-493f88123087",
-            "value": {},
-            "revision": 0,
-            "creation_timestamp": 0,
-            "publication_timestamp": 0,
-            "acknowledgement_timestamp": 0,
-            "receipt_timestamp": 0,
-            "success": true
-        },
-        {
-            "sensor_identifier": "df1ad8d1-63ea-45b6-ae42-86febb182fe8",
-            "configuration": {},
-            "revision": 0,
-            "creation_timestamp": 0,
-            "publication_timestamp": 0,
-            "acknowledgement_timestamp": 0,
-            "receipt_timestamp": 0,
-            "success": true
         }
     ],
     "measurement": [
@@ -145,56 +119,40 @@
             "attribute": "temperature",
             "value": 6800.0,
             "revision": null,
-            "creation_timestamp": 0,
-            "receipt_timestamp": 0
-        },
-        {
-            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "attribute": "humidity",
-            "value": 1.2,
-            "revision": null,
-            "creation_timestamp": 0,
-            "receipt_timestamp": 0
+            "creation_timestamp": -7200,
+            "receipt_timestamp": -7200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "attribute": "humidity",
             "value": -0.4,
             "revision": null,
-            "creation_timestamp": 0,
-            "receipt_timestamp": 0
+            "creation_timestamp": -7200,
+            "receipt_timestamp": -7200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "attribute": "temperature",
             "value": 8200.0,
             "revision": null,
-            "creation_timestamp": 100,
-            "receipt_timestamp": 100
+            "creation_timestamp": -5400,
+            "receipt_timestamp": -5400
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "attribute": "humidity",
-            "value": 0.1,
-            "revision": null,
-            "creation_timestamp": 100,
-            "receipt_timestamp": 100
+            "value": 0.0,
+            "revision": 1,
+            "creation_timestamp": -5400,
+            "receipt_timestamp": -5400
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "attribute": "temperature",
             "value": 6000.0,
             "revision": 1,
-            "creation_timestamp": 200,
-            "receipt_timestamp": 300
-        },
-        {
-            "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "attribute": "temperature",
-            "value": 7800.0,
-            "revision": 1,
-            "creation_timestamp": 300,
-            "receipt_timestamp": 300
+            "creation_timestamp": -3600,
+            "receipt_timestamp": -3600
         }
     ],
     "log": [
@@ -203,40 +161,40 @@
             "message": "Everything is fine.",
             "severity": "info",
             "revision": null,
-            "creation_timestamp": 0,
-            "receipt_timestamp": 200
+            "creation_timestamp": -7200,
+            "receipt_timestamp": -7200
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "message": "Everything is fine.",
             "severity": "info",
             "revision": 0,
-            "creation_timestamp": 100,
-            "receipt_timestamp": 200
+            "creation_timestamp": -5400,
+            "receipt_timestamp": -5400
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "message": "The CPU is toasty; Get the marshmallows ready!",
             "severity": "warning",
             "revision": 0,
-            "creation_timestamp": 200,
-            "receipt_timestamp": 200
+            "creation_timestamp": -3600,
+            "receipt_timestamp": -3600
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "message": "The CPU is toasty; Get the marshmallows ready!",
             "severity": "warning",
             "revision": 1,
-            "creation_timestamp": 300,
-            "receipt_timestamp": 300
+            "creation_timestamp": -1800,
+            "receipt_timestamp": -1800
         },
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "message": "The CPU is burning; Please call the fire department.",
             "severity": "error",
             "revision": 2,
-            "creation_timestamp": 400,
-            "receipt_timestamp": 400
+            "creation_timestamp": 0,
+            "receipt_timestamp": 0
         }
     ]
 }

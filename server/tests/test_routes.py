@@ -236,7 +236,7 @@ async def test_create_sensor(reset, client, network_identifier, access_token):
     response = await client.post(
         url=f"/networks/{network_identifier}/sensors",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "pikachu"},
+        json={"sensor_name": "charmander"},
     )
     assert returns(response, 201)
     assert keys(response, {"sensor_identifier"})
@@ -263,7 +263,7 @@ async def test_create_sensor_with_nonexistent_network(
     response = await client.post(
         url=f"/networks/{identifier}/sensors",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "pikachu"},
+        json={"sensor_name": "charmander"},
     )
     assert returns(response, errors.NotFoundError)
 
@@ -276,7 +276,7 @@ async def test_create_sensor_with_invalid_authorization(
     response = await client.post(
         url="/networks/2f9a5285-4ce1-4ddb-a268-0164c70f4826/sensors",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "pikachu"},
+        json={"sensor_name": "charmander"},
     )
     assert returns(response, errors.ForbiddenError)
 
@@ -295,7 +295,7 @@ async def test_read_sensors(reset, client, network_identifier, access_token):
     )
     assert returns(response, 200)
     assert isinstance(response.json(), list)
-    assert len(response.json()) == 3
+    assert len(response.json()) == 2
     assert keys(response, {"sensor_identifier", "sensor_name"})
 
 
@@ -348,7 +348,7 @@ async def test_update_sensor(
     response = await client.put(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "pikachu"},
+        json={"sensor_name": "charmander"},
     )
     assert returns(response, 200)
     assert keys(response, {})
@@ -362,7 +362,7 @@ async def test_update_sensor_with_nonexistent_sensor(
     response = await client.put(
         url=f"/networks/{network_identifier}/sensors/{identifier}",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "pikachu"},
+        json={"sensor_name": "charmander"},
     )
     assert returns(response, errors.NotFoundError)
 
@@ -375,7 +375,7 @@ async def test_update_sensor_with_existent_sensor_name(
     response = await client.put(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"sensor_name": "charmander"},
+        json={"sensor_name": "squirtle"},
     )
     assert returns(response, errors.ConflictError)
 
@@ -468,7 +468,7 @@ async def test_read_configurations(
 async def test_read_configurations_with_next_page(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
-    """Test reading configurations after a given timestamp."""
+    """Test reading configurations after a given revision."""
     response = await client.get(
         url=(
             f"/networks/{network_identifier}/sensors/{sensor_identifier}/configurations"
@@ -523,11 +523,11 @@ async def test_read_measurements_with_next_page(
     response = await client.get(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/measurements",
         headers={"Authorization": f"Bearer {access_token}"},
-        params={"direction": "next", "creation_timestamp": 100 + offset},
+        params={"direction": "next", "creation_timestamp": offset - 7200},
     )
     assert returns(response, 200)
     assert isinstance(response.json(), list)
-    assert len(response.json()) == 2
+    assert len(response.json()) == 3
     assert keys(response, {"value", "revision", "creation_timestamp"})
     assert order(response, lambda x: x["creation_timestamp"])
 
@@ -540,11 +540,11 @@ async def test_read_measurements_with_previous_page(
     response = await client.get(
         url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/measurements",
         headers={"Authorization": f"Bearer {access_token}"},
-        params={"direction": "previous", "creation_timestamp": 200 + offset},
+        params={"direction": "previous", "creation_timestamp": offset - 3600},
     )
     assert returns(response, 200)
     assert isinstance(response.json(), list)
-    assert len(response.json()) == 2
+    assert len(response.json()) == 3
     assert keys(response, {"value", "revision", "creation_timestamp"})
     assert order(response, lambda x: x["creation_timestamp"])
 
@@ -567,3 +567,4 @@ async def test_read_measurements_with_previous_page(
 
 # TODO check missing/wrong authentication
 # TODO differences between 401 and 404
+# TODO aggregate query parameter

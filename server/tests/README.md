@@ -1,2 +1,3 @@
 - The `data.json` file contains the example data that is loaded into the database during tests. It is also used to populate the database when you run the `./scripts/develop` script. Editing this file will break the tests but can be useful during development.
+- All timestamps in `data.json` are adjusted to the current time when they are written to the database. This ensures that the tests match the continuous aggregations and retention policies. A timestamp of `0` represents the current time rounded down to the nearest hour.
 - The tests expect available PostgreSQL+TimescaleDB and Mosquitto instances. This is consistent with the production environment. These services are automatically spun up locally inside the `./scripts/test` and `./scripts/develop` scripts.

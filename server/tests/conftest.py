@@ -39,8 +39,8 @@ async def connection():
 
 
 def _offset():
-    """Return the unix timestamp from 24 hours ago rounded down to the nearest hour."""
-    return utils.timestamp() // 3600 * 3600 - (24 * 60 * 60)
+    """Return the current unix timestamp rounded down to the nearest hour."""
+    return utils.timestamp() // 3600 * 3600
 
 
 @pytest.fixture(scope="session")
@@ -54,7 +54,7 @@ async def _populate(connection, offset):
     with open("tests/data.json") as file:
         for table_name, records in json.load(file).items():
             identifiers = ", ".join([f"${i+1}" for i in range(len(records[0]))])
-            # Adapt the timestamps to now minus 24 hours
+            # Adapt the timestamps with the offset
             for record in records:
                 for key, value in record.items():
                     if key.endswith("_timestamp"):
