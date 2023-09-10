@@ -99,17 +99,15 @@ async def _handle_acknowledgments(sensor_identifier, payload, dbpool):
         arguments=[
             {
                 "sensor_identifier": sensor_identifier,
-                "revision": element.revision,
-                "acknowledgment_timestamp": element.timestamp,
                 "success": element.success,
+                "acknowledgment_timestamp": element.timestamp,
+                "revision": element.revision,
             }
             for element in payload
         ],
     )
-    try:
-        await dbpool.executemany(query, arguments)
-    except asyncpg.ForeignKeyViolationError:
-        logger.warning(f"Failed to handle; Sensor not found: {sensor_identifier}")
+    # Ignores when the sensor or revision does not exist, because it's an UPDATE query
+    response = await dbpool.executemany(query, arguments)
 
 
 async def _handle_measurements(sensor_identifier, payload, dbpool):
@@ -120,8 +118,8 @@ async def _handle_measurements(sensor_identifier, payload, dbpool):
                 "sensor_identifier": sensor_identifier,
                 "attribute": attribute,
                 "value": value,
-                "revision": element.revision,
                 "creation_timestamp": element.timestamp,
+                "revision": element.revision,
             }
             for element in payload
             for attribute, value in element.value.items()
@@ -140,9 +138,9 @@ async def _handle_logs(sensor_identifier, payload, dbpool):
             {
                 "sensor_identifier": sensor_identifier,
                 "message": element.message,
-                "revision": element.revision,
-                "creation_timestamp": element.timestamp,
                 "severity": element.severity,
+                "creation_timestamp": element.timestamp,
+                "revision": element.revision,
             }
             for element in payload
         ],
