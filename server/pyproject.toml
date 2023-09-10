@@ -25,8 +25,11 @@ httpx = "^0.24.0"
 ruff = "^0.0.275"
 pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
-anyio = "^3.6.2"
 asgi-lifespan = "^2.1.0"
+pytest-asyncio = "^0.21.1"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.black]
 preview = true

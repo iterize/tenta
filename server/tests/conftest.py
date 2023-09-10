@@ -1,3 +1,4 @@
+import asyncio
 import contextlib
 import json
 import os
@@ -9,9 +10,46 @@ import app.database as database
 import app.utils as utils
 
 
+########################################################################################
+# Configure pytest for asyncio
+########################################################################################
+
+
 @pytest.fixture(scope="session")
-def anyio_backend():
-    return "asyncio"
+def event_loop():
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
+
+
+########################################################################################
+# Test data
+########################################################################################
+
+
+@pytest.fixture(scope="session")
+def identifier():
+    return "00000000-0000-4000-8000-000000000000"
+
+
+@pytest.fixture(scope="session")
+def user_identifier():
+    return "575a7328-4e2e-4b88-afcc-e0b5ed3920cc"
+
+
+@pytest.fixture(scope="session")
+def network_identifier():
+    return "1f705cc5-4242-458b-9201-4217455ea23c"
+
+
+@pytest.fixture(scope="session")
+def sensor_identifier():
+    return "81bf7042-e20f-4a97-ac44-c15853e3618f"
+
+
+########################################################################################
+# Database setup
+########################################################################################
 
 
 @contextlib.asynccontextmanager

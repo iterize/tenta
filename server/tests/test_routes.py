@@ -44,26 +44,6 @@ def returns(response, check):
 
 
 @pytest.fixture(scope="session")
-def identifier():
-    return "00000000-0000-4000-8000-000000000000"
-
-
-@pytest.fixture(scope="session")
-def user_identifier():
-    return "575a7328-4e2e-4b88-afcc-e0b5ed3920cc"
-
-
-@pytest.fixture(scope="session")
-def network_identifier():
-    return "1f705cc5-4242-458b-9201-4217455ea23c"
-
-
-@pytest.fixture(scope="session")
-def sensor_identifier():
-    return "81bf7042-e20f-4a97-ac44-c15853e3618f"
-
-
-@pytest.fixture(scope="session")
 def token():
     return "0000000000000000000000000000000000000000000000000000000000000000"
 
@@ -78,7 +58,6 @@ def access_token():
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_read_status(client):
     """Test reading the server status."""
     response = await client.get("/status")
@@ -92,7 +71,6 @@ async def test_read_status(client):
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_create_user(reset, client):
     """Test creating a user."""
     response = await client.post(
@@ -103,7 +81,6 @@ async def test_create_user(reset, client):
     assert keys(body, {"user_identifier", "access_token"})
 
 
-@pytest.mark.anyio
 async def test_create_user_with_existent_user_name(reset, client):
     """Test creating a user that already exists."""
     response = await client.post(
@@ -117,7 +94,6 @@ async def test_create_user_with_existent_user_name(reset, client):
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_create_session(reset, client, user_identifier):
     """Test authenticating an existing user with a valid password."""
     response = await client.post(
@@ -130,7 +106,6 @@ async def test_create_session(reset, client, user_identifier):
     assert body["user_identifier"] == user_identifier
 
 
-@pytest.mark.anyio
 async def test_create_session_with_invalid_password(reset, client):
     """Test authenticating an existing user with an invalid password."""
     response = await client.post(
@@ -140,7 +115,6 @@ async def test_create_session_with_invalid_password(reset, client):
     assert returns(response, errors.UnauthorizedError)
 
 
-@pytest.mark.anyio
 async def test_create_session_with_nonexistent_user(reset, client):
     """Test authenticating a user that doesn't exist."""
     response = await client.post(
@@ -155,7 +129,6 @@ async def test_create_session_with_nonexistent_user(reset, client):
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_create_network(reset, client, access_token):
     """Test creating a network."""
     response = await client.post(
@@ -168,7 +141,6 @@ async def test_create_network(reset, client, access_token):
     assert keys(body, {"network_identifier"})
 
 
-@pytest.mark.anyio
 async def test_create_network_with_existent_network_name(reset, client, access_token):
     """Test creating a network with a name that's already taken."""
     response = await client.post(
@@ -179,7 +151,6 @@ async def test_create_network_with_existent_network_name(reset, client, access_t
     assert returns(response, errors.ConflictError)
 
 
-@pytest.mark.anyio
 async def test_create_network_with_invalid_request(reset, client, access_token):
     """Test creating a network with invalid request values."""
     response = await client.post(
@@ -190,7 +161,6 @@ async def test_create_network_with_invalid_request(reset, client, access_token):
     assert returns(response, errors.BadRequestError)
 
 
-@pytest.mark.anyio
 async def test_create_network_with_invalid_authentication(reset, client, token):
     """Test creating a network with an invalid access token."""
     response = await client.post(
@@ -201,18 +171,16 @@ async def test_create_network_with_invalid_authentication(reset, client, token):
     assert returns(response, errors.UnauthorizedError)
 
 
-@pytest.mark.anyio
 async def test_create_network_with_invalid_header(reset, client):
     """Test creating a network with a malformed header."""
     response = await client.post(
         url="/networks",
-        headers={"Authorization": f"Bearer"},
+        headers={"Authorization": "Bearer"},
         json={"network_name": "something"},
     )
     assert returns(response, errors.UnauthorizedError)
 
 
-@pytest.mark.anyio
 async def test_create_network_with_invalid_scheme(reset, client, access_token):
     """Test creating a network with a wrong authentication scheme."""
     response = await client.post(
@@ -228,7 +196,6 @@ async def test_create_network_with_invalid_scheme(reset, client, access_token):
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_read_networks(reset, client, access_token):
     """Test reading the networks the user has permissions for."""
     response = await client.get(
@@ -241,7 +208,6 @@ async def test_read_networks(reset, client, access_token):
     assert keys(body, {"network_identifier", "network_name"})
 
 
-@pytest.mark.anyio
 async def test_read_networks_with_invalid_authentication(reset, client, token):
     """Test reading the networks with an invalid access token."""
     response = await client.get(
@@ -255,7 +221,6 @@ async def test_read_networks_with_invalid_authentication(reset, client, token):
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_create_sensor(reset, client, network_identifier, access_token):
     """Test creating a sensor."""
     response = await client.post(
@@ -268,7 +233,6 @@ async def test_create_sensor(reset, client, network_identifier, access_token):
     assert keys(body, {"sensor_identifier"})
 
 
-@pytest.mark.anyio
 async def test_create_sensor_with_existent_sensor_name(
     reset, client, network_identifier, access_token
 ):
@@ -281,7 +245,6 @@ async def test_create_sensor_with_existent_sensor_name(
     assert returns(response, errors.ConflictError)
 
 
-@pytest.mark.anyio
 async def test_create_sensor_with_nonexistent_network(
     reset, client, identifier, access_token
 ):
@@ -294,7 +257,6 @@ async def test_create_sensor_with_nonexistent_network(
     assert returns(response, errors.NotFoundError)
 
 
-@pytest.mark.anyio
 async def test_create_sensor_with_invalid_authorization(
     reset, client, network_identifier, access_token
 ):
@@ -312,7 +274,6 @@ async def test_create_sensor_with_invalid_authorization(
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_read_sensors(reset, client, network_identifier, access_token):
     """Test reading the sensors that are part of a network."""
     response = await client.get(
@@ -326,7 +287,6 @@ async def test_read_sensors(reset, client, network_identifier, access_token):
     assert keys(body, {"sensor_identifier", "sensor_name"})
 
 
-@pytest.mark.anyio
 async def test_read_sensors_with_nonexistent_network(
     reset, client, identifier, access_token
 ):
@@ -338,7 +298,6 @@ async def test_read_sensors_with_nonexistent_network(
     assert returns(response, errors.NotFoundError)
 
 
-@pytest.mark.anyio
 async def test_read_sensors_with_invalid_authentication(
     reset, client, network_identifier, token
 ):
@@ -350,7 +309,6 @@ async def test_read_sensors_with_invalid_authentication(
     assert returns(response, errors.UnauthorizedError)
 
 
-@pytest.mark.anyio
 async def test_read_sensors_with_invalid_authorization(
     reset, client, network_identifier, access_token
 ):
@@ -367,7 +325,6 @@ async def test_read_sensors_with_invalid_authorization(
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_update_sensor(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -382,7 +339,6 @@ async def test_update_sensor(
     assert keys(body, {})
 
 
-@pytest.mark.anyio
 async def test_update_sensor_with_nonexistent_sensor(
     reset, client, network_identifier, identifier, access_token
 ):
@@ -395,7 +351,6 @@ async def test_update_sensor_with_nonexistent_sensor(
     assert returns(response, errors.NotFoundError)
 
 
-@pytest.mark.anyio
 async def test_update_sensor_with_existent_sensor_name(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -413,7 +368,6 @@ async def test_update_sensor_with_existent_sensor_name(
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_create_configuration(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -430,7 +384,6 @@ async def test_create_configuration(
     assert keys(body, {"revision"})
 
 
-@pytest.mark.anyio
 async def test_create_configuration_with_no_values(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -447,7 +400,6 @@ async def test_create_configuration_with_no_values(
     assert keys(body, {"revision"})
 
 
-@pytest.mark.anyio
 async def test_create_configuration_with_nonexistent_sensor(
     reset, client, network_identifier, identifier, access_token
 ):
@@ -465,7 +417,6 @@ async def test_create_configuration_with_nonexistent_sensor(
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_read_configurations(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -495,7 +446,6 @@ async def test_read_configurations(
     assert order(body, lambda x: x["revision"])
 
 
-@pytest.mark.anyio
 async def test_read_configurations_with_next_page(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -531,7 +481,6 @@ async def test_read_configurations_with_next_page(
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_read_measurements(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -548,7 +497,6 @@ async def test_read_measurements(
     assert order(body, lambda x: x["creation_timestamp"])
 
 
-@pytest.mark.anyio
 async def test_read_measurements_with_next_page(
     reset, client, network_identifier, sensor_identifier, access_token, offset
 ):
@@ -566,7 +514,6 @@ async def test_read_measurements_with_next_page(
     assert order(body, lambda x: x["creation_timestamp"])
 
 
-@pytest.mark.anyio
 async def test_read_measurements_with_previous_page(
     reset, client, network_identifier, sensor_identifier, access_token, offset
 ):
@@ -584,7 +531,6 @@ async def test_read_measurements_with_previous_page(
     assert order(body, lambda x: x["creation_timestamp"])
 
 
-@pytest.mark.anyio
 async def test_read_measurements_with_aggregation(
     reset, client, network_identifier, sensor_identifier, access_token, offset
 ):
@@ -609,7 +555,6 @@ async def test_read_measurements_with_aggregation(
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_read_logs(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
@@ -626,7 +571,6 @@ async def test_read_logs(
     assert order(body, lambda x: x["creation_timestamp"])
 
 
-@pytest.mark.anyio
 async def test_read_logs_with_next_page(
     reset, client, network_identifier, sensor_identifier, access_token, offset
 ):
@@ -644,7 +588,6 @@ async def test_read_logs_with_next_page(
     assert order(body, lambda x: x["creation_timestamp"])
 
 
-@pytest.mark.anyio
 async def test_read_logs_with_previous_page(
     reset, client, network_identifier, sensor_identifier, access_token, offset
 ):
@@ -667,7 +610,6 @@ async def test_read_logs_with_previous_page(
 ########################################################################################
 
 
-@pytest.mark.anyio
 async def test_read_log_aggregates(
     reset, client, network_identifier, sensor_identifier, access_token
 ):
