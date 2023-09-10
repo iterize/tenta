@@ -1,5 +1,6 @@
-import pydantic
 import typing
+
+import pydantic
 
 import app.validation.constants as constants
 

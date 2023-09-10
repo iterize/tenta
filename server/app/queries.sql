@@ -3,7 +3,7 @@ SELECT
     attribute,
     array_agg(
         jsonb_build_object(
-            'bucket_timestamp', bucket_timestamp,
+            'bucket_timestamp', extract(EPOCH FROM bucket_timestamp),
             'average', average
         ) ORDER BY bucket_timestamp ASC
     ) AS values
