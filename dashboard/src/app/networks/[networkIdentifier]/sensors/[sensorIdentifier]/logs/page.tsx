@@ -92,7 +92,7 @@ export default function Page(props: {
         {logsData.map((log) => (
           <div
             key={JSON.stringify(log)}
-            className="flex flex-col justify-start w-full overflow-hidden text-sm bg-white border rounded-md shadow gap-x-6 border-slate-300"
+            className="flex flex-col justify-start flex-shrink-0 w-full overflow-hidden text-sm bg-white border rounded-md shadow gap-x-6 border-slate-300"
           >
             <div
               key={JSON.stringify(log)}
@@ -119,8 +119,22 @@ export default function Page(props: {
               <div className="flex-grow" />
               <div>{new Date(log.creationTimestamp * 1000).toISOString()}</div>
             </div>
-            <div className="w-full font-mono text-xs whitespace-pre divide-y bg-slate-100 text-slate-600 divide-slate-200">
-              {log.message}
+            <div className="flex flex-row items-baseline w-full px-3 py-2 font-mono text-xs break-words justify-baseline bg-slate-100 text-slate-600 whitespace-break-spaces gap-x-2">
+              <div
+                className={
+                  "px-1.5 py-0.5 mr-1 rounded-sm uppercase font-semibold " +
+                  (log.severity === "info"
+                    ? "bg-blue-200 text-blue-900 "
+                    : "") +
+                  (log.severity === "warning"
+                    ? "bg-yellow-200 text-yellow-900 "
+                    : "") +
+                  (log.severity === "error" ? "bg-red-200 text-red-900 " : "")
+                }
+              >
+                {log.severity}
+              </div>
+              <div>{log.message}</div>
             </div>
           </div>
         ))}
