@@ -14,17 +14,17 @@ async def client():
             yield client
 
 
-def keys(response, keys):
+def keys(body, keys):
     """Check that a httpx response body has a specific set of keys."""
-    if isinstance(response.json(), dict):
-        return set(response.json().keys()) == set(keys)
+    if isinstance(body, dict):
+        return set(body.keys()) == set(keys)
     # If the response is an array, check that each element satisfies the condition
-    return all([set(element.keys()) == set(keys) for element in response.json()])
+    return all([set(element.keys()) == set(keys) for element in body])
 
 
-def order(response, key):
+def order(body, key):
     """Check that a httpx response body array is sorted by the given key."""
-    return response.json() == sorted(response.json(), key=key)
+    return body == sorted(body, key=key)
 
 
 def returns(response, check):
@@ -33,7 +33,7 @@ def returns(response, check):
         return response.status_code == check
     return (
         response.status_code == check.STATUS_CODE
-        and keys(response, {"details"})
+        and keys(response.json(), {"details"})
         and response.json()["details"] == check.DETAILS
     )
 
@@ -83,9 +83,8 @@ async def test_read_status(client):
     """Test reading the server status."""
     response = await client.get("/status")
     assert returns(response, 200)
-    assert keys(
-        response, {"environment", "commit_sha", "branch_name", "start_timestamp"}
-    )
+    body = response.json()
+    assert keys(body, {"environment", "commit_sha", "branch_name", "start_timestamp"})
 
 
 ########################################################################################
@@ -100,7 +99,8 @@ async def test_create_user(reset, client):
         url="/users", json={"user_name": "example", "password": "12345678"}
     )
     assert returns(response, 201)
-    assert keys(response, {"user_identifier", "access_token"})
+    body = response.json()
+    assert keys(body, {"user_identifier", "access_token"})
 
 
 @pytest.mark.anyio
@@ -125,8 +125,9 @@ async def test_create_session(reset, client, user_identifier):
         json={"user_name": "happy-un1c0rn", "password": "12345678"},
     )
     assert returns(response, 201)
-    assert keys(response, {"user_identifier", "access_token"})
-    assert response.json()["user_identifier"] == user_identifier
+    body = response.json()
+    assert keys(body, {"user_identifier", "access_token"})
+    assert body["user_identifier"] == user_identifier
 
 
 @pytest.mark.anyio
@@ -163,7 +164,8 @@ async def test_create_network(reset, client, access_token):
         json={"network_name": "something"},
     )
     assert returns(response, 201)
-    assert keys(response, {"network_identifier"})
+    body = response.json()
+    assert keys(body, {"network_identifier"})
 
 
 @pytest.mark.anyio
@@ -178,6 +180,17 @@ async def test_create_network_with_existent_network_name(reset, client, access_t
 
 
 @pytest.mark.anyio
+async def test_create_network_with_invalid_request(reset, client, access_token):
+    """Test creating a network with invalid request values."""
+    response = await client.post(
+        url="/networks",
+        headers={"Authorization": f"Bearer {access_token}"},
+        json={},
+    )
+    assert returns(response, errors.BadRequestError)
+
+
+@pytest.mark.anyio
 async def test_create_network_with_invalid_authentication(reset, client, token):
     """Test creating a network with an invalid access token."""
     response = await client.post(
@@ -189,14 +202,25 @@ async def test_create_network_with_invalid_authentication(reset, client, token):
 
 
 @pytest.mark.anyio
-async def test_create_network_with_invalid_request(reset, client, access_token):
-    """Test creating a network with invalid request values."""
+async def test_create_network_with_invalid_header(reset, client):
+    """Test creating a network with a malformed header."""
     response = await client.post(
         url="/networks",
-        headers={"Authorization": f"Bearer {access_token}"},
-        json={},
+        headers={"Authorization": f"Bearer"},
+        json={"network_name": "something"},
     )
-    assert returns(response, errors.BadRequestError)
+    assert returns(response, errors.UnauthorizedError)
+
+
+@pytest.mark.anyio
+async def test_create_network_with_invalid_scheme(reset, client, access_token):
+    """Test creating a network with a wrong authentication scheme."""
+    response = await client.post(
+        url="/networks",
+        headers={"Authorization": f"Basic {access_token}"},
+        json={"network_name": "something"},
+    )
+    assert returns(response, errors.UnauthorizedError)
 
 
 ########################################################################################
@@ -211,9 +235,10 @@ async def test_read_networks(reset, client, access_token):
         url="/networks", headers={"Authorization": f"Bearer {access_token}"}
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 2
-    assert keys(response, {"network_identifier", "network_name"})
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 2
+    assert keys(body, {"network_identifier", "network_name"})
 
 
 @pytest.mark.anyio
@@ -239,7 +264,8 @@ async def test_create_sensor(reset, client, network_identifier, access_token):
         json={"sensor_name": "charmander"},
     )
     assert returns(response, 201)
-    assert keys(response, {"sensor_identifier"})
+    body = response.json()
+    assert keys(body, {"sensor_identifier"})
 
 
 @pytest.mark.anyio
@@ -294,9 +320,10 @@ async def test_read_sensors(reset, client, network_identifier, access_token):
         headers={"Authorization": f"Bearer {access_token}"},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 2
-    assert keys(response, {"sensor_identifier", "sensor_name"})
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 2
+    assert keys(body, {"sensor_identifier", "sensor_name"})
 
 
 @pytest.mark.anyio
@@ -351,7 +378,8 @@ async def test_update_sensor(
         json={"sensor_name": "charmander"},
     )
     assert returns(response, 200)
-    assert keys(response, {})
+    body = response.json()
+    assert keys(body, {})
 
 
 @pytest.mark.anyio
@@ -398,7 +426,8 @@ async def test_create_configuration(
         json={"measurement_interval": 8.5, "cache": True, "strategy": "default"},
     )
     assert returns(response, 201)
-    assert keys(response, {"revision"})
+    body = response.json()
+    assert keys(body, {"revision"})
 
 
 @pytest.mark.anyio
@@ -414,7 +443,8 @@ async def test_create_configuration_with_no_values(
         json={},
     )
     assert returns(response, 201)
-    assert keys(response, {"revision"})
+    body = response.json()
+    assert keys(body, {"revision"})
 
 
 @pytest.mark.anyio
@@ -447,10 +477,11 @@ async def test_read_configurations(
         headers={"Authorization": f"Bearer {access_token}"},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 3
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 3
     assert keys(
-        response,
+        body,
         {
             "value",
             "revision",
@@ -461,7 +492,7 @@ async def test_read_configurations(
             "success",
         },
     )
-    assert order(response, lambda x: x["revision"])
+    assert order(body, lambda x: x["revision"])
 
 
 @pytest.mark.anyio
@@ -477,10 +508,11 @@ async def test_read_configurations_with_next_page(
         params={"direction": "next", "revision": 0},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 2
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 2
     assert keys(
-        response,
+        body,
         {
             "value",
             "revision",
@@ -491,7 +523,7 @@ async def test_read_configurations_with_next_page(
             "success",
         },
     )
-    assert order(response, lambda x: x["revision"])
+    assert order(body, lambda x: x["revision"])
 
 
 ########################################################################################
@@ -509,10 +541,11 @@ async def test_read_measurements(
         headers={"Authorization": f"Bearer {access_token}"},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 4
-    assert keys(response, {"value", "revision", "creation_timestamp"})
-    assert order(response, lambda x: x["creation_timestamp"])
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 4
+    assert keys(body, {"value", "revision", "creation_timestamp"})
+    assert order(body, lambda x: x["creation_timestamp"])
 
 
 @pytest.mark.anyio
@@ -526,10 +559,11 @@ async def test_read_measurements_with_next_page(
         params={"direction": "next", "creation_timestamp": offset - 7200},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 3
-    assert keys(response, {"value", "revision", "creation_timestamp"})
-    assert order(response, lambda x: x["creation_timestamp"])
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 3
+    assert keys(body, {"value", "revision", "creation_timestamp"})
+    assert order(body, lambda x: x["creation_timestamp"])
 
 
 @pytest.mark.anyio
@@ -543,10 +577,31 @@ async def test_read_measurements_with_previous_page(
         params={"direction": "previous", "creation_timestamp": offset - 3600},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 3
-    assert keys(response, {"value", "revision", "creation_timestamp"})
-    assert order(response, lambda x: x["creation_timestamp"])
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 3
+    assert keys(body, {"value", "revision", "creation_timestamp"})
+    assert order(body, lambda x: x["creation_timestamp"])
+
+
+@pytest.mark.anyio
+async def test_read_measurements_with_aggregation(
+    reset, client, network_identifier, sensor_identifier, access_token, offset
+):
+    """Test reading measurements with aggregate query parameter."""
+    response = await client.get(
+        url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/measurements",
+        headers={"Authorization": f"Bearer {access_token}"},
+        params={"aggregate": True},
+    )
+    assert returns(response, 200)
+    body = response.json()
+    assert keys(body, {"temperature", "humidity"})
+    assert body["temperature"] == [
+        {"bucket_timestamp": offset - 7200, "average": 8000.0},
+        {"bucket_timestamp": offset - 3600, "average": 6000.0},
+    ]
+    assert body["humidity"] == [{"bucket_timestamp": offset - 7200, "average": -0.2}]
 
 
 ########################################################################################
@@ -564,10 +619,11 @@ async def test_read_logs(
         headers={"Authorization": f"Bearer {access_token}"},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 5
-    assert keys(response, {"message", "severity", "revision", "creation_timestamp"})
-    assert order(response, lambda x: x["creation_timestamp"])
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 5
+    assert keys(body, {"message", "severity", "revision", "creation_timestamp"})
+    assert order(body, lambda x: x["creation_timestamp"])
 
 
 @pytest.mark.anyio
@@ -581,10 +637,11 @@ async def test_read_logs_with_next_page(
         params={"direction": "next", "creation_timestamp": offset - 3600},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 2
-    assert keys(response, {"message", "severity", "revision", "creation_timestamp"})
-    assert order(response, lambda x: x["creation_timestamp"])
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 2
+    assert keys(body, {"message", "severity", "revision", "creation_timestamp"})
+    assert order(body, lambda x: x["creation_timestamp"])
 
 
 @pytest.mark.anyio
@@ -598,10 +655,11 @@ async def test_read_logs_with_previous_page(
         params={"direction": "previous", "creation_timestamp": offset - 1800},
     )
     assert returns(response, 200)
-    assert isinstance(response.json(), list)
-    assert len(response.json()) == 3
-    assert keys(response, {"message", "severity", "revision", "creation_timestamp"})
-    assert order(response, lambda x: x["creation_timestamp"])
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 3
+    assert keys(body, {"message", "severity", "revision", "creation_timestamp"})
+    assert order(body, lambda x: x["creation_timestamp"])
 
 
 ########################################################################################
@@ -609,9 +667,29 @@ async def test_read_logs_with_previous_page(
 ########################################################################################
 
 
-# TODO check log aggregation
-
-
-# TODO check missing/malformed authentication header
-# TODO differences between 401 and 404
-# TODO aggregate query parameter
+@pytest.mark.anyio
+async def test_read_log_aggregates(
+    reset, client, network_identifier, sensor_identifier, access_token
+):
+    """Test reading the log aggregation."""
+    response = await client.get(
+        url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates",
+        headers={"Authorization": f"Bearer {access_token}"},
+    )
+    assert returns(response, 200)
+    body = response.json()
+    assert isinstance(body, list)
+    assert len(body) == 2
+    assert keys(
+        body,
+        {
+            "message",
+            "severity",
+            "min_revision",
+            "max_revision",
+            "min_creation_timestamp",
+            "max_creation_timestamp",
+            "count",
+        },
+    )
+    assert order(body, lambda x: x["max_creation_timestamp"])

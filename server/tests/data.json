@@ -117,7 +117,7 @@
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "attribute": "temperature",
-            "value": 6800.0,
+            "value": 7000.0,
             "revision": null,
             "creation_timestamp": -7200,
             "receipt_timestamp": -7200
@@ -133,7 +133,7 @@
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
             "attribute": "temperature",
-            "value": 8200.0,
+            "value": 9000.0,
             "revision": null,
             "creation_timestamp": -5400,
             "receipt_timestamp": -5400
