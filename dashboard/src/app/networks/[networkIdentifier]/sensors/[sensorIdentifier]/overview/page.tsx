@@ -6,7 +6,9 @@ import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { maxBy, min, minBy, range } from "lodash";
+import { maxBy, minBy, range } from "lodash";
+import { useLogsAggregation } from "@/requests/logs-aggregation";
+import { formatDistanceToNow } from "date-fns";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -18,8 +20,18 @@ export default function Page(props: {
     props.params.networkIdentifier,
     props.params.sensorIdentifier
   );
+  const { logsAggregationData } = useLogsAggregation(
+    userData?.accessToken,
+    logoutUser,
+    props.params.networkIdentifier,
+    props.params.sensorIdentifier
+  );
 
-  if (userDataIsloading || measurementsAggregationData === undefined) {
+  if (
+    userDataIsloading ||
+    measurementsAggregationData === undefined ||
+    logsAggregationData === undefined
+  ) {
     return <AuthLoadingScreen />;
   } else if (userData === undefined) {
     redirect("/login");
@@ -29,7 +41,7 @@ export default function Page(props: {
 
   return (
     <div className="flex flex-col w-full gap-y-4">
-      <div className="flex flex-row items-baseline w-full text-base font-medium">
+      <div className="flex flex-row items-baseline w-full text-base font-medium text-slate-800">
         <h1>
           <span className="px-2 py-1 rounded text-emerald-900 bg-emerald-200">
             Measurements
@@ -46,7 +58,22 @@ export default function Page(props: {
           data={measurementsAggregationData[key]}
         />
       ))}
-      <h1 className="mt-8 text-base font-semibold">Aggregated logs</h1>
+      {Object.keys(measurementsAggregationData).length === 0 && (
+        <div className="w-full text-sm text-center">no measurements</div>
+      )}
+      <h1 className="mt-8 text-base font-medium text-slate-800">
+        <span className="px-2 py-1 text-yellow-900 bg-yellow-200 rounded">
+          Logs
+        </span>{" "}
+        with severity <span className="font-semibold text-black">warning</span>{" "}
+        or higher
+      </h1>
+      {logsAggregationData.map((log) => (
+        <LogAggregationPanel key={JSON.stringify(log)} log={log} />
+      ))}
+      {Object.keys(logsAggregationData).length === 0 && (
+        <div className="w-full text-sm text-center">no logs</div>
+      )}
     </div>
   );
 }
@@ -194,6 +221,73 @@ function MeasurementAggregationPlot(props: {
       </div>
       <div className="flex-grow p-2 bg-white border rounded-md shadow border-slate-300">
         <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />
+      </div>
+    </div>
+  );
+}
+
+function LogAggregationPanel(props: {
+  log: {
+    minCreationTimestamp: number;
+    maxCreationTimestamp: number;
+    minRevision: number | null;
+    maxRevision: number | null;
+    severity: "error" | "info" | "warning";
+    message: string;
+    count: number;
+  };
+}) {
+  const log = props.log;
+
+  return (
+    <div className="flex flex-col justify-start flex-shrink-0 w-[calc(100%-1rem)] ml-4 overflow-hidden text-sm bg-white border rounded-md shadow gap-x-6 border-slate-300">
+      <div className="flex flex-row items-baseline justify-start w-full p-3 border-b border-slate-200">
+        <div
+          className={
+            "flex items-center flex-shrink-0 h-6 px-2 text-sm font-semibold text-blue-900 bg-blue-200 rounded mr-2 " +
+            (log.minRevision === null
+              ? "bg-slate-200 text-slate-700"
+              : "bg-blue-200 text-blue-900")
+          }
+        >
+          {log.minRevision === null || log.maxRevision === null
+            ? "No Config Revision"
+            : log.minRevision === log.maxRevision
+            ? `Config Revision ${log.minRevision.toString()} only`
+            : `Config Revisions ${log.minRevision.toString()} - ${log.maxRevision.toString()}`}
+        </div>
+        <div className="font-normal">
+          First appeared{" "}
+          {formatDistanceToNow(new Date(log.minCreationTimestamp * 1000), {
+            addSuffix: true,
+          })}
+          {" | "}
+          Last appeared{" "}
+          {formatDistanceToNow(new Date(log.maxCreationTimestamp * 1000), {
+            addSuffix: true,
+          })}
+        </div>
+        <div className="flex-grow" />
+        <div>
+          {new Date(log.minCreationTimestamp * 1000).toISOString()}
+          {" | "}
+          {new Date(log.maxCreationTimestamp * 1000).toISOString()}
+        </div>
+      </div>
+      <div className="flex flex-row items-baseline w-full px-3 py-2 font-mono text-xs break-words justify-baseline bg-slate-100 text-slate-600 whitespace-break-spaces gap-x-2">
+        <div
+          className={
+            "px-1.5 py-0.5 mr-1 rounded-sm uppercase font-semibold " +
+            (log.severity === "info" ? "bg-blue-200 text-blue-900 " : "") +
+            (log.severity === "warning"
+              ? "bg-yellow-200 text-yellow-900 "
+              : "") +
+            (log.severity === "error" ? "bg-red-200 text-red-900 " : "")
+          }
+        >
+          {log.severity}
+        </div>
+        <div>{log.message}</div>
       </div>
     </div>
   );
