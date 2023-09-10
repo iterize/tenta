@@ -11,11 +11,11 @@ const schema = z.record(
     z
       .object({
         average: z.number(),
-        bucket_timestamp: z.string(),
+        bucket_timestamp: z.number(),
       })
       .transform((obj) => ({
         average: obj.average,
-        bucketTimestamp: new Date(obj.bucket_timestamp).getTime() / 1000,
+        bucketTimestamp: obj.bucket_timestamp,
       }))
   )
 );
