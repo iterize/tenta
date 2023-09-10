@@ -56,8 +56,14 @@ export default function Page(props: {
         duration: 1500,
       });
     }
-  }, [measurementsDataFetchingState, dataLoadingToastId]);
+  }, [measurementsDataFetchingState, dataLoadingToastId, measurementsData]);
 
+  // when new data is fetched, go to the last page
+  useEffect(() => {
+    setCurrentPageNumber(numberOfMeasurementsPages);
+  }, [numberOfMeasurementsPages]);
+
+  // when page is left, dismiss all toasts
   useEffect(() => {
     return () => toast.dismiss();
   }, []);
@@ -81,11 +87,7 @@ export default function Page(props: {
       <div className="flex flex-row items-center justify-start w-full gap-x-6">
         <Pagination
           currentPageNumber={currentPageNumber}
-          numberOfPages={
-            measurementsDataFetchingState === "fetching"
-              ? 0
-              : numberOfMeasurementsPages
-          }
+          numberOfPages={numberOfMeasurementsPages}
           setCurrentPageNumber={setCurrentPageNumber}
           noDataPlaceholder={
             measurementsDataFetchingState === "fetching" ? "..." : "no data"
@@ -95,56 +97,58 @@ export default function Page(props: {
       </div>
       <div className="flex flex-col items-center justify-center w-full mt-2 gap-y-4">
         {measurementsData === undefined && "loading"}
-        {measurementsData.map((measurement) => (
-          <div
-            key={JSON.stringify(measurement)}
-            className="flex flex-col justify-start w-full overflow-hidden text-sm bg-white border rounded-md shadow gap-x-6 border-slate-300"
-          >
+        {measurementsData
+          .slice((currentPageNumber - 1) * 64, currentPageNumber * 64)
+          .map((measurement) => (
             <div
               key={JSON.stringify(measurement)}
-              className="flex flex-row items-baseline justify-start w-full p-3 border-b border-slate-200"
+              className="flex flex-col justify-start flex-shrink-0 w-full overflow-hidden text-sm bg-white border rounded-md shadow gap-x-6 border-slate-300"
             >
               <div
-                className={
-                  "flex items-center flex-shrink-0 h-6 px-2 text-sm font-semibold text-blue-900 bg-blue-200 rounded mr-2 " +
-                  (measurement.revision === null
-                    ? "bg-slate-200 text-slate-700"
-                    : "bg-blue-200 text-blue-900")
-                }
+                key={JSON.stringify(measurement)}
+                className="flex flex-row items-baseline justify-start w-full p-3 border-b border-slate-200"
               >
-                {measurement.revision === null
-                  ? "No Config Revision"
-                  : `Config Revision ${measurement.revision.toString()}`}
-              </div>
-              <div className="font-medium">
-                Created{" "}
-                {formatDistanceToNow(
-                  new Date(measurement.creationTimestamp * 1000),
-                  {
-                    addSuffix: true,
-                  }
-                )}
-              </div>
-              <div className="flex-grow" />
-              <div>
-                {new Date(measurement.creationTimestamp * 1000).toISOString()}
-              </div>
-            </div>
-            <div className="w-full font-mono text-xs whitespace-pre divide-y bg-slate-100 text-slate-600 divide-slate-200">
-              {Object.entries(measurement.value).map(([key, value]) => (
                 <div
-                  key={key}
-                  className="flex flex-row items-center justify-start w-full px-3 py-1 gap-x-2"
+                  className={
+                    "flex items-center flex-shrink-0 h-6 px-2 text-sm font-semibold text-blue-900 bg-blue-200 rounded mr-2 " +
+                    (measurement.revision === null
+                      ? "bg-slate-200 text-slate-700"
+                      : "bg-blue-200 text-blue-900")
+                  }
                 >
-                  <div className="flex-grow-0 w-40 font-medium break-words whitespace-break-spaces">
-                    {key}:
-                  </div>
-                  <div>{JSON.stringify(value)}</div>
+                  {measurement.revision === null
+                    ? "No Config Revision"
+                    : `Config Revision ${measurement.revision.toString()}`}
                 </div>
-              ))}
+                <div className="font-medium">
+                  Created{" "}
+                  {formatDistanceToNow(
+                    new Date(measurement.creationTimestamp * 1000),
+                    {
+                      addSuffix: true,
+                    }
+                  )}
+                </div>
+                <div className="flex-grow" />
+                <div>
+                  {new Date(measurement.creationTimestamp * 1000).toISOString()}
+                </div>
+              </div>
+              <div className="w-full font-mono text-xs whitespace-pre divide-y bg-slate-100 text-slate-600 divide-slate-200">
+                {Object.entries(measurement.value).map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex flex-row items-center justify-start w-full px-3 py-1 gap-x-2"
+                  >
+                    <div className="flex-grow-0 w-40 font-medium break-words whitespace-break-spaces">
+                      {key}:
+                    </div>
+                    <div>{JSON.stringify(value)}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </>
   );

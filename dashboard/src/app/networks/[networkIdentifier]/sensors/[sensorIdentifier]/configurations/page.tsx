@@ -67,7 +67,7 @@ function ConfigurationBox(props: {
   };
 }) {
   return (
-    <div className="flex flex-col w-full overflow-hidden bg-white border rounded shadow-md border-slate-300">
+    <div className="flex flex-col flex-shrink-0 w-full overflow-hidden bg-white border rounded shadow-md border-slate-300">
       <div className="flex flex-row items-start justify-start p-3 border-b gap-x-4 border-slate-200">
         <div className="flex items-center flex-shrink-0 h-6 px-2 text-sm font-semibold text-blue-900 bg-blue-200 rounded">
           Config Revision {props.configuration.revision}

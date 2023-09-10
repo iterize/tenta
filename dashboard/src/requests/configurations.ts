@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 const schema = z.array(
   z
     .object({
-      value: z.object({}),
+      value: z.any(),
       revision: z.number().int(),
       creation_timestamp: z.number().nullable(),
       publication_timestamp: z.number().nullable(),

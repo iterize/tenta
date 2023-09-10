@@ -54,6 +54,12 @@ export default function Page(props: {
     }
   }, [logsDataFetchingState, dataLoadingToastId]);
 
+  // when new data is fetched, go to the last page
+  useEffect(() => {
+    setCurrentPageNumber(numberOfLogsPages);
+  }, [numberOfLogsPages]);
+
+  // when page is left, dismiss all toasts
   useEffect(() => {
     return () => toast.dismiss();
   }, []);
@@ -77,9 +83,7 @@ export default function Page(props: {
       <div className="flex flex-row items-center justify-start w-full gap-x-6">
         <Pagination
           currentPageNumber={currentPageNumber}
-          numberOfPages={
-            logsDataFetchingState === "fetching" ? 0 : numberOfLogsPages
-          }
+          numberOfPages={numberOfLogsPages}
           setCurrentPageNumber={setCurrentPageNumber}
           noDataPlaceholder={
             logsDataFetchingState === "fetching" ? "..." : "no data"
