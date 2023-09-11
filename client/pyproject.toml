@@ -21,6 +21,12 @@ optional = true
 black = "^23.9.1"
 mypy = "^1.5.1"
 pytest = "^7.4.2"
+pytest-cov = "^4.1.0"
+
+[tool.mypy]
+strict = true
+implicit_reexport = true
+no_warn_unused_ignores = true
 
 [build-system]
 requires = ["poetry-core"]
