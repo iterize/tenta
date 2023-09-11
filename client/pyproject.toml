@@ -12,7 +12,8 @@ repository = "https://github.com/iterize/tenta"
 license = "AGPL-3.0-only"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "3.11.*"
+wetterdienst = "^0.59.3"
 
 [tool.poetry.group.dev]
 optional = true

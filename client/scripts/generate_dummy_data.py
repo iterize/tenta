@@ -10,6 +10,7 @@ from wetterdienst.provider.dwd.observation import (
 import json
 import polars as pl
 
+current_timestamp = int(time.time())
 today = datetime.datetime.utcnow().date()
 settings = wetterdienst.Settings(ts_si_units=True)
 
@@ -55,8 +56,8 @@ for row in df.iter_rows():
                 "attribute": key,
                 "value": value,
                 "revision": None,
-                "creation_timestamp": time.timestamp(),
-                "receipt_timestamp": time.timestamp(),
+                "creation_timestamp": time.timestamp() - current_timestamp,
+                "receipt_timestamp": time.timestamp() - current_timestamp,
             }
         )
 
@@ -67,11 +68,11 @@ for row in wind_speed_warnings.iter_rows():
     dummy_log_records.append(
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "severity": "warning",
             "message": "High wind speed",
+            "severity": "warning",
             "revision": None,
-            "creation_timestamp": time.timestamp(),
-            "receipt_timestamp": time.timestamp(),
+            "creation_timestamp": time.timestamp() - current_timestamp,
+            "receipt_timestamp": time.timestamp() - current_timestamp,
         },
     )
 
@@ -83,11 +84,11 @@ for row in rain_warnings.iter_rows():
     dummy_log_records.append(
         {
             "sensor_identifier": "81bf7042-e20f-4a97-ac44-c15853e3618f",
-            "severity": "warning",
             "message": "Heavy rain",
+            "severity": "warning",
             "revision": None,
-            "creation_timestamp": time.timestamp(),
-            "receipt_timestamp": time.timestamp(),
+            "creation_timestamp": time.timestamp() - current_timestamp,
+            "receipt_timestamp": time.timestamp() - current_timestamp,
         },
     )
 
