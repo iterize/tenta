@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python_version: [3.8, 3.9, 3.10, 3.11]
+        python_version: ["3.8", "3.9", "3.10", "3.11"]
     defaults:
       run:
         working-directory: client
@@ -40,8 +40,8 @@ jobs:
         id: cached-venv
         uses: actions/cache@v3
         with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ matrix.python_version }}-${{ hashFiles('poetry.lock') }}
+          path: client/.venv
+          key: venv-${{ runner.os }}-${{ matrix.python_version }}-${{ hashFiles('client/poetry.lock') }}
 
       # install poetry if venv not in cache
       - name: Install Poetry
