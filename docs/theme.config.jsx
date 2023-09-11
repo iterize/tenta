@@ -91,10 +91,10 @@ export default {
       }
     },
   },
-  banner: {
+  /*banner: {
     key: "v1.0.0-release",
     text: "🎉 Tenta v0.1.0 has been released",
-  },
+  },*/
   toc: {
     float: true,
   },
