@@ -31,11 +31,11 @@ export function NavigationBar() {
       <p className="text-sm text-slate-800">
         powered by{" "}
         <Link
-          href="https://github.com/tum-esm/hermes"
+          href="https://github.com/iterize/tenta"
           target="_blank"
           className="font-medium underline text-slate-950 hover:text-rose-600"
         >
-          github.com/tum-esm/tenta
+          github.com/iterize/tenta
         </Link>
       </p>
       {userData !== undefined && (

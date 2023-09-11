@@ -14,7 +14,6 @@ const schema = z.array(
       creation_timestamp: z.number().nullable(),
       publication_timestamp: z.number().nullable(),
       acknowledgment_timestamp: z.number().nullable(),
-      receipt_timestamp: z.number().nullable(),
       success: z.boolean().nullable(),
     })
     .transform((data) => ({
@@ -23,7 +22,6 @@ const schema = z.array(
       creationTimestamp: data.creation_timestamp,
       publicationTimestamp: data.publication_timestamp,
       acknowledgmentTimestamp: data.acknowledgment_timestamp,
-      receiptTimestamp: data.receipt_timestamp,
       success: data.success,
     }))
 );

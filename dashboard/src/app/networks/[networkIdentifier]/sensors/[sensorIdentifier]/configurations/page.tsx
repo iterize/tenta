@@ -62,7 +62,6 @@ function ConfigurationBox(props: {
     creationTimestamp: number | null;
     publicationTimestamp: number | null;
     acknowledgmentTimestamp: number | null;
-    receiptTimestamp: number | null;
     success: boolean | null;
   };
 }) {
@@ -73,7 +72,7 @@ function ConfigurationBox(props: {
           Config Revision {props.configuration.revision}
         </div>
         <div className="flex flex-col w-full">
-          <div className="grid flex-grow w-full h-1.5 grid-cols-4 my-2 rounded-full  relative">
+          <div className="grid flex-grow w-full h-1.5 grid-cols-3 my-2 rounded-full  relative">
             <div
               className="absolute -translate-x-1/2 w-2.5 h-2.5 rounded-full -top-[0.125rem] bg-emerald-800 "
               style={{
@@ -81,11 +80,9 @@ function ConfigurationBox(props: {
                   props.configuration.creationTimestamp === null
                     ? "0%"
                     : props.configuration.publicationTimestamp === null
-                    ? "25%"
-                    : props.configuration.receiptTimestamp === null
-                    ? "50%"
+                    ? "33.33333%"
                     : props.configuration.acknowledgmentTimestamp === null
-                    ? "75%"
+                    ? "66.66666%"
                     : "100%",
               }}
             />
@@ -105,14 +102,7 @@ function ConfigurationBox(props: {
                   : "bg-slate-200")
               }
             />
-            <div
-              className={
-                "w-full h-full border-r-[2.5px] border-emerald-700 " +
-                (props.configuration.receiptTimestamp !== null
-                  ? "bg-emerald-400"
-                  : "bg-slate-200")
-              }
-            />
+
             <div
               className={
                 "w-full h-full rounded-r-full " +
@@ -122,7 +112,7 @@ function ConfigurationBox(props: {
               }
             />
           </div>
-          <div className="grid flex-grow w-full grid-cols-4 -mt-1 text-xs">
+          <div className="grid flex-grow w-full grid-cols-3 -mt-1 text-xs">
             <TimestampLabel
               label="created"
               timestamp={props.configuration.creationTimestamp}
@@ -130,10 +120,6 @@ function ConfigurationBox(props: {
             <TimestampLabel
               label="published"
               timestamp={props.configuration.publicationTimestamp}
-            />
-            <TimestampLabel
-              label="received"
-              timestamp={props.configuration.receiptTimestamp}
             />
             <TimestampLabel
               label="acknowledged"
