@@ -1,0 +1,63 @@
+name: test-client
+on:
+  push:
+    branches: [main]
+    paths:
+      - client/tenta/**
+      - client/tests/**
+      - client/poetry.lock
+      - client/pyproject.toml
+      - .github/workflows/test-client.yml
+  pull_request:
+    paths:
+      - client/tenta/**
+      - client/tests/**
+      - client/poetry.lock
+      - client/pyproject.toml
+      - .github/workflows/test-client.yml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version: [3.8, 3.9, 3.10, 3.11]
+    defaults:
+      run:
+        working-directory: client
+        shell: bash
+
+    steps:
+      # check-out repo and install python
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python_version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      # load cache if available
+      - name: Load cached venv
+        id: cached-venv
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ matrix.python_version }}-${{ hashFiles('poetry.lock') }}
+
+      # install poetry if venv not in cache
+      - name: Install Poetry
+        if: steps.cached-venv.outputs.cache-hit != 'true'
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.6.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Install dependencies
+        if: steps.cached-venv.outputs.cache-hit != 'true'
+        run: poetry install --with=dev
+
+      # run test suite
+      - name: Run pytests
+        run: |
+          source .venv/bin/activate
+          pytest --verbose --cov=tenta tests/
