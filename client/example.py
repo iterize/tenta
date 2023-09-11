@@ -14,4 +14,12 @@ tenta_client.publish_log_message(
     message="Hello, world!",
 )
 tenta_client.wait_for_message_publishing()
-print("Message published!")
+print("Message 1 published!")
+
+tenta_client.publish_log_message(
+    severity="warning",
+    message="Hello, to you too!",
+    blocking=True,
+    blocking_timeout=5,
+)
+print("Message 2 published!")

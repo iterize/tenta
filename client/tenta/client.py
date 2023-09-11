@@ -44,8 +44,14 @@ class TentaClient:
         self,
         severity: Literal["info", "warning", "error"],
         message: str,
+        blocking: bool = False,
+        blocking_timeout: int = 60,
     ) -> int:
-        """Publish a log message to the MQTT broker and return the `message_id`."""
+        """Publish a log message to the MQTT broker and return the `message_id`.
+
+        If `blocking` is `True`, waits until the message has been published or
+        until `blocking_timeout` seconds have passed. Raises an exception if the
+        timeout is reached."""
 
         mqtt_message_info = self.client.publish(
             topic=f"logs/{self.sensor_identifier}",
@@ -60,8 +66,11 @@ class TentaClient:
                 ]
             ),
         )
-
         self.active_message_ids.add(mqtt_message_info.mid)
+
+        if blocking:
+            mqtt_message_info.wait_for_publish(blocking_timeout)
+
         return mqtt_message_info.mid
 
     def was_message_published(self, message_id: int) -> bool:
