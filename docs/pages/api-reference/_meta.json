@@ -1,0 +1,5 @@
+{
+  "rest-api": "REST API",
+  "mqtt-api": "MQTT API",
+  "python-client-api": "Python Client API"
+}

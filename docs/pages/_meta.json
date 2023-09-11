@@ -1,0 +1,13 @@
+{
+  "index": "Overview",
+  "roadmap": "Roadmap",
+  "---1": {
+    "type": "separator"
+  },
+  "user-guide": "🏔️ User Guide",
+  "developer-guide": "🛠️ Developer Guide",
+  "---2": {
+    "type": "separator"
+  },
+  "api-reference": "⚙️ API Reference"
+}
