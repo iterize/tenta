@@ -1,4 +1,5 @@
 {
+  "repository": "https://github.com/iterize/tenta",
   "scripts": {
     "dev": "next dev",
     "build": "next build"
