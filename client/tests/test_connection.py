@@ -1,6 +1,5 @@
 import tenta
 
-
 MQTT_HOST = "127.0.0.1"
 MQTT_PORT = 1883
 MQTT_IDENTIFIER = "client"
@@ -16,6 +15,7 @@ def test_bad_connection_with_wrong_host() -> None:
             mqtt_password=MQTT_PASSWORD,
             sensor_identifier="some-sensor-id",
             revision=1,
+            connection_timeout=1,
         )
         tenta_client.teardown()
     except Exception:
@@ -33,6 +33,7 @@ def test_bad_connection_with_wrong_port() -> None:
             mqtt_password=MQTT_PASSWORD,
             sensor_identifier="some-sensor-id",
             revision=1,
+            connection_timeout=1,
         )
         tenta_client.teardown()
     except ConnectionError:
@@ -50,6 +51,7 @@ def test_bad_connection_with_wrong_identifier() -> None:
             mqtt_password=MQTT_PASSWORD,
             sensor_identifier="some-sensor-id",
             revision=1,
+            connection_timeout=1,
         )
         tenta_client.teardown()
     except ConnectionError:
@@ -67,6 +69,7 @@ def test_bad_connection_with_wrong_password() -> None:
             mqtt_password=MQTT_PASSWORD + "...",
             sensor_identifier="some-sensor-id",
             revision=1,
+            connection_timeout=1,
         )
         tenta_client.teardown()
     except ConnectionError:
@@ -83,6 +86,7 @@ def test_successful_connection() -> None:
         mqtt_password=MQTT_PASSWORD,
         sensor_identifier="some-sensor-id",
         revision=1,
+        connection_timeout=1,
     )
 
     tenta_client.teardown()
