@@ -1,3 +1,4 @@
+import time
 import tenta
 
 # Create the client instance and connect to the MQTT broker
@@ -17,9 +18,15 @@ tenta_client = tenta.TentaClient(
 tenta_client.publish_log(
     severity="info",
     message="Hello, world!",
+    # uses current time
+)
+tenta_client.publish_log(
+    severity="info",
+    message="Hello, world!",
+    timestamp=time.time() - 3600,
 )
 tenta_client.wait_for_publish()
-print("Log 1 published!")
+print("Logs 1-2 published!")
 
 # Publish logs synchronously
 # -> the code waits until the message has been published
@@ -30,7 +37,7 @@ tenta_client.publish_log(
     wait_for_publish=True,
     wait_for_publish_timeout=5,
 )
-print("Log 2 published!")
+print("Log 3 published!")
 
 # Publish measurements asynchronously
 
@@ -42,7 +49,7 @@ tenta_client.publish_measurement(
     },
 )
 tenta_client.wait_for_publish()
-print("Measurement 1 published!")
+print("Measurements published!")
 
 # Publish acknowledgements asynchronously
 # -> "did the sensor successfully process a new revision?" -> true/false
@@ -56,7 +63,7 @@ tenta_client.publish_acknowledgement(
     # uses the revision given to the client on initialization (line 11)
 )
 tenta_client.wait_for_publish()
-print("Measurement 1 published!")
+print("Acknowledgements published!")
 
 # tear down MQTT connection
 

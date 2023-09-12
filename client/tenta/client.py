@@ -44,6 +44,7 @@ class TentaClient:
         self,
         severity: Literal["info", "warning", "error"],
         message: str,
+        timestamp: Optional[float] = None,
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
@@ -51,18 +52,18 @@ class TentaClient:
 
         If `wait_for_publish` is `True`, waits until the message has been
         published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached."""
+        Raises an exception if the timeout is reached.
+
+        If `timestamp` is not specified, the current time is used."""
 
         return self._publish(
             topic=f"logs/{self.sensor_identifier}",
-            body=[
-                {
-                    "revision": self.revision,
-                    "timestamp": time.time(),
-                    "severity": severity,
-                    "message": message,
-                }
-            ],
+            body={
+                "revision": self.revision,
+                "severity": severity,
+                "message": message,
+            },
+            timestamp=timestamp,
             wait_for_publish=wait_for_publish,
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
@@ -70,6 +71,7 @@ class TentaClient:
     def publish_measurement(
         self,
         value: typing.Dict[str, typing.Union[float, int]],
+        timestamp: Optional[float] = None,
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
@@ -77,17 +79,17 @@ class TentaClient:
 
         If `wait_for_publish` is `True`, waits until the message has been
         published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached."""
+        Raises an exception if the timeout is reached.
+
+        If `timestamp` is not specified, the current time is used."""
 
         return self._publish(
             topic=f"measurements/{self.sensor_identifier}",
-            body=[
-                {
-                    "revision": self.revision,
-                    "timestamp": time.time(),
-                    "value": value,
-                }
-            ],
+            body={
+                "revision": self.revision,
+                "value": value,
+            },
+            timestamp=timestamp,
             wait_for_publish=wait_for_publish,
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
@@ -96,6 +98,7 @@ class TentaClient:
         self,
         success: bool,
         revision: Optional[int] = None,
+        timestamp: Optional[float] = None,
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
@@ -103,17 +106,17 @@ class TentaClient:
 
         If `wait_for_publish` is `True`, waits until the message has been
         published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached."""
+        Raises an exception if the timeout is reached.
+
+        If `timestamp` is not specified, the current time is used."""
 
         return self._publish(
             topic=f"acknowledgments/{self.sensor_identifier}",
-            body=[
-                {
-                    "revision": self.revision if revision is None else revision,
-                    "timestamp": time.time(),
-                    "success": success,
-                }
-            ],
+            body={
+                "revision": self.revision if revision is None else revision,
+                "success": success,
+            },
+            timestamp=timestamp,
             wait_for_publish=wait_for_publish,
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
@@ -121,7 +124,8 @@ class TentaClient:
     def _publish(
         self,
         topic: str,
-        body: typing.Any,
+        body: typing.Dict[str, typing.Any],
+        timestamp: Optional[float] = None,
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
@@ -129,11 +133,22 @@ class TentaClient:
 
         If `wait_for_publish` is `True`, waits until the message has been
         published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached."""
+        Raises an exception if the timeout is reached.
+
+        If `timestamp` is not specified, the current time is used."""
 
         mqtt_message_info = self.client.publish(
             topic=topic,
-            payload=json.dumps(body),
+            payload=json.dumps(
+                [
+                    {
+                        **body,
+                        "timestamp": (
+                            timestamp if timestamp is not None else time.time()
+                        ),
+                    }
+                ]
+            ),
         )
         self.active_message_ids.add(mqtt_message_info.mid)
 
