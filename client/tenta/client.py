@@ -40,36 +40,79 @@ class TentaClient:
 
         self.client.on_publish = _on_publish
 
-    def publish_log_message(
+    def publish_log(
         self,
         severity: Literal["info", "warning", "error"],
         message: str,
-        blocking: bool = False,
-        blocking_timeout: int = 60,
+        wait_for_publish: bool = False,
+        wait_for_publish_timeout: int = 60,
     ) -> int:
-        """Publish a log message to the MQTT broker and return the `message_id`.
+        """Publish a log to the MQTT broker and return the `message_id`.
 
-        If `blocking` is `True`, waits until the message has been published or
-        until `blocking_timeout` seconds have passed. Raises an exception if the
-        timeout is reached."""
+        If `wait_for_publish` is `True`, waits until the message has been
+        published or until `wait_for_publish_timeout` seconds have passed.
+        Raises an exception if the timeout is reached."""
+
+        return self._publish(
+            topic=f"logs/{self.sensor_identifier}",
+            body=[
+                {
+                    "revision": self.revision,
+                    "timestamp": time.time(),
+                    "severity": severity,
+                    "message": message,
+                }
+            ],
+            wait_for_publish=wait_for_publish,
+            wait_for_publish_timeout=wait_for_publish_timeout,
+        )
+
+    def publish_measurement(
+        self,
+        value: typing.Dict[str, typing.Union[float, int]],
+        wait_for_publish: bool = False,
+        wait_for_publish_timeout: int = 60,
+    ) -> int:
+        """Publish a measurement to the MQTT broker and return the `message_id`.
+
+        If `wait_for_publish` is `True`, waits until the message has been
+        published or until `wait_for_publish_timeout` seconds have passed.
+        Raises an exception if the timeout is reached."""
+
+        return self._publish(
+            topic=f"measurements/{self.sensor_identifier}",
+            body=[
+                {
+                    "revision": self.revision,
+                    "timestamp": time.time(),
+                    "value": value,
+                }
+            ],
+            wait_for_publish=wait_for_publish,
+            wait_for_publish_timeout=wait_for_publish_timeout,
+        )
+
+    def _publish(
+        self,
+        topic: str,
+        body: typing.Any,
+        wait_for_publish: bool = False,
+        wait_for_publish_timeout: int = 60,
+    ) -> int:
+        """Publish a message to the MQTT broker and return the `message_id`.
+
+        If `wait_for_publish` is `True`, waits until the message has been
+        published or until `wait_for_publish_timeout` seconds have passed.
+        Raises an exception if the timeout is reached."""
 
         mqtt_message_info = self.client.publish(
-            topic=f"logs/{self.sensor_identifier}",
-            payload=json.dumps(
-                [
-                    {
-                        "revision": self.revision,
-                        "timestamp": time.time(),
-                        "severity": severity,
-                        "message": message,
-                    }
-                ]
-            ),
+            topic=topic,
+            payload=json.dumps(body),
         )
         self.active_message_ids.add(mqtt_message_info.mid)
 
-        if blocking:
-            mqtt_message_info.wait_for_publish(blocking_timeout)
+        if wait_for_publish:
+            mqtt_message_info.wait_for_publish(wait_for_publish_timeout)
 
         return mqtt_message_info.mid
 
@@ -84,7 +127,7 @@ class TentaClient:
 
         return len(self.active_message_ids)
 
-    def wait_for_message_publishing(self, timeout: Optional[int] = 60) -> None:
+    def wait_for_publish(self, timeout: Optional[int] = 60) -> None:
         """Wait until all messages have been published. Raise a
         `TimeoutError` if the timeout is reached."""
 

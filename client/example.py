@@ -11,26 +11,39 @@ tenta_client = tenta.TentaClient(
     revision=1,
 )
 
-# Publish messages asynchronously
+# Publish logs asynchronously
 # -> your code continues to run while the message is being published
 
-tenta_client.publish_log_message(
+tenta_client.publish_log(
     severity="info",
     message="Hello, world!",
 )
-tenta_client.wait_for_message_publishing()
-print("Message 1 published!")
+tenta_client.wait_for_publish()
+print("Log 1 published!")
 
-# Publish messages synchronously
+# Publish logs synchronously
 # -> the code waits until the message has been published
 
-tenta_client.publish_log_message(
+tenta_client.publish_log(
     severity="warning",
     message="Hello, to you too!",
-    blocking=True,
-    blocking_timeout=5,
+    wait_for_publish=True,
+    wait_for_publish_timeout=5,
 )
-print("Message 2 published!")
+print("Log 2 published!")
+
+# Publish measurements asynchronously
+# -> your code continues to run while the message is being published
+
+tenta_client.publish_measurement(
+    value={
+        "temperature": 20.0,
+        "humidity": 50.0,
+        "pressure": 1013.25,
+    },
+)
+tenta_client.wait_for_publish()
+print("Measurement 1 published!")
 
 # tear down MQTT connection
 
