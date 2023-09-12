@@ -33,7 +33,6 @@ tenta_client.publish_log(
 print("Log 2 published!")
 
 # Publish measurements asynchronously
-# -> your code continues to run while the message is being published
 
 tenta_client.publish_measurement(
     value={
@@ -41,6 +40,20 @@ tenta_client.publish_measurement(
         "humidity": 50.0,
         "pressure": 1013.25,
     },
+)
+tenta_client.wait_for_publish()
+print("Measurement 1 published!")
+
+# Publish acknowledgements asynchronously
+# -> "did the sensor successfully process a new revision?" -> true/false
+
+tenta_client.publish_acknowledgement(
+    success=False,
+    revision=20,
+)
+tenta_client.publish_acknowledgement(
+    success=True,
+    # uses the revision given to the client on initialization (line 11)
 )
 tenta_client.wait_for_publish()
 print("Measurement 1 published!")

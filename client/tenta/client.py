@@ -92,6 +92,32 @@ class TentaClient:
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
 
+    def publish_acknowledgement(
+        self,
+        success: bool,
+        revision: Optional[int] = None,
+        wait_for_publish: bool = False,
+        wait_for_publish_timeout: int = 60,
+    ) -> int:
+        """Publish an acknowledgement to the MQTT broker and return the `message_id`.
+
+        If `wait_for_publish` is `True`, waits until the message has been
+        published or until `wait_for_publish_timeout` seconds have passed.
+        Raises an exception if the timeout is reached."""
+
+        return self._publish(
+            topic=f"acknowledgments/{self.sensor_identifier}",
+            body=[
+                {
+                    "revision": self.revision if revision is None else revision,
+                    "timestamp": time.time(),
+                    "success": success,
+                }
+            ],
+            wait_for_publish=wait_for_publish,
+            wait_for_publish_timeout=wait_for_publish_timeout,
+        )
+
     def _publish(
         self,
         topic: str,
