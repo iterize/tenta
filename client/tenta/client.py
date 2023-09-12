@@ -5,6 +5,11 @@ import typing
 import paho.mqtt.client
 
 
+class ConfigurationDict(typing.TypedDict):
+    revision: int
+    configuration: typing.Any
+
+
 class TentaClient:
     def __init__(
         self,
@@ -31,6 +36,13 @@ class TentaClient:
         self.revision = revision
         self.active_message_ids: typing.Set[int] = set()
 
+        self.latest_received_configuration: typing.Optional[ConfigurationDict] = None
+
+        def _set_latest_received_configuration(
+            configuration_dict: ConfigurationDict,
+        ) -> None:
+            self.latest_received_configuration = configuration_dict
+
         def _on_publish(
             client: typing.Any,
             userdata: typing.Any,
@@ -38,7 +50,32 @@ class TentaClient:
         ) -> None:
             self.active_message_ids.remove(message_id)
 
+        def _on_config_message(
+            client: typing.Any,
+            userdata: typing.Any,
+            message: paho.mqtt.client.MQTTMessage,
+        ) -> None:
+            # decode the message
+            try:
+                payload = json.loads(message.payload.decode())
+            except:
+                return
+
+            # check whether the message is in a valid format
+            try:
+                assert isinstance(payload, dict)
+                assert "revision" in payload.keys()
+                assert "configuration" in payload.keys()
+                assert isinstance(payload["revision"], int)
+            except:
+                return
+
+            # update the latest received configuration
+            _set_latest_received_configuration(payload)  # type: ignore
+
         self.client.on_publish = _on_publish
+        self.client.subscribe(f"configurations/{self.sensor_identifier}")
+        self.client.on_message = _on_config_message
 
     def publish_log(
         self,
@@ -180,6 +217,12 @@ class TentaClient:
                 raise TimeoutError(
                     "Timed out while waiting for messages to be published"
                 )
+
+    def get_latest_received_configuration(self) -> Optional[ConfigurationDict]:
+        """Return the latest received configuration or `None` if no
+        configuration has been received yet."""
+
+        return self.latest_received_configuration
 
     def teardown(self) -> None:
         self.client.loop_stop()
