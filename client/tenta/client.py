@@ -5,7 +5,7 @@ import typing
 import paho.mqtt.client
 
 
-class ConfigurationDict(typing.TypedDict):
+class ConfigMessageDict(typing.TypedDict):
     revision: int
     configuration: typing.Any
 
@@ -19,15 +19,40 @@ class TentaClient:
         mqtt_password: str,
         sensor_identifier: str,
         revision: Optional[int] = None,
+        on_config_message: Optional[typing.Callable[[ConfigMessageDict], None]] = None,
+        on_publish: Optional[typing.Callable[[int], None]] = None,
+        connection_timeout: int = 8,
     ) -> None:
-        self.client = paho.mqtt.client.Client()
-        self.client.username_pw_set(
-            username=mqtt_identifier,
-            password=mqtt_password,
-        )
+        """Create a new Tenta client.
 
+        Args:
+            mqtt_host: The host of the MQTT broker.
+            mqtt_port: The port of the MQTT broker.
+            mqtt_identifier: The MQTT identifier.
+            mqtt_password: The MQTT password.
+            sensor_identifier: The sensor identifier.
+
+        Optional Args:
+            revision: The current revision of the sensor.
+            on_config_message: A callback that is called when a new
+                configuration message is received.
+            on_publish: A callback that is called when a message is
+                published.
+
+        Raises:
+            ConnectionError: If the client could not connect to the
+                MQTT broker.
+            RuntimeError: If the MQTT background loop could not be
+                started.
+        """
+
+        self.client = paho.mqtt.client.Client()
         connection_rc_code: typing.Optional[int] = None
 
+        # on connect, the connection rc code is set:
+        # (0 = success, 1 = incorrect protocol, 2 = invalid client id,
+        #  3 = server unavailable, 4 = bad username or password,
+        #  5 = not authorised)
         def _on_connect(
             client: paho.mqtt.client.Client,
             userdata: typing.Any,
@@ -37,79 +62,73 @@ class TentaClient:
             nonlocal connection_rc_code
             connection_rc_code = rc
 
+        # connect to the MQTT broker and raise a `ConnectionError` if
+        # the connection fails or times out (default: after 8 seconds)
         self.client.on_connect = _on_connect
-
+        self.client.username_pw_set(username=mqtt_identifier, password=mqtt_password)
         try:
             self.client.connect(
                 host=mqtt_host,
                 port=mqtt_port,
                 keepalive=60,
             )
+            self.client.loop_start()
             start_time = time.time()
-
             while True:
-                time.sleep(0.1)
-                if connection_rc_code is not None:
+                if time.time() > (start_time + connection_timeout):
+                    raise TimeoutError("timed out while connecting")
+                if connection_rc_code is None:
+                    time.sleep(0.1)
+                    continue
+                else:
                     if connection_rc_code == 0:
                         break
-                    if connection_rc_code == 1:
-                        raise ConnectionError("Connection refused - incorrect protocol")
-                    if connection_rc_code == 2:
-                        raise ConnectionError("Connection refused - invalid client id")
-                    if connection_rc_code == 3:
-                        raise ConnectionError("Connection refused - server unavailable")
-                    if connection_rc_code == 4:
-                        raise ConnectionError(
-                            "Connection refused - bad username or password"
+                    raise Exception(
+                        {
+                            1: "incorrect protocol",
+                            2: "invalid client id",
+                            3: "server unavailable",
+                            4: "bad username or password",
+                            5: "not authorised",
+                        }.get(
+                            connection_rc_code,
+                            f"unknown error code: {connection_rc_code}",
                         )
-                    if connection_rc_code == 5:
-                        raise ConnectionError("Connection refused - not authorised")
-                    raise ConnectionError(
-                        f"Connection refused - unknown error ({connection_rc_code})"
                     )
-                if time.time() > (start_time + 8):
-                    raise TimeoutError("Timed out while connecting")
-
         except Exception as e:
             raise ConnectionError(
                 f"Could not connect to MQTT broker at {mqtt_host}:{mqtt_port} ({e})"
             )
 
-        try:
-            self.client.loop_start()
-        except Exception as e:
-            raise RuntimeError(f"Could not start MQTT background loop ({e})")
-
         self.sensor_identifier = sensor_identifier
         self.revision = revision
         self.active_message_ids: typing.Set[int] = set()
+        self.latest_received_config_message: typing.Optional[ConfigMessageDict] = None
 
-        self.latest_received_configuration: typing.Optional[ConfigurationDict] = None
-
-        def _set_latest_received_configuration(
-            configuration_dict: ConfigurationDict,
-        ) -> None:
-            self.latest_received_configuration = configuration_dict
-
+        # on message publish, the message id is removed from the set of
+        # active message ids and the `on_publish` callback is called
         def _on_publish(
             client: typing.Any,
             userdata: typing.Any,
             message_id: int,
         ) -> None:
             self.active_message_ids.remove(message_id)
+            if on_publish is not None:
+                on_publish(message_id)
 
+        # on receiving a configuration message, the structure of the
+        # message is validated, the `latest_received_config_message`
+        # is updated and the `on_config_message` callback is called
         def _on_config_message(
             client: typing.Any,
             userdata: typing.Any,
             message: paho.mqtt.client.MQTTMessage,
         ) -> None:
-            # decode the message
             try:
-                payload = json.loads(message.payload.decode())
+                payload: ConfigMessageDict = json.loads(message.payload.decode())
             except:
                 return
 
-            # check whether the message is in a valid format
             try:
                 assert isinstance(payload, dict)
                 assert "revision" in payload.keys()
@@ -118,9 +137,13 @@ class TentaClient:
             except:
                 return
 
-            # update the latest received configuration
-            _set_latest_received_configuration(payload)  # type: ignore
+            self.latest_received_config_message = payload
 
+            if on_config_message is not None:
+                on_config_message(payload)
+
+        # subscribe to the configuration topic and set the callbacks
+        # for successfully publishing and receiving messages
         self.client.on_publish = _on_publish
         self.client.subscribe(f"configurations/{self.sensor_identifier}")
         self.client.on_message = _on_config_message
@@ -247,8 +270,7 @@ class TentaClient:
 
         return message_id in self.active_message_ids
 
-    @property
-    def active_message_count(self) -> int:
+    def get_active_message_count(self) -> int:
         """Return the number of messages that have not yet been published."""
 
         return len(self.active_message_ids)
@@ -259,18 +281,18 @@ class TentaClient:
 
         start_time = time.time()
 
-        while self.active_message_count > 0:
+        while self.get_active_message_count() > 0:
             time.sleep(0.1)
             if (timeout is not None) and (time.time() > (start_time + timeout)):
                 raise TimeoutError(
                     "Timed out while waiting for messages to be published"
                 )
 
-    def get_latest_received_configuration(self) -> Optional[ConfigurationDict]:
+    def get_latest_received_config_message(self) -> Optional[ConfigMessageDict]:
         """Return the latest received configuration or `None` if no
         configuration has been received yet."""
 
-        return self.latest_received_configuration
+        return self.latest_received_config_message
 
     def teardown(self) -> None:
         self.client.loop_stop()
