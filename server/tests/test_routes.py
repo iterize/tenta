@@ -439,7 +439,6 @@ async def test_read_configurations(
             "creation_timestamp",
             "publication_timestamp",
             "acknowledgment_timestamp",
-            "receipt_timestamp",
             "success",
         },
     )
@@ -469,7 +468,6 @@ async def test_read_configurations_with_next_page(
             "creation_timestamp",
             "publication_timestamp",
             "acknowledgment_timestamp",
-            "receipt_timestamp",
             "success",
         },
     )

@@ -165,7 +165,6 @@ SELECT
     creation_timestamp,
     publication_timestamp,
     acknowledgment_timestamp,
-    receipt_timestamp,
     success
 FROM configuration
 WHERE
