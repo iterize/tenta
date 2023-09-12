@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Safety first
 set -o errexit -o pipefail -o nounset

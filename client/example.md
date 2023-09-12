@@ -1,8 +1,10 @@
-# ## Basic Example
-#
-# **Create the client** and connect to the MQTT broker
+# Example Usage of the Tenta Python Client
 
+## Basic Example
 
+**Create the client** and connect to the MQTT broker
+
+```python
 import time
 import typing
 import tenta
@@ -16,12 +18,12 @@ tenta_client = tenta.TentaClient(
     sensor_identifier="81bf7042-e20f-4a97-ac44-c15853e3618f",
     revision=17,
 )
+```
 
+**Publish logs asynchronously**, i.e. your code continues to
+run while the message is being published
 
-# **Publish logs asynchronously**, i.e. your code continues to
-# run while the message is being published
-
-
+```python
 tenta_client.publish_log(
     severity="info",
     message="Hello, world!",
@@ -32,12 +34,12 @@ tenta_client.publish_log(
 )
 tenta_client.wait_for_publish()
 print("Logs 1-2 published!")
+```
 
+**Publish logs synchronously**, i.e. ypur code waits until the
+message has been published successfully
 
-# **Publish logs synchronously**, i.e. ypur code waits until the
-# message has been published successfully
-
-
+```python
 tenta_client.publish_log(
     severity="warning",
     message="Hello, to you too!",
@@ -45,11 +47,11 @@ tenta_client.publish_log(
     wait_for_publish_timeout=5,
 )
 print("Log 3 published!")
+```
 
+**Publish measurements asynchronously**
 
-# **Publish measurements asynchronously**
-
-
+```python
 tenta_client.publish_measurement(
     value={
         "temperature": 20.0,
@@ -59,45 +61,45 @@ tenta_client.publish_measurement(
 )
 tenta_client.wait_for_publish()
 print("Measurements published!")
+```
 
+**Publish acknowledgements asynchronously**, i.e. "did the sensor successfully
+process a new config revision?" -> true/false
 
-# **Publish acknowledgements asynchronously**, i.e. "did the sensor successfully
-# process a new config revision?" -> true/false
-
-
+```python
 tenta_client.publish_acknowledgement(success=False, revision=20)
 tenta_client.wait_for_publish()
 print("Acknowledgements published!")
+```
 
+Get the **latest received config** on demand
 
-# Get the **latest received config** on demand
-
-
+```python
 config_message: typing.Optional[
     tenta.ConfigMessageDict
 ] = tenta_client.get_latest_received_config_message()
+```
 
+**Tear down** the MQTT connection and the client
 
-# **Tear down** the MQTT connection and the client
-
-
+```python
 tenta_client.teardown()
+```
 
+## Advanced Example
 
-# ## Advanced Example
-#
-# You can gice **callbacks** to the client to get notified when a message has
-# been published successfully or when the client receives a new config message.
-#
-# You can also check the current **length of the clients message queue** =
-# number of messages that have not been published yet. When offline, a full
-# queue might raise Exceptions.
-#
-# By default, all published messages will be tagged by the current timestamp.
-# However, by **passing a timestamp** to the functions `publish_log`/
-# `publish_measurement`/`publish_acknowledgement`, you can override this behaviour.
+You can gice **callbacks** to the client to get notified when a message has
+been published successfully or when the client receives a new config message.
 
+You can also check the current **length of the clients message queue** =
+number of messages that have not been published yet. When offline, a full
+queue might raise Exceptions.
 
+By default, all published messages will be tagged by the current timestamp.
+However, by **passing a timestamp** to the functions `publish_log`/
+`publish_measurement`/`publish_acknowledgement`, you can override this behaviour.
+
+```python
 tenta_client = tenta.TentaClient(
     mqtt_host="localhost",
     mqtt_port=1883,
@@ -124,9 +126,9 @@ tenta_client.publish_log(
 )
 
 tenta_client.teardown()
+```
 
-
-# Finally, if the client does not exactly fit your needs, you can also
-# inherit from it and only override the methods you need to change or
-# take the client as a starting point for your own implementation since
-# this code is open-source.
+Finally, if the client does not exactly fit your needs, you can also
+inherit from it and only override the methods you need to change or
+take the client as a starting point for your own implementation since
+this code is open-source.

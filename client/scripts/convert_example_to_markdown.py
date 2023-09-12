@@ -7,10 +7,10 @@ EXAMPLE_SRC = os.path.join(PROJECT_DIR, "example.py")
 EXAMPLE_DST = os.path.join(PROJECT_DIR, "example.md")
 
 with open(EXAMPLE_SRC, "r") as f:
-    file_content = f.read()
+    file_content = f.read().strip(" \n\t")
 
 file_blocks = file_content.split("\n\n\n")
-markdown_blocks: typing.List[str] = []
+markdown_blocks: typing.List[str] = ["# Example Usage of the Tenta Python Client"]
 
 for block in file_blocks:
     is_comment_block = all([l.startswith("#") for l in block.split("\n")])
