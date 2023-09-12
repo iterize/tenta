@@ -1,1 +1,1 @@
-from .client import TentaClient
+from .client import TentaClient, ConfigMessageDict

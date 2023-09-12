@@ -1,9 +1,24 @@
 import tenta
 
-MQTT_HOST = "127.0.0.1"
-MQTT_PORT = 1883
-MQTT_IDENTIFIER = "client"
-MQTT_PASSWORD = "password"
+MQTT_HOST = "test.mosquitto.org"
+MQTT_PORT = 1884
+MQTT_IDENTIFIER = "rw"
+MQTT_PASSWORD = "readwrite"
+CONNECTION_TIMEOUT = 3
+
+
+def test_successful_connection() -> None:
+    tenta_client = tenta.TentaClient(
+        mqtt_host=MQTT_HOST,
+        mqtt_port=MQTT_PORT,
+        mqtt_identifier=MQTT_IDENTIFIER,
+        mqtt_password=MQTT_PASSWORD,
+        sensor_identifier="some-sensor-id",
+        revision=1,
+        connection_timeout=CONNECTION_TIMEOUT,
+    )
+
+    tenta_client.teardown()
 
 
 def test_bad_connection_with_wrong_host() -> None:
@@ -15,7 +30,7 @@ def test_bad_connection_with_wrong_host() -> None:
             mqtt_password=MQTT_PASSWORD,
             sensor_identifier="some-sensor-id",
             revision=1,
-            connection_timeout=1,
+            connection_timeout=CONNECTION_TIMEOUT,
         )
         tenta_client.teardown()
     except Exception:
@@ -33,7 +48,7 @@ def test_bad_connection_with_wrong_port() -> None:
             mqtt_password=MQTT_PASSWORD,
             sensor_identifier="some-sensor-id",
             revision=1,
-            connection_timeout=1,
+            connection_timeout=CONNECTION_TIMEOUT,
         )
         tenta_client.teardown()
     except ConnectionError:
@@ -51,7 +66,7 @@ def test_bad_connection_with_wrong_identifier() -> None:
             mqtt_password=MQTT_PASSWORD,
             sensor_identifier="some-sensor-id",
             revision=1,
-            connection_timeout=1,
+            connection_timeout=CONNECTION_TIMEOUT,
         )
         tenta_client.teardown()
     except ConnectionError:
@@ -69,24 +84,10 @@ def test_bad_connection_with_wrong_password() -> None:
             mqtt_password=MQTT_PASSWORD + "...",
             sensor_identifier="some-sensor-id",
             revision=1,
-            connection_timeout=1,
+            connection_timeout=CONNECTION_TIMEOUT,
         )
         tenta_client.teardown()
     except ConnectionError:
         return
 
     raise Exception("Should have raised a ConnectionError")
-
-
-def test_successful_connection() -> None:
-    tenta_client = tenta.TentaClient(
-        mqtt_host=MQTT_HOST,
-        mqtt_port=MQTT_PORT,
-        mqtt_identifier=MQTT_IDENTIFIER,
-        mqtt_password=MQTT_PASSWORD,
-        sensor_identifier="some-sensor-id",
-        revision=1,
-        connection_timeout=1,
-    )
-
-    tenta_client.teardown()
