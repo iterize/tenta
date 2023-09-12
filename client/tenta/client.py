@@ -25,12 +25,60 @@ class TentaClient:
             username=mqtt_identifier,
             password=mqtt_password,
         )
-        self.client.connect(
-            host=mqtt_host,
-            port=mqtt_port,
-            keepalive=60,
-        )
-        self.client.loop_start()
+
+        connection_rc_code: typing.Optional[int] = None
+
+        def _on_connect(
+            client: paho.mqtt.client.Client,
+            userdata: typing.Any,
+            flags: typing.Any,
+            rc: int,
+        ) -> None:
+            nonlocal connection_rc_code
+            connection_rc_code = rc
+
+        self.client.on_connect = _on_connect
+
+        try:
+            self.client.connect(
+                host=mqtt_host,
+                port=mqtt_port,
+                keepalive=60,
+            )
+            start_time = time.time()
+
+            while True:
+                time.sleep(0.1)
+                if connection_rc_code is not None:
+                    if connection_rc_code == 0:
+                        break
+                    if connection_rc_code == 1:
+                        raise ConnectionError("Connection refused - incorrect protocol")
+                    if connection_rc_code == 2:
+                        raise ConnectionError("Connection refused - invalid client id")
+                    if connection_rc_code == 3:
+                        raise ConnectionError("Connection refused - server unavailable")
+                    if connection_rc_code == 4:
+                        raise ConnectionError(
+                            "Connection refused - bad username or password"
+                        )
+                    if connection_rc_code == 5:
+                        raise ConnectionError("Connection refused - not authorised")
+                    raise ConnectionError(
+                        f"Connection refused - unknown error ({connection_rc_code})"
+                    )
+                if time.time() > (start_time + 8):
+                    raise TimeoutError("Timed out while connecting")
+
+        except Exception as e:
+            raise ConnectionError(
+                f"Could not connect to MQTT broker at {mqtt_host}:{mqtt_port} ({e})"
+            )
+
+        try:
+            self.client.loop_start()
+        except Exception as e:
+            raise RuntimeError(f"Could not start MQTT background loop ({e})")
 
         self.sensor_identifier = sensor_identifier
         self.revision = revision
