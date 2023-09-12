@@ -90,17 +90,21 @@ def offset():
 async def _populate(connection, offset):
     """Populate the database with example data."""
     with open("tests/data.json") as file:
-        for table_name, records in json.load(file).items():
-            identifiers = ", ".join([f"${i+1}" for i in range(len(records[0]))])
-            # Adapt the timestamps with the offset
-            for record in records:
-                for key, value in record.items():
+        for table_name, elements in json.load(file).items():
+            # Get the keys from the first record
+            keys = tuple(elements[0].keys())
+            # Generate the column names and identifiers for the query
+            columns = ", ".join([f"{key}" for key in keys])
+            identifiers = ", ".join([f"${i+1}" for i in range(len(keys))])
+            # Adapt all timestamps with the offset
+            for element in elements:
+                for key, value in element.items():
                     if key.endswith("_timestamp"):
-                        record[key] = None if value is None else value + offset
+                        element[key] = None if value is None else value + offset
             # Write to the database
             await connection.executemany(
-                f'INSERT INTO "{table_name}" VALUES ({identifiers});',
-                [tuple(record.values()) for record in records],
+                f'INSERT INTO "{table_name}" ({columns}) VALUES ({identifiers});',
+                [tuple(element[key] for key in keys) for element in elements],
             )
     # Refresh the materialized views
     await connection.execute("CALL refresh_continuous_aggregate('measurement_aggregation_1_hour', NULL, NULL);")  # fmt: skip

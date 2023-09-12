@@ -81,7 +81,7 @@
             "revision": 0,
             "creation_timestamp": -7200,
             "publication_timestamp": -7200,
-            "acknowledgement_timestamp": -7200,
+            "acknowledgment_timestamp": -7200,
             "receipt_timestamp": -7200,
             "success": true
         },
@@ -94,7 +94,7 @@
             "revision": 1,
             "creation_timestamp": -5400,
             "publication_timestamp": -5400,
-            "acknowledgement_timestamp": -5400,
+            "acknowledgment_timestamp": -5400,
             "receipt_timestamp": -5400,
             "success": false
         },
@@ -108,7 +108,7 @@
             "revision": 2,
             "creation_timestamp": -3600,
             "publication_timestamp": -3600,
-            "acknowledgement_timestamp": null,
+            "acknowledgment_timestamp": null,
             "receipt_timestamp": null,
             "success": null
         }
