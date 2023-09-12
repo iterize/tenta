@@ -63,7 +63,17 @@ async def test_read_status(client):
     response = await client.get("/status")
     assert returns(response, 200)
     body = response.json()
-    assert keys(body, {"environment", "commit_sha", "branch_name", "start_timestamp"})
+    assert keys(
+        body,
+        {
+            "environment",
+            "start_timestamp",
+            "commit_sha",
+            "branch_name",
+            "mqtt_hostname",
+            "mqtt_port",
+        },
+    )
 
 
 ########################################################################################

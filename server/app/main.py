@@ -24,9 +24,11 @@ async def read_status(request, values):
         status_code=200,
         content={
             "environment": settings.ENVIRONMENT,
+            "start_timestamp": settings.START_TIMESTAMP,
             "commit_sha": settings.COMMIT_SHA,
             "branch_name": settings.BRANCH_NAME,
-            "start_timestamp": settings.START_TIMESTAMP,
+            "mqtt_hostname": settings.MQTT_HOSTNAME,
+            "mqtt_port": settings.MQTT_PORT,
         },
     )
 

@@ -29,14 +29,20 @@ paths:
                   environment:
                     type: string
                     example: production
+                  start_timestamp:
+                    $ref: "#/components/schemas/timestamp"
                   commit_sha:
                     type: string
                     example: 1a2984bf5ffda71207fb133d785eb486cb465618
                   branch_name:
                     type: string
                     example: main
-                  start_timestamp:
-                    $ref: "#/components/schemas/timestamp"
+                  mqtt_hostname:
+                    type: string
+                    example: mqtt.example.com
+                  mqtt_port:
+                    type: integer
+                    example: 8883
         "400":
           $ref: "#/components/responses/400"
   "/users":

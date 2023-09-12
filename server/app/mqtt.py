@@ -26,7 +26,7 @@ task_references = set()
 async def client():
     """Context manager to manage aiomqtt client with custom settings."""
     async with aiomqtt.Client(
-        hostname=settings.MQTT_URL,
+        hostname=settings.MQTT_HOSTNAME,
         port=settings.MQTT_PORT,
         protocol=aiomqtt.ProtocolVersion.V5,
         username=settings.MQTT_IDENTIFIER,

@@ -57,7 +57,7 @@ async def _connection():
     """Provide a connection to the database that's properly closed afterwards."""
     try:
         connection = await asyncpg.connect(
-            host=os.environ["POSTGRESQL_URL"],
+            host=os.environ["POSTGRESQL_HOSTNAME"],
             port=os.environ["POSTGRESQL_PORT"],
             user=os.environ["POSTGRESQL_IDENTIFIER"],
             password=os.environ["POSTGRESQL_PASSWORD"],

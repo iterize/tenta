@@ -80,7 +80,7 @@ async def initialize(connection):
 async def pool():
     """Context manager for asyncpg database pool with custom settings."""
     async with asyncpg.create_pool(
-        host=settings.POSTGRESQL_URL,
+        host=settings.POSTGRESQL_HOSTNAME,
         port=settings.POSTGRESQL_PORT,
         user=settings.POSTGRESQL_IDENTIFIER,
         password=settings.POSTGRESQL_PASSWORD,
