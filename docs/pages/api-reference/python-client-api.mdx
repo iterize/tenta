@@ -1,3 +1,151 @@
-# Python Client API
+# Tenta Python Client API Reference
 
-TODO: write
+```python
+class TentaClient()
+```
+
+
+#### \_\_init\_\_
+
+```python
+def __init__(mqtt_host: str,
+             mqtt_port: int,
+             mqtt_identifier: str,
+             mqtt_password: str,
+             sensor_identifier: str,
+             config_revision: Optional[int] = None,
+             on_config_message: Optional[Callable[[ConfigMessage],
+                                                  None]] = None,
+             on_publish: Optional[Callable[[int], None]] = None,
+             connection_timeout: int = 8,
+             tls_context: Optional[ssl.SSLContext] = None,
+             tls_parameters: Optional[TLSParameters] = None,
+             tls_insecure: Optional[bool] = None) -> None
+```
+
+Create a new Tenta client.
+
+**Arguments**:
+
+- `mqtt_host` - The host of the MQTT broker.
+- `mqtt_port` - The port of the MQTT broker.
+- `mqtt_identifier` - The MQTT identifier.
+- `mqtt_password` - The MQTT password.
+- `sensor_identifier` - The sensor identifier.
+- `config_revision` - The current revision of the sensor.
+- `on_config_message` - A callback that is called when a new
+  configuration message is received.
+- `on_publish` - A callback that is called when a message is
+  published.
+- `connection_timeout` - How many seconds to wait for the initial
+  connection to the MQTT broker until a `TimeoutError` is
+  raised.
+- `tls_context` - The TLS context to use for the connection. This
+  will be passed as is to `paho.mqtt.client.Client.tls_set_context`.
+- `tls_parameters` - The TLS parameters to use for the connection.
+  This will be passed as is to `paho.mqtt.client.Client.tls_set`.
+- `tls_insecure` - Whether to disable TLS verification. This will
+  be passed as is to `paho.mqtt.client.Client.tls_insecure_set`.
+  
+
+**Raises**:
+
+- `ConnectionError` - If the client could not connect to the
+  MQTT broker.
+- `RuntimeError` - If the MQTT background loop could not be
+  started.
+
+
+#### publish\_log
+
+```python
+def publish_log(severity: Literal["info", "warning", "error"],
+                message: str,
+                timestamp: Optional[float] = None,
+                wait_for_publish: bool = False,
+                wait_for_publish_timeout: int = 60) -> int
+```
+
+Publish a log to the MQTT broker and return the `message_id`.
+
+If `wait_for_publish` is `True`, waits until the message has been
+published or until `wait_for_publish_timeout` seconds have passed.
+Raises an exception if the timeout is reached.
+
+If `timestamp` is not specified, the current time is used.
+
+
+#### publish\_measurement
+
+```python
+def publish_measurement(value: Dict[str, Union[float, int]],
+                        timestamp: Optional[float] = None,
+                        wait_for_publish: bool = False,
+                        wait_for_publish_timeout: int = 60) -> int
+```
+
+Publish a measurement to the MQTT broker and return the `message_id`.
+
+If `wait_for_publish` is `True`, waits until the message has been
+published or until `wait_for_publish_timeout` seconds have passed.
+Raises an exception if the timeout is reached.
+
+If `timestamp` is not specified, the current time is used.
+
+
+#### publish\_acknowledgement
+
+```python
+def publish_acknowledgement(success: bool,
+                            revision: Optional[int],
+                            timestamp: Optional[float] = None,
+                            wait_for_publish: bool = False,
+                            wait_for_publish_timeout: int = 60) -> int
+```
+
+Publish an acknowledgement to the MQTT broker and return the `message_id`.
+
+If `wait_for_publish` is `True`, waits until the message has been
+published or until `wait_for_publish_timeout` seconds have passed.
+Raises an exception if the timeout is reached.
+
+If `timestamp` is not specified, the current time is used.
+
+
+#### was\_message\_published
+
+```python
+def was_message_published(message_id: int) -> bool
+```
+
+Check if the message with `message_id` was published.
+
+
+#### get\_active\_message\_count
+
+```python
+def get_active_message_count() -> int
+```
+
+Return the number of messages that have not yet been published.
+
+
+#### wait\_for\_publish
+
+```python
+def wait_for_publish(timeout: Optional[int] = 60) -> None
+```
+
+Wait until all messages have been published. Raise a
+`TimeoutError` if the timeout is reached.
+
+
+#### get\_latest\_received\_config\_message
+
+```python
+def get_latest_received_config_message() -> Optional[ConfigMessage]
+```
+
+Return the latest received configuration or `None` if no
+configuration has been received yet.
+

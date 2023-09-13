@@ -2,10 +2,7 @@
 name = "tenta"
 version = "0.0.0"
 description = ""
-authors = [
-    "Moritz Makowski <moritz@dostuffthatmatters.dev>",
-    "Felix Böhm <felix@felixboehm.dev>",
-]
+authors = ["Moritz Makowski <moritz@dostuffthatmatters.dev>"]
 readme = "README.md"
 packages = [{ include = "tenta", from = "." }]
 repository = "https://github.com/iterize/tenta"
@@ -25,6 +22,7 @@ pytest = "^7.4.2"
 pytest-cov = "^4.1.0"
 types-paho-mqtt = "^1.6.0.7"
 pytest-order = "^1.1.0"
+pydoc-markdown = "^4.8.2"
 
 [tool.mypy]
 strict = true
