@@ -275,7 +275,7 @@ class TentaClient:
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
 
-    def publish_acknowledgement(
+    def publish_acknowledgment(
         self,
         success: bool,
         revision: Optional[int],
@@ -283,7 +283,7 @@ class TentaClient:
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
-        """Publish an acknowledgement to the MQTT broker.
+        """Publish an acknowledgment to the MQTT broker.
 
         Args:
             success:                   Whether the configuration was processed/applied successfully.

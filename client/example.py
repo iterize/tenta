@@ -1,7 +1,7 @@
 # fmt: off
 # ## Basic Example
 #
-# **Create the client** and connect to the MQTT broker
+# **Create the client** and connect to the MQTT broker.
 
 
 import time
@@ -17,8 +17,8 @@ tenta_client = tenta.TentaClient(
 )
 
 
-# **Publish logs asynchronously**, i.e. your code continues to
-# run while the message is being published
+# **Publish logs asynchronously**, i.e., your code continues to
+# run while the message is being published.
 
 
 tenta_client.publish_log(
@@ -31,8 +31,8 @@ tenta_client.wait_for_publish()
 print("Logs 1-2 published!")
 
 
-# **Publish logs synchronously**, i.e. ypur code waits until the
-# message has been published successfully
+# **Publish logs synchronously**, i.e., your code waits until the
+# message has been published successfully.
 
 
 tenta_client.publish_log(
@@ -42,7 +42,7 @@ tenta_client.publish_log(
 print("Log 3 published!")
 
 
-# **Publish measurements asynchronously**
+# **Publish measurements asynchronously**.
 
 
 tenta_client.publish_measurement(
@@ -55,18 +55,18 @@ tenta_client.wait_for_publish()
 print("Measurements published!")
 
 
-# **Publish acknowledgements asynchronously**, i.e. "did the sensor successfully
-# process a new config revision?" -> true/false
+# **Publish acknowledgment asynchronously**, i.e., "did the sensor successfully
+# process a new config revision?" -> `True`/`False`.
 
 
-tenta_client.publish_acknowledgement(
+tenta_client.publish_acknowledgment(
     success=False, revision=20,
 )
 tenta_client.wait_for_publish()
-print("Acknowledgements published!")
+print("Acknowledgment published!")
 
 
-# Get the **latest received config** on demand
+# Get the **latest received config** on demand.
 
 
 config_message: typing.Optional[
@@ -74,7 +74,7 @@ config_message: typing.Optional[
 ] = tenta_client.get_latest_received_config_message()
 
 
-# **Tear down** the MQTT connection and the client
+# **Tear down** the MQTT connection and the client.
 
 
 tenta_client.teardown()
@@ -82,8 +82,9 @@ tenta_client.teardown()
 
 # ## Advanced Example
 #
-# You can gice **callbacks** to the client to get notified when a message has
+# You can pass **callbacks** to the client to get notified when a message has
 # been published successfully or when the client receives a new config message.
+# 
 # You can also check the current **length of the clients message queue** =
 # number of messages that have not been published yet. When offline, a full
 # queue might raise Exceptions.
@@ -130,7 +131,7 @@ tenta_client_with_tls = tenta.TentaClient(
     # this server certificate is only valid for the MQTT
     # broker hosted at test.mosquitto.org:8885
     tls_parameters=tenta.TLSParameters(
-        ca_certs="tests/mosquitto.org.crt",
+        ca_certs=".../tests/mosquitto.org.crt",
         cert_reqs=ssl.CERT_REQUIRED,
         tls_version=ssl.PROTOCOL_TLS_CLIENT,
     ),
@@ -138,7 +139,7 @@ tenta_client_with_tls = tenta.TentaClient(
 tenta_client_with_tls.teardown()
 
 
-# Finally, if the client does not exactly fit your needs, you can also
-# inherit from it and only override the methods you need to change or
+# Finally, if the client does not precisely fit your needs, you can also
+# inherit from it and only override the methods that require changes or
 # take the client as a starting point for your own implementation since
-# this code is open-source.
+# this code is open-source in the end.

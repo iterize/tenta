@@ -108,17 +108,17 @@ Publish a measurement to the MQTT broker.
   The `message_id` of the published message.
 
 
-#### publish\_acknowledgement
+#### publish\_acknowledgment
 
 ```python
-def publish_acknowledgement(success: bool,
-                            revision: Optional[int],
-                            timestamp: Optional[float] = None,
-                            wait_for_publish: bool = False,
-                            wait_for_publish_timeout: int = 60) -> int
+def publish_acknowledgment(success: bool,
+                           revision: Optional[int],
+                           timestamp: Optional[float] = None,
+                           wait_for_publish: bool = False,
+                           wait_for_publish_timeout: int = 60) -> int
 ```
 
-Publish an acknowledgement to the MQTT broker.
+Publish an acknowledgment to the MQTT broker.
 
 **Arguments**:
 

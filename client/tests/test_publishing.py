@@ -64,11 +64,11 @@ def test_publishing() -> None:
 
     # non-block send of acknowledgements
 
-    tenta_client.publish_acknowledgement(
+    tenta_client.publish_acknowledgment(
         revision=17,
         success=True,
     )
-    tenta_client.publish_acknowledgement(
+    tenta_client.publish_acknowledgment(
         revision=18,
         success=False,
     )
@@ -77,7 +77,7 @@ def test_publishing() -> None:
 
     # blocking send
 
-    tenta_client.publish_acknowledgement(
+    tenta_client.publish_acknowledgment(
         revision=18,
         success=False,
         wait_for_publish=True,
