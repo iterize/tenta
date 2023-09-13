@@ -5,6 +5,7 @@ import ssl
 import time
 from typing import Any, Literal, Optional, Callable, Set, Union, Dict
 import paho.mqtt.client
+import threading
 
 
 @dataclasses.dataclass(frozen=True)
@@ -30,6 +31,7 @@ class TentaClient:
     instance: Optional[TentaClient] = None
 
     # these variables are shared over all threads
+    thread_lock = threading.Lock()
     connection_rc_code: Optional[int] = None
     active_message_ids: Set[int] = set()
     latest_received_config_message: Optional[ConfigMessage] = None
@@ -97,7 +99,8 @@ class TentaClient:
             flags: Any,
             rc: int,
         ) -> None:
-            TentaClient.connection_rc_code = rc
+            with TentaClient.thread_lock:
+                TentaClient.connection_rc_code = rc
 
         # set TLS parameters if specified
 
@@ -156,7 +159,8 @@ class TentaClient:
             userdata: Any,
             message_id: int,
         ) -> None:
-            TentaClient.active_message_ids.remove(message_id)
+            with TentaClient.thread_lock:
+                TentaClient.active_message_ids.remove(message_id)
             if on_publish is not None:
                 on_publish(message_id)
 
@@ -185,7 +189,8 @@ class TentaClient:
                 revision=payload["revision"],
                 configuration=payload["configuration"],
             )
-            TentaClient.latest_received_config_message = config_message
+            with TentaClient.thread_lock:
+                TentaClient.latest_received_config_message = config_message
             if on_config_message is not None:
                 on_config_message(config_message)
 
@@ -292,20 +297,21 @@ class TentaClient:
 
         If `timestamp` is not specified, the current time is used."""
 
-        mqtt_message_info = self.client.publish(
-            topic=topic,
-            payload=json.dumps(
-                [
-                    {
-                        **body,
-                        "timestamp": (
-                            timestamp if timestamp is not None else time.time()
-                        ),
-                    }
-                ]
-            ),
-        )
-        TentaClient.active_message_ids.add(mqtt_message_info.mid)
+        with TentaClient.thread_lock:
+            mqtt_message_info = self.client.publish(
+                topic=topic,
+                payload=json.dumps(
+                    [
+                        {
+                            **body,
+                            "timestamp": (
+                                timestamp if timestamp is not None else time.time()
+                            ),
+                        }
+                    ]
+                ),
+            )
+            TentaClient.active_message_ids.add(mqtt_message_info.mid)
 
         if wait_for_publish:
             # FIXME: I don't know why this method does not work
