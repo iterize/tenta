@@ -132,7 +132,7 @@ tenta_client_with_tls = tenta.TentaClient(
     tls_parameters=tenta.TLSParameters(
         ca_certs="tests/mosquitto.org.crt",
         cert_reqs=ssl.CERT_REQUIRED,
-        tls_version=ssl.PROTOCOL_TLSv1_2,
+        tls_version=ssl.PROTOCOL_TLS_CLIENT,
     ),
 )
 tenta_client_with_tls.teardown()

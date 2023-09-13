@@ -1,3 +1,4 @@
+from __future__ import annotations
 import dataclasses
 import json
 import ssl
@@ -26,6 +27,13 @@ class TLSParameters:
 
 
 class TentaClient:
+    instance: Optional[TentaClient] = None
+
+    # these variables are shared over all threads
+    connection_rc_code: Optional[int] = None
+    active_message_ids: Set[int] = set()
+    latest_received_config_message: Optional[ConfigMessage] = None
+
     def __init__(
         self,
         # --- Required args
@@ -72,8 +80,12 @@ class TentaClient:
                 MQTT broker.
         """
 
+        if TentaClient.instance is not None:
+            raise Exception("There can only be one TentaClient instance per process")
+
+        TentaClient.instance = self
+
         self.client = paho.mqtt.client.Client()
-        connection_rc_code: Optional[int] = None
 
         # on connect, the connection rc code is set:
         # (0 = success, 1 = incorrect protocol, 2 = invalid client id,
@@ -85,8 +97,7 @@ class TentaClient:
             flags: Any,
             rc: int,
         ) -> None:
-            nonlocal connection_rc_code
-            connection_rc_code = rc
+            TentaClient.connection_rc_code = rc
 
         # set TLS parameters if specified
 
@@ -112,11 +123,11 @@ class TentaClient:
             while True:
                 if time.time() > (start_time + connection_timeout):
                     raise TimeoutError("timed out while connecting")
-                if connection_rc_code is None:
+                if TentaClient.connection_rc_code is None:
                     time.sleep(0.1)
                     continue
                 else:
-                    if connection_rc_code == 0:
+                    if TentaClient.connection_rc_code == 0:
                         break
                     raise Exception(
                         {
@@ -126,8 +137,8 @@ class TentaClient:
                             4: "bad username or password",
                             5: "not authorised",
                         }.get(
-                            connection_rc_code,
-                            f"unknown error code: {connection_rc_code}",
+                            TentaClient.connection_rc_code,
+                            f"unknown error code: {TentaClient.connection_rc_code}",
                         )
                     )
         except Exception as e:
@@ -137,8 +148,6 @@ class TentaClient:
 
         self.sensor_identifier = sensor_identifier
         self.config_revision = config_revision
-        self.active_message_ids: Set[int] = set()
-        self.latest_received_config_message: Optional[ConfigMessage] = None
 
         # on message publish, the message id is removed from the set of
         # active message ids and the `on_publish` callback is called
@@ -147,7 +156,7 @@ class TentaClient:
             userdata: Any,
             message_id: int,
         ) -> None:
-            self.active_message_ids.remove(message_id)
+            TentaClient.active_message_ids.remove(message_id)
             if on_publish is not None:
                 on_publish(message_id)
 
@@ -176,7 +185,7 @@ class TentaClient:
                 revision=payload["revision"],
                 configuration=payload["configuration"],
             )
-            self.latest_received_config_message = config_message
+            TentaClient.latest_received_config_message = config_message
             if on_config_message is not None:
                 on_config_message(config_message)
 
@@ -296,7 +305,7 @@ class TentaClient:
                 ]
             ),
         )
-        self.active_message_ids.add(mqtt_message_info.mid)
+        TentaClient.active_message_ids.add(mqtt_message_info.mid)
 
         if wait_for_publish:
             # FIXME: I don't know why this method does not work
@@ -315,12 +324,12 @@ class TentaClient:
     def was_message_published(self, message_id: int) -> bool:
         """Check if the message with `message_id` was published."""
 
-        return message_id not in self.active_message_ids
+        return message_id not in TentaClient.active_message_ids
 
     def get_active_message_count(self) -> int:
         """Return the number of messages that have not yet been published."""
 
-        return len(self.active_message_ids)
+        return len(TentaClient.active_message_ids)
 
     def wait_for_publish(self, timeout: Optional[int] = 60) -> None:
         """Wait until all messages have been published. Raise a
@@ -339,8 +348,18 @@ class TentaClient:
         """Return the latest received configuration or `None` if no
         configuration has been received yet."""
 
-        return self.latest_received_config_message
+        return TentaClient.latest_received_config_message
 
     def teardown(self) -> None:
         self.client.loop_stop()
         self.client.disconnect()
+        TentaClient.instance = None
+        TentaClient.connection_rc_code = None
+        TentaClient.active_message_ids = set()
+        TentaClient.latest_received_config_message = None
+
+    @staticmethod
+    def reset() -> None:
+        if TentaClient.instance is not None:
+            TentaClient.instance.teardown()
+            TentaClient.instance = None

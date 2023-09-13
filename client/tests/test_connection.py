@@ -14,7 +14,7 @@ MQTT_BROKERS: typing.List[typing.Dict[str, typing.Any]] = [
         "tls_parameters": tenta.TLSParameters(
             ca_certs=os.path.join(PROJECT_DIR, "tests/mosquitto.org.crt"),
             cert_reqs=ssl.CERT_REQUIRED,
-            tls_version=ssl.PROTOCOL_TLSv1_2,
+            tls_version=ssl.PROTOCOL_TLS_CLIENT,
         ),
     },
     {
@@ -47,11 +47,12 @@ def test_bad_connection_with_wrong_host() -> None:
             tenta.TentaClient(
                 **{**broker, "mqtt_host": "notadomain"},
                 **DEFAULTS,
-            ).teardown()
-        except Exception:
-            return
-
-        raise Exception("Should have raised an exception")
+            )
+            raise Exception("Should have raised a ConnectionError")
+        except ConnectionError:
+            pass
+        finally:
+            tenta.TentaClient.reset()
 
 
 @pytest.mark.order(2)
@@ -61,11 +62,12 @@ def test_bad_connection_with_wrong_port() -> None:
             tenta.TentaClient(
                 **{**broker, "mqtt_port": 1234},
                 **DEFAULTS,
-            ).teardown()
+            )
+            raise Exception("Should have raised a ConnectionError")
         except ConnectionError:
-            return
-
-        raise Exception("Should have raised a ConnectionError")
+            pass
+        finally:
+            tenta.TentaClient.reset()
 
 
 @pytest.mark.order(2)
@@ -75,11 +77,12 @@ def test_bad_connection_with_wrong_identifier() -> None:
             tenta.TentaClient(
                 **{**broker, "mqtt_identifier": "..."},
                 **DEFAULTS,
-            ).teardown()
+            )
+            raise Exception("Should have raised a ConnectionError")
         except ConnectionError:
-            return
-
-        raise Exception("Should have raised a ConnectionError")
+            pass
+        finally:
+            tenta.TentaClient.reset()
 
 
 @pytest.mark.order(2)
@@ -89,8 +92,10 @@ def test_bad_connection_with_wrong_password() -> None:
             tenta.TentaClient(
                 **{**broker, "mqtt_password": "..."},
                 **DEFAULTS,
-            ).teardown()
+            )
         except ConnectionError:
             return
+        finally:
+            tenta.TentaClient.reset()
 
         raise Exception("Should have raised a ConnectionError")
