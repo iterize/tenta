@@ -326,6 +326,23 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
+name = "pytest-order"
+version = "1.1.0"
+description = "pytest plugin to run your tests in a specific order"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pytest-order-1.1.0.tar.gz", hash = "sha256:139d25b30826b78eebb42722f747eab14c44b88059d7a71d4f79d14a057269a5"},
+    {file = "pytest_order-1.1.0-py3-none-any.whl", hash = "sha256:3b3730969c97900fa5cd31ecff80847680ed56b2490954565c14949ba60d9371"},
+]
+
+[package.dependencies]
+pytest = [
+    {version = ">=5.0", markers = "python_version < \"3.10\""},
+    {version = ">=6.2.4", markers = "python_version >= \"3.10\""},
+]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -361,4 +378,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<4.0"
-content-hash = "d2ba77470506d387b784ba633ec3e636a2b5d9322321c2595948f8cfb88ef20e"
+content-hash = "346ee5d31131276707b1fea2f59e6bef4c6761d49f6eb6c970015d9a5f2ed4b6"

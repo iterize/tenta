@@ -21,7 +21,9 @@ class TLSParameters:
     cert_reqs: typing.Optional[ssl.VerifyMode] = None
     tls_version: typing.Optional[ssl._SSLMethod] = None
     ciphers: typing.Optional[str] = None
-    # keyfile_password: typing.Optional[ssl._PasswordType] = None
+
+    # I couldn't find a way to type this properly yet
+    keyfile_password: typing.Optional[typing.Any] = None
 
 
 class TentaClient:
@@ -34,7 +36,7 @@ class TentaClient:
         mqtt_password: str,
         sensor_identifier: str,
         # --- Optional args
-        revision: Optional[int] = None,
+        config_revision: Optional[int] = None,
         on_config_message: Optional[typing.Callable[[ConfigMessage], None]] = None,
         on_publish: Optional[typing.Callable[[int], None]] = None,
         connection_timeout: int = 8,
@@ -61,9 +63,12 @@ class TentaClient:
             connection_timeout: How many seconds to wait for the initial
                 connection to the MQTT broker until a `TimeoutError` is
                 raised.
-            tls_context: The TLS context to use for the connection.
+            tls_context: The TLS context to use for the connection. This
+                will be passed as is to `paho.mqtt.client.Client.tls_set_context`.
             tls_parameters: The TLS parameters to use for the connection.
-            tls_insecure: Whether to disable TLS verification.
+                This will be passed as is to `paho.mqtt.client.Client.tls_set`.
+            tls_insecure: Whether to disable TLS verification. This will
+                be passed as is to `paho.mqtt.client.Client.tls_insecure_set`.
 
         Raises:
             ConnectionError: If the client could not connect to the
@@ -136,7 +141,7 @@ class TentaClient:
             )
 
         self.sensor_identifier = sensor_identifier
-        self.revision = revision
+        self.config_revision = config_revision
         self.active_message_ids: typing.Set[int] = set()
         self.latest_received_config_message: typing.Optional[ConfigMessage] = None
 
@@ -205,7 +210,7 @@ class TentaClient:
         return self._publish(
             topic=f"logs/{self.sensor_identifier}",
             body={
-                "revision": self.revision,
+                "revision": self.config_revision,
                 "severity": severity,
                 "message": message,
             },
@@ -232,7 +237,7 @@ class TentaClient:
         return self._publish(
             topic=f"measurements/{self.sensor_identifier}",
             body={
-                "revision": self.revision,
+                "revision": self.config_revision,
                 "value": value,
             },
             timestamp=timestamp,
@@ -243,7 +248,7 @@ class TentaClient:
     def publish_acknowledgement(
         self,
         success: bool,
-        revision: Optional[int] = None,
+        revision: Optional[int],
         timestamp: Optional[float] = None,
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
@@ -259,7 +264,7 @@ class TentaClient:
         return self._publish(
             topic=f"acknowledgments/{self.sensor_identifier}",
             body={
-                "revision": self.revision if revision is None else revision,
+                "revision": revision,
                 "success": success,
             },
             timestamp=timestamp,
