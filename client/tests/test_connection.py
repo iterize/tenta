@@ -40,7 +40,7 @@ def test_successful_connection() -> None:
         ).teardown()
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(2)
 def test_bad_connection_with_wrong_host() -> None:
     for broker in MQTT_BROKERS:
         try:
@@ -54,7 +54,7 @@ def test_bad_connection_with_wrong_host() -> None:
         raise Exception("Should have raised an exception")
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(2)
 def test_bad_connection_with_wrong_port() -> None:
     for broker in MQTT_BROKERS:
         try:
@@ -68,7 +68,7 @@ def test_bad_connection_with_wrong_port() -> None:
         raise Exception("Should have raised a ConnectionError")
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(2)
 def test_bad_connection_with_wrong_identifier() -> None:
     for broker in MQTT_BROKERS:
         try:
@@ -82,7 +82,7 @@ def test_bad_connection_with_wrong_identifier() -> None:
         raise Exception("Should have raised a ConnectionError")
 
 
-@pytest.mark.order(3)
+@pytest.mark.order(2)
 def test_bad_connection_with_wrong_password() -> None:
     for broker in MQTT_BROKERS:
         try:

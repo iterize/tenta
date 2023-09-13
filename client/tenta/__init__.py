@@ -299,14 +299,23 @@ class TentaClient:
         self.active_message_ids.add(mqtt_message_info.mid)
 
         if wait_for_publish:
-            mqtt_message_info.wait_for_publish(wait_for_publish_timeout)
+            # FIXME: I don't know why this method does not work
+            # mqtt_message_info.wait_for_publish(wait_for_publish_timeout)
+
+            start_time = time.time()
+            while not self.was_message_published(mqtt_message_info.mid):
+                time.sleep(0.1)
+                if time.time() > (start_time + wait_for_publish_timeout):
+                    raise TimeoutError(
+                        "Timed out while waiting for messages to be published"
+                    )
 
         return mqtt_message_info.mid
 
     def was_message_published(self, message_id: int) -> bool:
         """Check if the message with `message_id` was published."""
 
-        return message_id in self.active_message_ids
+        return message_id not in self.active_message_ids
 
     def get_active_message_count(self) -> int:
         """Return the number of messages that have not yet been published."""

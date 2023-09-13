@@ -19,7 +19,7 @@ API_DST = os.path.join(
 )
 
 
-@pytest.mark.order(5)
+@pytest.mark.order(4)
 def test_documentation_sync() -> None:
     with open(EXAMPLE_DST, "r") as f:
         checksum_of_example_before = hashlib.md5(f.read().encode()).hexdigest()

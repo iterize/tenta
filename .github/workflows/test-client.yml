@@ -67,4 +67,4 @@ jobs:
       - name: Run pytests
         run: |
           source .venv/bin/activate
-          pytest --verbose --cov=tenta tests/
+          pytest --verbose --cov=tenta --cov-report=term-missing tests
