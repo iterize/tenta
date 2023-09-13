@@ -1,1 +1,1 @@
-from .client import TentaClient, ConfigMessageDict
+from .client import TentaClient, ConfigMessage, TLSParameters

@@ -1,27 +1,47 @@
+import dataclasses
 import json
+import ssl
 import time
 from typing import Literal, Optional
 import typing
 import paho.mqtt.client
 
 
-class ConfigMessageDict(typing.TypedDict):
+@dataclasses.dataclass(frozen=True)
+class ConfigMessage:
     revision: int
     configuration: typing.Any
+
+
+@dataclasses.dataclass(frozen=True)
+class TLSParameters:
+    ca_certs: typing.Optional[str] = None
+    certfile: typing.Optional[str] = None
+    keyfile: typing.Optional[str] = None
+    cert_reqs: typing.Optional[ssl.VerifyMode] = None
+    tls_version: typing.Optional[ssl._SSLMethod] = None
+    ciphers: typing.Optional[str] = None
+    # keyfile_password: typing.Optional[ssl._PasswordType] = None
 
 
 class TentaClient:
     def __init__(
         self,
+        # --- Required args
         mqtt_host: str,
         mqtt_port: int,
         mqtt_identifier: str,
         mqtt_password: str,
         sensor_identifier: str,
+        # --- Optional args
         revision: Optional[int] = None,
-        on_config_message: Optional[typing.Callable[[ConfigMessageDict], None]] = None,
+        on_config_message: Optional[typing.Callable[[ConfigMessage], None]] = None,
         on_publish: Optional[typing.Callable[[int], None]] = None,
         connection_timeout: int = 8,
+        # --- TLS parameters
+        tls_context: typing.Optional[ssl.SSLContext] = None,
+        tls_parameters: typing.Optional[TLSParameters] = None,
+        tls_insecure: typing.Optional[bool] = None,
     ) -> None:
         """Create a new Tenta client.
 
@@ -38,6 +58,12 @@ class TentaClient:
                 configuration message is received.
             on_publish: A callback that is called when a message is
                 published.
+            connection_timeout: How many seconds to wait for the initial
+                connection to the MQTT broker until a `TimeoutError` is
+                raised.
+            tls_context: The TLS context to use for the connection.
+            tls_parameters: The TLS parameters to use for the connection.
+            tls_insecure: Whether to disable TLS verification.
 
         Raises:
             ConnectionError: If the client could not connect to the
@@ -61,6 +87,15 @@ class TentaClient:
         ) -> None:
             nonlocal connection_rc_code
             connection_rc_code = rc
+
+        # set TLS parameters if specified
+
+        if tls_context is not None:
+            self.client.tls_set_context(tls_context)
+        if tls_parameters is not None:
+            self.client.tls_set(**tls_parameters.__dict__)
+        if tls_insecure is not None:
+            self.client.tls_insecure_set(tls_insecure)
 
         # connect to the MQTT broker and raise a `ConnectionError` if
         # the connection fails or times out (default: after 8 seconds)
@@ -103,7 +138,7 @@ class TentaClient:
         self.sensor_identifier = sensor_identifier
         self.revision = revision
         self.active_message_ids: typing.Set[int] = set()
-        self.latest_received_config_message: typing.Optional[ConfigMessageDict] = None
+        self.latest_received_config_message: typing.Optional[ConfigMessage] = None
 
         # on message publish, the message id is removed from the set of
         # active message ids and the `on_publish` callback is called
@@ -125,7 +160,7 @@ class TentaClient:
             message: paho.mqtt.client.MQTTMessage,
         ) -> None:
             try:
-                payload: ConfigMessageDict = json.loads(message.payload.decode())
+                payload = json.loads(message.payload.decode())
             except:
                 return
 
@@ -137,10 +172,13 @@ class TentaClient:
             except:
                 return
 
-            self.latest_received_config_message = payload
-
+            config_message = ConfigMessage(
+                revision=payload["revision"],
+                configuration=payload["configuration"],
+            )
+            self.latest_received_config_message = config_message
             if on_config_message is not None:
-                on_config_message(payload)
+                on_config_message(config_message)
 
         # subscribe to the configuration topic and set the callbacks
         # for successfully publishing and receiving messages
@@ -288,7 +326,7 @@ class TentaClient:
                     "Timed out while waiting for messages to be published"
                 )
 
-    def get_latest_received_config_message(self) -> Optional[ConfigMessageDict]:
+    def get_latest_received_config_message(self) -> Optional[ConfigMessage]:
         """Return the latest received configuration or `None` if no
         configuration has been received yet."""
 
