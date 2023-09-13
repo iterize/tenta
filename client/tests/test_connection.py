@@ -52,7 +52,8 @@ def test_bad_connection_with_wrong_host() -> None:
         except ConnectionError:
             pass
         finally:
-            tenta.TentaClient.reset()
+            if tenta.TentaClient.instance is not None:
+                tenta.TentaClient.instance.teardown()
 
 
 @pytest.mark.order(2)
@@ -67,7 +68,8 @@ def test_bad_connection_with_wrong_port() -> None:
         except ConnectionError:
             pass
         finally:
-            tenta.TentaClient.reset()
+            if tenta.TentaClient.instance is not None:
+                tenta.TentaClient.instance.teardown()
 
 
 @pytest.mark.order(2)
@@ -82,7 +84,8 @@ def test_bad_connection_with_wrong_identifier() -> None:
         except ConnectionError:
             pass
         finally:
-            tenta.TentaClient.reset()
+            if tenta.TentaClient.instance is not None:
+                tenta.TentaClient.instance.teardown()
 
 
 @pytest.mark.order(2)
@@ -96,6 +99,7 @@ def test_bad_connection_with_wrong_password() -> None:
         except ConnectionError:
             return
         finally:
-            tenta.TentaClient.reset()
+            if tenta.TentaClient.instance is not None:
+                tenta.TentaClient.instance.teardown()
 
         raise Exception("Should have raised a ConnectionError")

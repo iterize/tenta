@@ -3,7 +3,7 @@ import dataclasses
 import json
 import ssl
 import time
-from typing import Any, Literal, Optional, Callable, Set, Union, Dict
+from typing import Any, List, Literal, Optional, Callable, Set, Union, Dict
 import paho.mqtt.client
 import threading
 
@@ -54,40 +54,42 @@ class TentaClient:
         tls_parameters: Optional[TLSParameters] = None,
         tls_insecure: Optional[bool] = None,
     ) -> None:
-        """Create a new Tenta client.
+        """Create a new Tenta client. Prevents creating multiple instances.
+
+        You can look at the [advanced example](/user-guide/python-client-example#advanced-example)
+        in the documentation to see how to pass the TLS parameters.
 
         Args:
-            mqtt_host: The host of the MQTT broker.
-            mqtt_port: The port of the MQTT broker.
-            mqtt_identifier: The MQTT identifier.
-            mqtt_password: The MQTT password.
-            sensor_identifier: The sensor identifier.
-            config_revision: The current revision of the sensor.
-            on_config_message: A callback that is called when a new
-                configuration message is received.
-            on_publish: A callback that is called when a message is
-                published.
-            connection_timeout: How many seconds to wait for the initial
-                connection to the MQTT broker until a `TimeoutError` is
-                raised.
-            tls_context: The TLS context to use for the connection. This
-                will be passed as is to `paho.mqtt.client.Client.tls_set_context`.
-            tls_parameters: The TLS parameters to use for the connection.
-                This will be passed as is to `paho.mqtt.client.Client.tls_set`.
-            tls_insecure: Whether to disable TLS verification. This will
-                be passed as is to `paho.mqtt.client.Client.tls_insecure_set`.
+            mqtt_host:           The host of the MQTT broker.
+            mqtt_port:           The port of the MQTT broker.
+            mqtt_identifier:     The MQTT identifier.
+            mqtt_password:       The MQTT password.
+            sensor_identifier:   The sensor identifier.
+            config_revision:     The current revision of the sensor.
+            on_config_message:   A callback that is called when a new configuration message is received.
+            on_publish:          A callback that is called when a message is published.
+            connection_timeout:  How many seconds to wait for the initial connection to the MQTT
+                                 broker until a `TimeoutError` is raised.
+            tls_context:         The TLS context to use for the connection. This will be passed as
+                                 is to `paho.mqtt.client.Client.tls_set_context`.
+            tls_parameters:      The TLS parameters to use for the connection. This will be passed
+                                 as is to `paho.mqtt.client.Client.tls_set`.
+            tls_insecure:        Whether to disable TLS verification. This will be passed as is to
+                                 `paho.mqtt.client.Client.tls_insecure_set`.
 
         Raises:
-            ConnectionError: If the client could not connect to the
-                MQTT broker.
+            RuntimeError:     If there is already a Tenta client instance.
+            ConnectionError:  If the client could not connect to the MQTT broker.
         """
 
         if TentaClient.instance is not None:
-            raise Exception("There can only be one TentaClient instance per process")
+            raise RuntimeError("There can only be one TentaClient instance per process")
 
         TentaClient.instance = self
 
         self.client = paho.mqtt.client.Client()
+        self.sensor_identifier = sensor_identifier
+        self.config_revision = config_revision
 
         # on connect, the connection rc code is set:
         # (0 = success, 1 = incorrect protocol, 2 = invalid client id,
@@ -102,7 +104,7 @@ class TentaClient:
             with TentaClient.thread_lock:
                 TentaClient.connection_rc_code = rc
 
-        # set TLS parameters if specified
+        # set TLS configuration if specified
 
         if tls_context is not None:
             self.client.tls_set_context(tls_context)
@@ -148,9 +150,6 @@ class TentaClient:
             raise ConnectionError(
                 f"Could not connect to MQTT broker at {mqtt_host}:{mqtt_port} ({e})"
             )
-
-        self.sensor_identifier = sensor_identifier
-        self.config_revision = config_revision
 
         # on message publish, the message id is removed from the set of
         # active message ids and the `on_publish` callback is called
@@ -208,22 +207,31 @@ class TentaClient:
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
-        """Publish a log to the MQTT broker and return the `message_id`.
+        """Publish a log to the MQTT broker.
 
-        If `wait_for_publish` is `True`, waits until the message has been
-        published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached.
+        Args:
+            severity:                  The severity of the log.
+            message:                   The log message.
+            timestamp:                 Timestamp of the log. Uses the current time if not specified.
+            wait_for_publish:          Whether to wait for the message to be published.
+            wait_for_publish_timeout:  How many seconds to wait for the message to be published
+                                       until a `TimeoutError` is raised. Only used if
+                                       `wait_for_publish` is `True`.
 
-        If `timestamp` is not specified, the current time is used."""
+        Returns:
+            The `message_id` of the published message.
+        """
 
         return self._publish(
             topic=f"logs/{self.sensor_identifier}",
-            body={
-                "revision": self.config_revision,
-                "severity": severity,
-                "message": message,
-            },
-            timestamp=timestamp,
+            body=[
+                {
+                    "revision": self.config_revision,
+                    "severity": severity,
+                    "message": message,
+                    "timestamp": timestamp if timestamp is not None else time.time(),
+                }
+            ],
             wait_for_publish=wait_for_publish,
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
@@ -235,21 +243,28 @@ class TentaClient:
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
-        """Publish a measurement to the MQTT broker and return the `message_id`.
+        """Publish a measurement to the MQTT broker.
 
-        If `wait_for_publish` is `True`, waits until the message has been
-        published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached.
+        Args:
+            value:                     The measurement value, e.g. `{"temperature": 20.5, "humidity": 50}`.
+            timestamp:                 Timestamp of the log. Uses the current time if not specified.
+            wait_for_publish:          Whether to wait for the message to be published.
+            wait_for_publish_timeout:  How many seconds to wait for the message to be published
+                                       until a `TimeoutError` is raised. Only used if
+                                       `wait_for_publish` is `True`.
 
-        If `timestamp` is not specified, the current time is used."""
+        Returns: The `message_id` of the published message.
+        """
 
         return self._publish(
             topic=f"measurements/{self.sensor_identifier}",
-            body={
-                "revision": self.config_revision,
-                "value": value,
-            },
-            timestamp=timestamp,
+            body=[
+                {
+                    "revision": self.config_revision,
+                    "value": value,
+                    "timestamp": timestamp if timestamp is not None else time.time(),
+                }
+            ],
             wait_for_publish=wait_for_publish,
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
@@ -262,21 +277,29 @@ class TentaClient:
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
-        """Publish an acknowledgement to the MQTT broker and return the `message_id`.
+        """Publish an acknowledgement to the MQTT broker.
 
-        If `wait_for_publish` is `True`, waits until the message has been
-        published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached.
+        Args:
+            success:                   Whether the configuration was processed/applied successfully.
+            revision:                  The revision of the configuration that was processed/applied.
+            timestamp:                 Timestamp of the log. Uses the current time if not specified.
+            wait_for_publish:          Whether to wait for the message to be published.
+            wait_for_publish_timeout:  How many seconds to wait for the message to be published
+                                       until a `TimeoutError` is raised. Only used if
+                                       `wait_for_publish` is `True`.
 
-        If `timestamp` is not specified, the current time is used."""
+        Returns: The `message_id` of the published message.
+        """
 
         return self._publish(
             topic=f"acknowledgments/{self.sensor_identifier}",
-            body={
-                "revision": revision,
-                "success": success,
-            },
-            timestamp=timestamp,
+            body=[
+                {
+                    "revision": revision,
+                    "success": success,
+                    "timestamp": timestamp if timestamp is not None else time.time(),
+                }
+            ],
             wait_for_publish=wait_for_publish,
             wait_for_publish_timeout=wait_for_publish_timeout,
         )
@@ -284,37 +307,32 @@ class TentaClient:
     def _publish(
         self,
         topic: str,
-        body: Dict[str, Any],
-        timestamp: Optional[float] = None,
+        body: List[Dict[str, Any]],
         wait_for_publish: bool = False,
         wait_for_publish_timeout: int = 60,
     ) -> int:
-        """Publish a message to the MQTT broker and return the `message_id`.
+        """Publish an body to a topic on the MQTT broker.
 
-        If `wait_for_publish` is `True`, waits until the message has been
-        published or until `wait_for_publish_timeout` seconds have passed.
-        Raises an exception if the timeout is reached.
+        Args:
+            topic:                     The topic to publish to.
+            body:                      Body of the message.
+            wait_for_publish:          Whether to wait for the message to be published.
+            wait_for_publish_timeout:  How many seconds to wait for the message to be published
+                                       until a `TimeoutError` is raised. Only used if
+                                       `wait_for_publish` is `True`.
 
-        If `timestamp` is not specified, the current time is used."""
+        Returns: The `message_id` of the published message.
+        """
 
         with TentaClient.thread_lock:
             mqtt_message_info = self.client.publish(
                 topic=topic,
-                payload=json.dumps(
-                    [
-                        {
-                            **body,
-                            "timestamp": (
-                                timestamp if timestamp is not None else time.time()
-                            ),
-                        }
-                    ]
-                ),
+                payload=json.dumps(body),
             )
             TentaClient.active_message_ids.add(mqtt_message_info.mid)
 
         if wait_for_publish:
-            # FIXME: I don't know why this method does not work
+            # FIXME: I don't know why the native paho method (below) does not work
             # mqtt_message_info.wait_for_publish(wait_for_publish_timeout)
 
             start_time = time.time()
@@ -328,18 +346,30 @@ class TentaClient:
         return mqtt_message_info.mid
 
     def was_message_published(self, message_id: int) -> bool:
-        """Check if the message with `message_id` was published."""
+        """Check if a message with a given id was published.
+
+        Args:
+            message_id:  The `message_id` of the message.
+
+        Returns: Whether the message was published.
+        """
 
         return message_id not in TentaClient.active_message_ids
 
     def get_active_message_count(self) -> int:
-        """Return the number of messages that have not yet been published."""
+        """Get how many messages have not yet been published.
+
+        Returns: The number of messages that have not yet been published.
+        """
 
         return len(TentaClient.active_message_ids)
 
     def wait_for_publish(self, timeout: Optional[int] = 60) -> None:
-        """Wait until all messages have been published. Raise a
-        `TimeoutError` if the timeout is reached."""
+        """Wait until all messages have been published.
+
+        Args:
+            timeout:  How many seconds to wait until a `TimeoutError` is raised.
+        """
 
         start_time = time.time()
 
@@ -351,21 +381,20 @@ class TentaClient:
                 )
 
     def get_latest_received_config_message(self) -> Optional[ConfigMessage]:
-        """Return the latest received configuration or `None` if no
-        configuration has been received yet."""
+        """Return the latest received configuration.
+
+        Returns: The latest received configuration or `None` if no configuration has been received
+                 yet.
+        """
 
         return TentaClient.latest_received_config_message
 
     def teardown(self) -> None:
+        """Disconnect from the MQTT broker and stop the client loop."""
+
         self.client.loop_stop()
         self.client.disconnect()
         TentaClient.instance = None
         TentaClient.connection_rc_code = None
         TentaClient.active_message_ids = set()
         TentaClient.latest_received_config_message = None
-
-    @staticmethod
-    def reset() -> None:
-        if TentaClient.instance is not None:
-            TentaClient.instance.teardown()
-            TentaClient.instance = None
