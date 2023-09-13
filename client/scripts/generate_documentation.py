@@ -52,7 +52,7 @@ api_reference_content = "\n".join(
             lambda line: not line.startswith('<a id="'),
             (
                 ["# Tenta Python Client API Reference"]
-                + raw_api_reference_content.split("\n")[7:]
+                + raw_api_reference_content.split("\n")[5:]
             ),
         )
     )

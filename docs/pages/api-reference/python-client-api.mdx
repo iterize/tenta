@@ -1,5 +1,54 @@
 # Tenta Python Client API Reference
 
+It exports the three classes `ConfigMessage`, `TLSParameters` and `TentaClient`.
+
+
+## ConfigMessage Objects
+
+```python
+class ConfigMessage()
+```
+
+A configuration message published by the server. Used by the `TentaClient`
+class to produce a typed object for received configs.
+
+
+#### \_\_init\_\_
+
+```python
+def __init__(revision: int, configuration: Any) -> None
+```
+
+Create a new configuration message.
+
+
+## TLSParameters Objects
+
+```python
+class TLSParameters()
+```
+
+TLS parameters for the MQTT connection. Passed as
+is to `paho.mqtt.client.Client.tls_set`.
+
+
+#### \_\_init\_\_
+
+```python
+def __init__(ca_certs: Optional[str] = None,
+             certfile: Optional[str] = None,
+             keyfile: Optional[str] = None,
+             cert_reqs: Optional[ssl.VerifyMode] = None,
+             tls_version: Optional[ssl._SSLMethod] = None,
+             ciphers: Optional[str] = None,
+             keyfile_password: Optional[Any] = None) -> None
+```
+
+Create a new TLS parameters object.
+
+
+## TentaClient Objects
+
 ```python
 class TentaClient()
 ```

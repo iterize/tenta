@@ -1,5 +1,9 @@
+"""**The Tenta Python client library**
+
+It exports the three classes `ConfigMessage`, `TLSParameters` and `TentaClient`."""
+
+
 from __future__ import annotations
-import dataclasses
 import json
 import ssl
 import time
@@ -8,23 +12,45 @@ import paho.mqtt.client
 import threading
 
 
-@dataclasses.dataclass(frozen=True)
 class ConfigMessage:
-    revision: int
-    configuration: Any
+    """A configuration message published by the server. Used by the `TentaClient`
+    class to produce a typed object for received configs."""
+
+    def __init__(
+        self,
+        revision: int,
+        configuration: Any,
+    ) -> None:
+        """Create a new configuration message."""
+
+        self.revision = revision
+        self.configuration = configuration
 
 
-@dataclasses.dataclass(frozen=True)
 class TLSParameters:
-    ca_certs: Optional[str] = None
-    certfile: Optional[str] = None
-    keyfile: Optional[str] = None
-    cert_reqs: Optional[ssl.VerifyMode] = None
-    tls_version: Optional[ssl._SSLMethod] = None
-    ciphers: Optional[str] = None
+    """TLS parameters for the MQTT connection. Passed as
+    is to `paho.mqtt.client.Client.tls_set`."""
 
-    # I couldn't find a way to type this properly yet
-    keyfile_password: Optional[Any] = None
+    def __init__(
+        self,
+        ca_certs: Optional[str] = None,
+        certfile: Optional[str] = None,
+        keyfile: Optional[str] = None,
+        cert_reqs: Optional[ssl.VerifyMode] = None,
+        tls_version: Optional[ssl._SSLMethod] = None,
+        ciphers: Optional[str] = None,
+        # FIXME: I couldn't find a way to type this properly yet
+        keyfile_password: Optional[Any] = None,
+    ) -> None:
+        """Create a new TLS parameters object."""
+
+        self.ca_certs = ca_certs
+        self.certfile = certfile
+        self.keyfile = keyfile
+        self.cert_reqs = cert_reqs
+        self.tls_version = tls_version
+        self.ciphers = ciphers
+        self.keyfile_password = keyfile_password
 
 
 class TentaClient:
