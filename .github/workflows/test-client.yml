@@ -56,6 +56,13 @@ jobs:
         if: steps.cached-venv.outputs.cache-hit != 'true'
         run: poetry install --with=dev
 
+      # Install mosquitto dependencies
+      - name: Install mosquitto dependencies
+        run: |
+          sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa -y
+          sudo apt-get update -y
+          sudo apt-get install -y mosquitto-clients
+
       # run test suite
       - name: Run pytests
         run: |
