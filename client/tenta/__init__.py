@@ -70,8 +70,6 @@ class TentaClient:
         Raises:
             ConnectionError: If the client could not connect to the
                 MQTT broker.
-            RuntimeError: If the MQTT background loop could not be
-                started.
         """
 
         self.client = paho.mqtt.client.Client()
