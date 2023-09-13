@@ -102,7 +102,10 @@ Publish a measurement to the MQTT broker.
   until a `TimeoutError` is raised. Only used if
   `wait_for_publish` is `True`.
   
-- `Returns` - The `message_id` of the published message.
+
+**Returns**:
+
+  The `message_id` of the published message.
 
 
 #### publish\_acknowledgement
@@ -127,7 +130,10 @@ Publish an acknowledgement to the MQTT broker.
   until a `TimeoutError` is raised. Only used if
   `wait_for_publish` is `True`.
   
-- `Returns` - The `message_id` of the published message.
+
+**Returns**:
+
+  The `message_id` of the published message.
 
 
 #### was\_message\_published
@@ -142,7 +148,10 @@ Check if a message with a given id was published.
 
 - `message_id` - The `message_id` of the message.
   
-- `Returns` - Whether the message was published.
+
+**Returns**:
+
+  Whether the message was published.
 
 
 #### get\_active\_message\_count
@@ -153,7 +162,9 @@ def get_active_message_count() -> int
 
 Get how many messages have not yet been published.
 
-Returns: The number of messages that have not yet been published.
+**Returns**:
+
+  The number of messages that have not yet been published.
 
 
 #### wait\_for\_publish
@@ -177,8 +188,9 @@ def get_latest_received_config_message() -> Optional[ConfigMessage]
 
 Return the latest received configuration.
 
-Returns: The latest received configuration or `None` if no configuration has been received
-yet.
+**Returns**:
+
+  The latest received configuration or `None` if no configuration has been received yet.
 
 
 #### teardown

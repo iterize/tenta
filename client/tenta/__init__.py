@@ -118,6 +118,11 @@ class TentaClient:
         self.client.on_connect = _on_connect
         self.client.username_pw_set(username=mqtt_identifier, password=mqtt_password)
         try:
+            # when the host is correct but the port is wrong, this connection
+            # will take some time (~ 6 seconds) but since it is inside a low
+            # level routine, alarms from the python `signal` library will not
+            # interrupt it, hence the `connection_timeout` argument does not
+            # work in this case
             self.client.connect(
                 host=mqtt_host,
                 port=mqtt_port,
@@ -253,7 +258,8 @@ class TentaClient:
                                        until a `TimeoutError` is raised. Only used if
                                        `wait_for_publish` is `True`.
 
-        Returns: The `message_id` of the published message.
+        Returns:
+            The `message_id` of the published message.
         """
 
         return self._publish(
@@ -288,7 +294,8 @@ class TentaClient:
                                        until a `TimeoutError` is raised. Only used if
                                        `wait_for_publish` is `True`.
 
-        Returns: The `message_id` of the published message.
+        Returns:
+            The `message_id` of the published message.
         """
 
         return self._publish(
@@ -321,7 +328,8 @@ class TentaClient:
                                        until a `TimeoutError` is raised. Only used if
                                        `wait_for_publish` is `True`.
 
-        Returns: The `message_id` of the published message.
+        Returns:
+            The `message_id` of the published message.
         """
 
         with TentaClient.thread_lock:
@@ -351,7 +359,8 @@ class TentaClient:
         Args:
             message_id:  The `message_id` of the message.
 
-        Returns: Whether the message was published.
+        Returns:
+            Whether the message was published.
         """
 
         return message_id not in TentaClient.active_message_ids
@@ -359,7 +368,8 @@ class TentaClient:
     def get_active_message_count(self) -> int:
         """Get how many messages have not yet been published.
 
-        Returns: The number of messages that have not yet been published.
+        Returns:
+            The number of messages that have not yet been published.
         """
 
         return len(TentaClient.active_message_ids)
@@ -383,8 +393,8 @@ class TentaClient:
     def get_latest_received_config_message(self) -> Optional[ConfigMessage]:
         """Return the latest received configuration.
 
-        Returns: The latest received configuration or `None` if no configuration has been received
-                 yet.
+        Returns:
+            The latest received configuration or `None` if no configuration has been received yet.
         """
 
         return TentaClient.latest_received_config_message
