@@ -135,6 +135,10 @@ function ServerStatus() {
           </TooltipProvider>
         )}
       </div>
+      <div>
+        <span className="inline-flex font-medium w-28">MQTT Broker:</span>{" "}
+        {serverStatus?.mqttHostname || "..."}:{serverStatus?.mqttPort || "..."}
+      </div>
     </div>
   );
 }

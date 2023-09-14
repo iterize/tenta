@@ -11,12 +11,16 @@ const schema = z
     commit_sha: z.string(),
     branch_name: z.string(),
     start_timestamp: z.number(),
+    mqtt_hostname: z.string(),
+    mqtt_port: z.number(),
   })
   .transform((data) => ({
     environment: data.environment,
     commitSha: data.commit_sha,
     branchName: data.branch_name,
     startTimestamp: data.start_timestamp,
+    mqttHostname: data.mqtt_hostname,
+    mqttPort: data.mqtt_port,
   }));
 
 export type StatusType = z.infer<typeof schema>;
