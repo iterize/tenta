@@ -1,9 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: [
-    "./src/**/*.{ts,tsx}",
-  ],
+  content: ["./src/**/*.{ts,tsx}"],
   theme: {
     container: {
       center: true,
@@ -49,7 +47,22 @@ module.exports = {
         },
         "slate-150": "#e9eef4",
         "slate-250": "rgb(215, 223, 233)",
-        "slate-350": "#afbccd"
+        "slate-350": "#afbccd",
+
+        blue: {
+          50: "#f1f5fd",
+          100: "#dfe9fa",
+          150: "#d3e0f8",
+          200: "#c7d8f6",
+          300: "#a0bff0",
+          400: "#739de7",
+          500: "#4a76de",
+          600: "#3d60d3",
+          700: "#344dc1",
+          800: "#30409d",
+          900: "#2b397d",
+          950: "#1e254d",
+        },
         /*blue: {
           100: "#a5e1ff",
           200: "#4bc3ff",

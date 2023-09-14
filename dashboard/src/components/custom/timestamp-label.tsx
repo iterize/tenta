@@ -12,7 +12,7 @@ export function TimestampLabel(props: {
 }) {
   if (props.timestamp === null) {
     return (
-      <div className="pl-1">
+      <div className="pl-1 font-regular">
         not{" "}
         <span className="font-semibold text-emerald-800">{props.label}</span>{" "}
         yet
@@ -20,11 +20,11 @@ export function TimestampLabel(props: {
     );
   } else {
     return (
-      <div className="pl-1">
+      <div className="pl-1 font-regular">
         <TooltipProvider>
-          <Tooltip>
+          <Tooltip delayDuration={200}>
             <TooltipTrigger>
-              <span className="font-semibold text-emerald-900">
+              <span className="font-semibold text-emerald-800">
                 {props.label}
               </span>{" "}
               {formatDistanceToNow(new Date(props.timestamp * 1000), {
