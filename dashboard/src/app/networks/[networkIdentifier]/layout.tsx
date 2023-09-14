@@ -5,7 +5,14 @@ import { useNetworks } from "@/requests/networks";
 import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
 import { redirect, usePathname } from "next/navigation";
-import { IconSquareChevronLeftFilled } from "@tabler/icons-react";
+import {
+  IconActivityHeartbeat,
+  IconAdjustmentsFilled,
+  IconChartHistogram,
+  IconDatabaseExclamation,
+  IconDatabaseSearch,
+  IconSquareChevronLeftFilled,
+} from "@tabler/icons-react";
 import { IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -72,7 +79,8 @@ export default function NetworkPageLayout(props: {
                 ))}{" "}
                 <div className="flex justify-center w-full p-3">
                   <Button>
-                    <IconPlus width={18} className="mr-1.5 -ml-0.5" /> sensor
+                    <IconPlus width={16} className="mr-1.5 -ml-0.5" /> New
+                    Sensor
                   </Button>
                 </div>
               </div>
@@ -96,11 +104,11 @@ function SensorListItem(props: {
   let currentlyActiveLabel = pathname.split("/").pop();
   if (
     currentlyActiveLabel === undefined ||
-    !["overview", "configurations", "measurements", "logs"].includes(
+    !["activity", "plots", "configurations", "measurements", "logs"].includes(
       currentlyActiveLabel
     )
   ) {
-    currentlyActiveLabel = "overview";
+    currentlyActiveLabel = "activity";
   }
 
   return (
@@ -137,17 +145,21 @@ function SensorListItem(props: {
           </div>
         </Link>
         {isActive && (
-          <div className="grid grid-cols-4 grid-rows-1 text-sm text-center border-t divide-x border-slate-200 divide-slate-200">
-            {["overview", "configurations", "measurements", "logs"].map(
-              (label) => (
-                <SensorListItemLink
-                  key={label}
-                  networkIdentifier={props.networkIdentifier}
-                  sensorIdentifier={props.sensorIdentifier}
-                  label={label}
-                />
-              )
-            )}
+          <div className="grid grid-cols-5 grid-rows-1 text-sm text-center border-t divide-x border-slate-200 divide-slate-200">
+            {[
+              "activity",
+              "plots",
+              "configurations",
+              "measurements",
+              "logs",
+            ].map((label: any) => (
+              <SensorListItemLink
+                key={label}
+                networkIdentifier={props.networkIdentifier}
+                sensorIdentifier={props.sensorIdentifier}
+                label={label}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -158,27 +170,81 @@ function SensorListItem(props: {
 function SensorListItemLink(props: {
   networkIdentifier: string;
   sensorIdentifier: string;
-  label: string;
+  label: "activity" | "plots" | "configurations" | "measurements" | "logs";
 }) {
   const pathname = usePathname();
   const isActive =
     pathname ==
     `/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${props.label}`;
 
+  let renderedLabel: string;
+  let renderedIcon: JSX.Element;
+  let activeColor: string;
+  switch (props.label) {
+    case "activity":
+      renderedLabel = "Activity";
+      renderedIcon = (
+        <IconActivityHeartbeat
+          size={12}
+          className={isActive ? "text-rose-600" : "text-slate-600"}
+        />
+      );
+      activeColor = "bg-rose-50 text-rose-800";
+      break;
+    case "plots":
+      renderedLabel = "Plots";
+      renderedIcon = (
+        <IconChartHistogram
+          size={12}
+          className={isActive ? "text-orange-600" : "text-slate-600"}
+        />
+      );
+      activeColor = "bg-orange-50 text-orange-800";
+      break;
+    case "configurations":
+      renderedLabel = "Configs";
+      renderedIcon = (
+        <IconAdjustmentsFilled
+          size={12}
+          className={isActive ? "text-sky-600" : "text-slate-600"}
+        />
+      );
+      activeColor = "bg-sky-50 text-sky-800";
+      break;
+    case "measurements":
+      renderedLabel = "Data";
+      renderedIcon = (
+        <IconDatabaseSearch
+          size={12}
+          className={isActive ? "text-emerald-600" : "text-slate-600"}
+        />
+      );
+      activeColor = "bg-emerald-50 text-emerald-800";
+      break;
+    case "logs":
+      renderedLabel = "Logs";
+      renderedIcon = (
+        <IconDatabaseExclamation
+          size={12}
+          className={isActive ? "text-yellow-600" : "text-slate-600"}
+        />
+      );
+      activeColor = "bg-yellow-50 text-yellow-800";
+      break;
+  }
+
   return (
     <Link
       href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${props.label}`}
       className={
         isActive
-          ? "bg-slate-250 text-black"
-          : "bg-slate-100 hover:bg-sky-100 hover:text-sky-900 text-slate-500"
+          ? activeColor
+          : "bg-slate-100 hover:bg-slate-50 hover:text-slate-900 text-slate-500"
       }
     >
-      <div className="flex flex-row items-center justify-center h-8 px-3 gap-x-1.5 font-medium text-[0.8rem]">
-        <span>
-          {props.label.slice(0, 1).toUpperCase()}
-          {props.label.slice(1)}
-        </span>
+      <div className="flex flex-row items-center justify-center h-8 px-3 gap-x-1.5 font-medium text-xs">
+        {renderedIcon}
+        {renderedLabel}
       </div>
     </Link>
   );
