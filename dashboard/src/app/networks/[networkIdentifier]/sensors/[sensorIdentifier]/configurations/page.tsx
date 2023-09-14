@@ -8,6 +8,7 @@ import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
 import { TimestampLabel } from "@/components/custom/timestamp-label";
 import { IconAdjustmentsFilled, IconPlus } from "@tabler/icons-react";
+import { ConfigRevisionTag } from "@/components/custom/config-revision-tag";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -44,7 +45,7 @@ export default function Page(props: {
   return (
     <>
       <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
-        <IconAdjustmentsFilled className="p-1.5 bg-sky-500 rounded text-sky-50 w-7 h-7" />{" "}
+        <IconAdjustmentsFilled className="p-1.5 bg-blue-500 rounded text-blue-50 w-7 h-7" />{" "}
         <h1>Sensor Node Configurations</h1>
       </div>
       <div className="flex flex-row justify-center w-full">
@@ -74,15 +75,13 @@ function ConfigurationBox(props: {
   };
 }) {
   return (
-    <div className="flex flex-col flex-shrink-0 w-full overflow-hidden bg-white border rounded shadow-md border-slate-300">
+    <div className="flex flex-col flex-shrink-0 w-full overflow-hidden bg-white border rounded-lg shadow-md border-slate-300">
       <div className="flex flex-row items-start justify-start p-3 border-b gap-x-4 border-slate-200">
-        <div className="flex items-center flex-shrink-0 h-6 px-2 text-sm font-semibold text-blue-900 bg-blue-200 rounded">
-          Config Revision {props.configuration.revision}
-        </div>
+        <ConfigRevisionTag revision={props.configuration.revision} />
         <div className="flex flex-col w-full">
           <div className="grid flex-grow w-full h-1.5 grid-cols-3 my-2 rounded-full  relative">
             <div
-              className="absolute -translate-x-1/2 w-2.5 h-2.5 rounded-full -top-[0.125rem] bg-emerald-800 "
+              className="absolute -translate-x-1/2 w-2.5 h-2.5 rounded-full -top-[0.125rem] bg-emerald-600 "
               style={{
                 left:
                   props.configuration.creationTimestamp === null
@@ -96,17 +95,17 @@ function ConfigurationBox(props: {
             />
             <div
               className={
-                "w-full h-full rounded-l-full border-r-[2.5px] border-emerald-700 " +
+                "w-full h-full rounded-l-full border-r-[2.5px] border-emerald-600 " +
                 (props.configuration.creationTimestamp !== null
-                  ? "bg-emerald-400"
+                  ? "bg-emerald-300"
                   : "bg-slate-200")
               }
             />
             <div
               className={
-                "w-full h-full border-r-[2.5px] border-emerald-700 " +
+                "w-full h-full border-r-[2.5px] border-emerald-600 " +
                 (props.configuration.publicationTimestamp !== null
-                  ? "bg-emerald-400"
+                  ? "bg-emerald-300"
                   : "bg-slate-200")
               }
             />
@@ -115,7 +114,7 @@ function ConfigurationBox(props: {
               className={
                 "w-full h-full rounded-r-full " +
                 (props.configuration.acknowledgmentTimestamp !== null
-                  ? "bg-emerald-400"
+                  ? "bg-emerald-300"
                   : "bg-slate-200")
               }
             />
@@ -136,7 +135,7 @@ function ConfigurationBox(props: {
           </div>
         </div>
       </div>
-      <div className="p-3 font-mono text-xs leading-tight whitespace-pre bg-slate-100 text-slate-600">
+      <div className="p-3 font-mono text-xs leading-tight whitespace-pre bg-slate-50 text-slate-500">
         {JSON.stringify(props.configuration.value, null, 2)}
       </div>
     </div>
