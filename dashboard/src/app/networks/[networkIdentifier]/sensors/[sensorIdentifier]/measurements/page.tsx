@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useMeasurements } from "@/requests/measurements";
 import toast from "react-hot-toast";
 import { formatDistanceToNow } from "date-fns";
+import { IconDatabaseSearch } from "@tabler/icons-react";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -84,6 +85,10 @@ export default function Page(props: {
 
   return (
     <>
+      <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
+        <IconDatabaseSearch className="p-1.5 bg-emerald-500 rounded text-emerald-50 w-7 h-7" />{" "}
+        <h1>Raw measurement data</h1>
+      </div>
       <div className="flex flex-row items-center justify-start w-full gap-x-6">
         <Pagination
           currentPageNumber={currentPageNumber}

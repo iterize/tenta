@@ -7,6 +7,7 @@ import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
 import { TimestampLabel } from "@/components/custom/timestamp-label";
+import { IconAdjustmentsFilled, IconPlus } from "@tabler/icons-react";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -42,8 +43,15 @@ export default function Page(props: {
 
   return (
     <>
-      <div className="flex flex-row justify-end w-full">
-        <Button>New Revision</Button>
+      <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
+        <IconAdjustmentsFilled className="p-1.5 bg-sky-500 rounded text-sky-50 w-7 h-7" />{" "}
+        <h1>Sensor Node Configurations</h1>
+      </div>
+      <div className="flex flex-row justify-center w-full">
+        <Button>
+          <IconPlus width={16} className="mr-1.5 -ml-0.5" />
+          New Revision
+        </Button>
       </div>
       {configurationsData.map((configuration) => (
         <ConfigurationBox

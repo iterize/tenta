@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { formatDistanceToNow } from "date-fns";
 import { useLogs } from "@/requests/logs";
+import { IconDatabaseExclamation } from "@tabler/icons-react";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -80,6 +81,10 @@ export default function Page(props: {
 
   return (
     <>
+      <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
+        <IconDatabaseExclamation className="p-1.5 bg-yellow-500 rounded text-yellow-50 w-7 h-7" />{" "}
+        <h1>Raw log data</h1>
+      </div>
       <div className="flex flex-row items-center justify-start w-full gap-x-6">
         <Pagination
           currentPageNumber={currentPageNumber}
