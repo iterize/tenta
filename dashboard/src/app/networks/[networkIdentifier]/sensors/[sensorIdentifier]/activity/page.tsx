@@ -218,6 +218,28 @@ function MeasurementActivityPlot(props: {
         .attr("cy", (d) => yScale(i))
         .attr("fill", "currentColor");
     });
+
+    svg
+      .append("line")
+      .attr("class", "current-time-line z-10 stroke-rose-500")
+      .attr("x1", xScale(now.getTime() / 1000))
+      .attr("x2", xScale(now.getTime() / 1000))
+      .attr("y1", yScale(minY) + 5)
+      .attr("y2", yScale(maxY) - 5)
+      .attr("stroke-width", 3)
+      .attr("stroke-linecap", "round");
+
+    svg
+      .append("text")
+      .attr(
+        "class",
+        "current-time-label z-10 text-rose-500 text-[0.65rem] font-semibold"
+      )
+      .text("now")
+      .attr("x", xScale(now.getTime() / 1000) - 5)
+      .attr("y", yScale(minY) + 10)
+      .attr("text-anchor", "end")
+      .attr("fill", "currentColor");
   }, [labelColumnWidth, plotHeight, props.data, plotRef.current]);
 
   return (

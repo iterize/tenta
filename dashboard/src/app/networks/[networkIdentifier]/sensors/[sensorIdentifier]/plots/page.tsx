@@ -96,7 +96,7 @@ function MeasurementAggregationPlot(props: {
     maxY += dy * 0.1;
 
     const xScale = d3.scaleLinear([minX, maxX], [65, 1050]);
-    const yScale = d3.scaleLinear([minY, maxY], [135, 0]);
+    const yScale = d3.scaleLinear([minY, maxY], [130, 10]);
 
     svg.selectAll("*").remove();
 
@@ -196,6 +196,28 @@ function MeasurementAggregationPlot(props: {
       .attr("r", 1.25)
       .attr("cx", (d) => xScale(d.bucketTimestamp))
       .attr("cy", (d) => yScale(d.average))
+      .attr("fill", "currentColor");
+
+    svg
+      .append("line")
+      .attr("class", "current-time-line z-10 stroke-rose-500")
+      .attr("x1", xScale(now.getTime() / 1000))
+      .attr("x2", xScale(now.getTime() / 1000))
+      .attr("y1", yScale(minY) + 2)
+      .attr("y2", yScale(maxY) - 2)
+      .attr("stroke-width", 2.5)
+      .attr("stroke-linecap", "round");
+
+    svg
+      .append("text")
+      .attr(
+        "class",
+        "current-time-label z-10 text-rose-500 text-[0.65rem] font-semibold"
+      )
+      .text("now")
+      .attr("x", xScale(now.getTime() / 1000) - 5)
+      .attr("y", yScale(maxY) - 1)
+      .attr("text-anchor", "end")
       .attr("fill", "currentColor");
   }, [props.data, plotRef.current]);
 
