@@ -2,7 +2,7 @@ openapi: 3.0.2
 info:
   title: Tenta's API
   description: |
-    Tenta is a remote and real-time management system for distributed sensor networks. It allows you to collect and store data from your sensors, and supervise and configure them remotely from anywhere in the world.
+    Tenta is a remote and real-time management system for sensor networks. It allows you to collect and store data from your sensors, and to supervise and configure them remotely from anywhere in the world.
 
     This documentation describes Tenta's REST API. In most cases, you won't need to call these endpoints directly, as the dashboard provides a user-friendly interface. However, you might use this API to integrate Tenta with your own systems or to automate certain tasks.
   version: "0.1"
@@ -281,6 +281,146 @@ paths:
           $ref: "#/components/responses/404"
         "409":
           $ref: "#/components/responses/409"
+  "/networks/{network_identifier}/sensors/{sensor_identifier}/measurements":
+    get:
+      tags: [Sensors]
+      summary: Read measurements
+      description: |
+        By default, returns a sensor's most recent 64 measurements sorted ascendingly by `creation_timestamp`. You can use the `creation_timestamp` and `direction` parameters to page through the collection.
+
+        If `aggregate` is set to `true`, other query parameters are ignored and the request returns an aggregation of the sensor's measurements over the last 4 weeks.
+      security:
+        - "Bearer token": []
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
+        - $ref: "#/components/parameters/direction"
+        - $ref: "#/components/parameters/creation_timestamp"
+        - $ref: "#/components/parameters/aggregate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - title: "Measurements"
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        creation_timestamp:
+                          $ref: "#/components/schemas/timestamp"
+                        value:
+                          $ref: "#/components/schemas/measurement"
+                        revision:
+                          $ref: "#/components/schemas/revision"
+                  - title: "Aggregation"
+                    description: "Note that the response contains averages only for periods with at least one measurement. All other periods are omitted and should be assumed `null`."
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          bucket_timestamp:
+                            $ref: "#/components/schemas/timestamp"
+                          average:
+                            $ref: "#/components/schemas/value"
+                    example:
+                      temperature:
+                        - bucket_timestamp: 1683644400.0
+                          average: 23.1
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+  "/networks/{network_identifier}/sensors/{sensor_identifier}/logs":
+    get:
+      tags: [Sensors]
+      summary: Read logs
+      description: |
+        Returns a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`.
+      security:
+        - "Bearer token": []
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
+        - $ref: "#/components/parameters/direction"
+        - $ref: "#/components/parameters/creation_timestamp"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    revision:
+                      $ref: "#/components/schemas/revision"
+                    message:
+                      $ref: "#/components/schemas/message"
+                    severity:
+                      $ref: "#/components/schemas/severity"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
+  "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
+    get:
+      tags: [Sensors]
+      summary: Read logs aggregation
+      description: |
+        Returns an aggregation of a sensor's logs that have a severity of warning or error.
+      security:
+        - "Bearer token": []
+      parameters:
+        - $ref: "#/components/parameters/network_identifier"
+        - $ref: "#/components/parameters/sensor_identifier"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    min_creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    max_creation_timestamp:
+                      $ref: "#/components/schemas/timestamp"
+                    min_revision:
+                      $ref: "#/components/schemas/revision"
+                    max_revision:
+                      $ref: "#/components/schemas/revision"
+                    message:
+                      $ref: "#/components/schemas/message"
+                    severity:
+                      $ref: "#/components/schemas/severity"
+                    count:
+                      $ref: "#/components/schemas/count"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "403":
+          $ref: "#/components/responses/403"
+        "404":
+          $ref: "#/components/responses/404"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/configurations":
     post:
       tags: [Sensors]
@@ -339,158 +479,18 @@ paths:
                 items:
                   type: object
                   properties:
+                    value:
+                      $ref: "#/components/schemas/configuration"
+                    revision:
+                      $ref: "#/components/schemas/revision"
                     creation_timestamp:
                       $ref: "#/components/schemas/timestamp"
                     publication_timestamp:
                       $ref: "#/components/schemas/timestamp"
                     acknowledgment_timestamp:
                       $ref: "#/components/schemas/timestamp"
-                    revision:
-                      $ref: "#/components/schemas/revision"
-                    value:
-                      $ref: "#/components/schemas/configuration"
                     success:
                       type: boolean
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-  "/networks/{network_identifier}/sensors/{sensor_identifier}/measurements":
-    get:
-      tags: [Sensors]
-      summary: Read measurements
-      description: |
-        By default, returns a sensor's most recent 64 measurements sorted ascendingly by `creation_timestamp`. You can use the `creation_timestamp` and `direction` parameters to page through the collection.
-
-        If `aggregate` is set to `true`, other query parameters are ignored and the request returns an aggregation of the sensor's measurements over the last 4 weeks.
-      security:
-        - "Bearer token": []
-      parameters:
-        - $ref: "#/components/parameters/network_identifier"
-        - $ref: "#/components/parameters/sensor_identifier"
-        - $ref: "#/components/parameters/direction"
-        - $ref: "#/components/parameters/creation_timestamp"
-        - $ref: "#/components/parameters/aggregate"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                oneOf:
-                  - title: "Measurements"
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        creation_timestamp:
-                          $ref: "#/components/schemas/timestamp"
-                        revision:
-                          $ref: "#/components/schemas/revision"
-                        value:
-                          $ref: "#/components/schemas/measurement"
-                  - title: "Aggregation"
-                    description: "Note that the response contains averages only for periods with at least one measurement. All other periods are omitted and should be assumed `null`."
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          bucket_timestamp:
-                            $ref: "#/components/schemas/timestamp"
-                          average:
-                            $ref: "#/components/schemas/value"
-                    example:
-                      temperature:
-                        - bucket_timestamp: 1683644400.0
-                          average: 23.1
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-  "/networks/{network_identifier}/sensors/{sensor_identifier}/logs":
-    get:
-      tags: [Sensors]
-      summary: Read logs
-      description: |
-        Returns a sensor's logs in pages of 64 elements sorted ascendingly by `creation_timestamp`.
-      security:
-        - "Bearer token": []
-      parameters:
-        - $ref: "#/components/parameters/network_identifier"
-        - $ref: "#/components/parameters/sensor_identifier"
-        - $ref: "#/components/parameters/direction"
-        - $ref: "#/components/parameters/creation_timestamp"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    creation_timestamp:
-                      $ref: "#/components/schemas/timestamp"
-                    revision:
-                      $ref: "#/components/schemas/revision"
-                    severity:
-                      $ref: "#/components/schemas/severity"
-                    message:
-                      $ref: "#/components/schemas/message"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
-  "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
-    get:
-      tags: [Sensors]
-      summary: Read logs aggregation
-      description: |
-        Returns an aggregation of a sensor's logs that have a severity of warning or error.
-      security:
-        - "Bearer token": []
-      parameters:
-        - $ref: "#/components/parameters/network_identifier"
-        - $ref: "#/components/parameters/sensor_identifier"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    min_creation_timestamp:
-                      $ref: "#/components/schemas/timestamp"
-                    max_creation_timestamp:
-                      $ref: "#/components/schemas/timestamp"
-                    min_revision:
-                      $ref: "#/components/schemas/revision"
-                    max_revision:
-                      $ref: "#/components/schemas/revision"
-                    severity:
-                      $ref: "#/components/schemas/severity"
-                    message:
-                      $ref: "#/components/schemas/message"
-                    count:
-                      $ref: "#/components/schemas/count"
         "400":
           $ref: "#/components/responses/400"
         "401":
