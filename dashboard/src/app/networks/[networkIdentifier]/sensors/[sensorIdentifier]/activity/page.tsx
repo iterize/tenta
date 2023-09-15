@@ -50,36 +50,31 @@ export default function Page(props: {
         <div className="flex-grow" />
         <span className="text-xs">Plot times in UTC</span>
       </div>
-      {Object.keys(measurementsAggregationData).map((key) => (
-        <MeasurementAggregationPlot
-          key={key}
-          label={key}
-          data={measurementsAggregationData[key]}
-        />
-      ))}
+      <h2 className="w-full -mb-2 text-sm font-medium">Measurements:</h2>
+      {Object.keys(measurementsAggregationData).length !== 0 && (
+        <MeasurementActivityPlot data={measurementsAggregationData} />
+      )}
       {Object.keys(measurementsAggregationData).length === 0 && (
         <div className="w-full text-sm text-center">no measurements</div>
       )}
-      <h1 className="mt-8 text-base font-medium text-slate-800">
-        <span className="px-2 py-1 text-yellow-900 bg-yellow-200 rounded">
-          Logs
+      <h2 className="w-full mt-2 text-sm font-medium">
+        <span className={"uppercase font-semibold text-red-700"}>ERROR</span>{" "}
+        log messages:
+      </h2>
+      pass
+      <h2 className="w-full mt-2 text-sm font-medium">
+        <span className={"uppercase font-semibold text-yellow-700"}>
+          WARNING
         </span>{" "}
-        with severity <span className="font-semibold text-black">warning</span>{" "}
-        or higher
-      </h1>
-      {logsAggregationData.map((log) => (
-        <LogAggregationPanel key={JSON.stringify(log)} log={log} />
-      ))}
-      {Object.keys(logsAggregationData).length === 0 && (
-        <div className="w-full text-sm text-center">no logs</div>
-      )}
+        log messages:
+      </h2>
+      pass
     </>
   );
 }
 
-function MeasurementAggregationPlot(props: {
-  label: string;
-  data: { average: number; bucketTimestamp: number }[];
+function MeasurementActivityPlot(props: {
+  data: Record<string, { average: number; bucketTimestamp: number }[]>;
 }) {
   const plotRef = useRef(null);
 
@@ -97,19 +92,15 @@ function MeasurementAggregationPlot(props: {
     const maxX = nextUTCMidnightTimestamp + 7200;
     const minX = nextUTCMidnightTimestamp - 29 * 24 * 3600 - 7200;
 
-    let minY = minBy(props.data, (d) => d.average)?.average;
-    let maxY = maxBy(props.data, (d) => d.average)?.average;
+    const minY = 0;
+    const maxY = Object.keys(props.data).length - 1;
 
     if (minY === undefined || maxY === undefined) {
       return;
     }
 
-    const dy = maxY - minY;
-    minY -= dy * 0.1;
-    maxY += dy * 0.1;
-
-    const xScale = d3.scaleLinear([minX, maxX], [65, 1050]);
-    const yScale = d3.scaleLinear([minY, maxY], [135, 0]);
+    const xScale = d3.scaleLinear([minX, maxX], [200, 1050]);
+    const yScale = d3.scaleLinear([minY, maxY], [125, 10]);
 
     svg.selectAll("*").remove();
 
@@ -168,20 +159,7 @@ function MeasurementAggregationPlot(props: {
       .attr("text-anchor", "middle")
       .attr("fill", "currentColor");
 
-    const yTicks = yScale.ticks(5);
-
-    svg
-      .append("g")
-      .attr("class", "y-tick-lines text-slate-300 z-0")
-      .selectAll("line")
-      .data(yTicks)
-      .enter()
-      .append("line")
-      .attr("x1", xScale(minX - 1 * 3600))
-      .attr("x2", xScale(maxX - 2 * 3600))
-      .attr("y1", (d) => yScale(d))
-      .attr("y2", (d) => yScale(d))
-      .attr("stroke", "currentColor");
+    const yTicks = range(minY, maxY + 1);
 
     svg
       .append("g")
@@ -193,34 +171,42 @@ function MeasurementAggregationPlot(props: {
       .data(yTicks)
       .enter()
       .append("text")
-      .text((d) => d.toPrecision(4))
-      .attr("x", 60)
+      .text((d) => {
+        const label = Object.keys(props.data)[d];
+        return label.length > 27 ? label.slice(0, 24) + "..." : label;
+      })
+      .attr("x", 195)
       .attr("y", (d) => yScale(d) + 4)
       .attr("text-anchor", "end")
       .attr("fill", "currentColor");
 
-    svg
-      .append("g")
-      .attr("class", "data-point-circles text-slate-900 z-10")
-      .selectAll("circle")
-      .data(props.data)
-      .enter()
-      .append("circle")
-      .attr("r", 1.25)
-      .attr("cx", (d) => xScale(d.bucketTimestamp))
-      .attr("cy", (d) => yScale(d.average))
-      .attr("fill", "currentColor");
+    Object.keys(props.data).forEach((sensorIdentifier, i) => {
+      svg
+        .append("line")
+        .attr("class", "data-point-line z-10 stroke-emerald-800")
+        .attr("x1", xScale(minX))
+        .attr("x2", xScale(maxX))
+        .attr("y1", yScale(i))
+        .attr("y2", yScale(i))
+        .attr("stroke-width", 1)
+        .attr("stroke-dasharray", "2 2");
+      svg
+        .append("g")
+        .attr("class", "data-point-circles z-10 text-emerald-500")
+        .selectAll("circle")
+        .data(props.data[sensorIdentifier])
+        .enter()
+        .append("circle")
+        .attr("r", 1.5)
+        .attr("cx", (d) => xScale(d.bucketTimestamp))
+        .attr("cy", (d) => yScale(i))
+        .attr("fill", "currentColor");
+    });
   }, [props.data, plotRef.current]);
 
   return (
-    <div className="flex flex-row w-full pl-4 gap-x-4">
-      <div className="flex flex-row items-center justify-center w-64 gap-x-2">
-        <h2 className="font-mono text-sm font-medium">{props.label}</h2>
-        <div className="flex-grow border-b-[2.5px] border-dotted border-slate-300" />
-      </div>
-      <div className="flex-grow p-2 bg-white border rounded-md shadow border-slate-300">
-        <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />
-      </div>
+    <div className="w-full p-2 bg-white border rounded-md shadow border-slate-300">
+      <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />
     </div>
   );
 }
