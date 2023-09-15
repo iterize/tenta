@@ -32,9 +32,9 @@ export function ConfigRevisionTag(props: {
                 size={14}
                 className={noRevision ? "text-slate-500" : "text-blue-500"}
               />{" "}
-              {props.to_revision === undefined &&
+              {(noRevision || props.to_revision === undefined) &&
                 (props.revision === null ? "-" : props.revision)}
-              {props.to_revision !== undefined && (
+              {!noRevision && props.to_revision !== undefined && (
                 <>
                   from {props.to_revision === null ? "-" : props.to_revision} to{" "}
                   {props.to_revision === null ? "-" : props.to_revision}
