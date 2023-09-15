@@ -10,6 +10,8 @@ import { maxBy, minBy, range } from "lodash";
 import { useLogsAggregation } from "@/requests/logs-aggregation";
 import { formatDistanceToNow } from "date-fns";
 import { IconActivityHeartbeat } from "@tabler/icons-react";
+import { ConfigRevisionTag } from "@/components/custom/config-revision-tag";
+import { TimestampLabel } from "@/components/custom/timestamp-label";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -50,7 +52,9 @@ export default function Page(props: {
         <div className="flex-grow" />
         <span className="text-xs">Plot times in UTC</span>
       </div>
-      <h2 className="w-full -mb-2 text-sm font-medium">Measurements:</h2>
+      <h2 className="w-full -mb-2 text-sm font-medium">
+        Measurement messages:
+      </h2>
       {Object.keys(measurementsAggregationData).length !== 0 && (
         <MeasurementActivityPlot data={measurementsAggregationData} />
       )}
@@ -58,17 +62,25 @@ export default function Page(props: {
         <div className="w-full text-sm text-center">no measurements</div>
       )}
       <h2 className="w-full mt-2 text-sm font-medium">
-        <span className={"uppercase font-semibold text-red-700"}>ERROR</span>{" "}
-        log messages:
+        <span className={"uppercase font-semibold "}>ERROR</span> log messages:
       </h2>
-      pass
+      {logsAggregationData.filter((l) => l.severity === "error").length ===
+        0 && <div className="w-full text-sm text-center">no error logs</div>}
+      {logsAggregationData
+        .filter((l) => l.severity === "error")
+        .map((l) => (
+          <LogAggregationPanel key={l.message} log={l} />
+        ))}
       <h2 className="w-full mt-2 text-sm font-medium">
-        <span className={"uppercase font-semibold text-yellow-700"}>
-          WARNING
-        </span>{" "}
-        log messages:
+        <span className={"uppercase font-semibold"}>WARNING</span> log messages:
       </h2>
-      pass
+      {logsAggregationData.filter((l) => l.severity === "warning").length ===
+        0 && <div className="w-full text-sm text-center">no warning logs</div>}
+      {logsAggregationData
+        .filter((l) => l.severity === "warning")
+        .map((l) => (
+          <LogAggregationPanel key={l.message} log={l} />
+        ))}
     </>
   );
 }
@@ -205,7 +217,7 @@ function MeasurementActivityPlot(props: {
   }, [props.data, plotRef.current]);
 
   return (
-    <div className="w-full p-2 bg-white border rounded-md shadow border-slate-300">
+    <div className="w-[calc(100%-1rem)] p-2 ml-4 bg-white border rounded-md shadow border-slate-300">
       <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />
     </div>
   );
@@ -225,54 +237,35 @@ function LogAggregationPanel(props: {
   const log = props.log;
 
   return (
-    <div className="flex flex-col justify-start flex-shrink-0 w-[calc(100%-1rem)] ml-4 overflow-hidden text-sm bg-white border rounded-md shadow gap-x-6 border-slate-300">
-      <div className="flex flex-row items-baseline justify-start w-full p-3 border-b border-slate-200">
-        <div
-          className={
-            "flex items-center flex-shrink-0 h-6 px-2 text-sm font-semibold text-blue-900 bg-blue-200 rounded mr-2 " +
-            (log.minRevision === null
-              ? "bg-slate-200 text-slate-700"
-              : "bg-blue-200 text-blue-900")
-          }
-        >
-          {log.minRevision === null || log.maxRevision === null
-            ? "No Config Revision"
-            : log.minRevision === log.maxRevision
-            ? `Config Revision ${log.minRevision.toString()} only`
-            : `Config Revisions ${log.minRevision.toString()} - ${log.maxRevision.toString()}`}
-        </div>
-        <div className="font-normal">
-          First appeared{" "}
-          {formatDistanceToNow(new Date(log.minCreationTimestamp * 1000), {
-            addSuffix: true,
-          })}
-          {" | "}
-          Last appeared{" "}
-          {formatDistanceToNow(new Date(log.maxCreationTimestamp * 1000), {
-            addSuffix: true,
-          })}
-        </div>
-        <div className="flex-grow" />
-        <div>
-          {new Date(log.minCreationTimestamp * 1000).toISOString()}
-          {" | "}
-          {new Date(log.maxCreationTimestamp * 1000).toISOString()}
-        </div>
+    <div className="flex flex-col justify-start flex-shrink-0 w-[calc(100%-1rem)] ml-4 overflow-hidden text-sm bg-white border rounded-lg shadow gap-x-6 border-slate-300">
+      <div className="flex flex-row items-center w-full p-3 border-b font-regular border-slate-200 gap-x-3">
+        <ConfigRevisionTag
+          revision={log.minRevision}
+          to_revision={log.maxRevision}
+        />
+
+        <TimestampLabel
+          label="first appeared"
+          timestamp={log.minCreationTimestamp}
+        />
+        <div className="-mx-1 font-light">|</div>
+        <TimestampLabel
+          label="last appeared"
+          timestamp={log.maxCreationTimestamp}
+        />
       </div>
-      <div className="flex flex-row items-baseline w-full px-3 py-2 font-mono text-xs break-words justify-baseline bg-slate-100 text-slate-600 whitespace-break-spaces gap-x-2">
-        <div
+      <div className="w-full px-3 py-2 font-mono text-xs break-words bg-slate-50 text-slate-500 whitespace-break-spaces gap-x-2">
+        <span
           className={
-            "px-1.5 py-0.5 mr-1 rounded-sm uppercase font-semibold " +
-            (log.severity === "info" ? "bg-blue-200 text-blue-900 " : "") +
-            (log.severity === "warning"
-              ? "bg-yellow-200 text-yellow-900 "
-              : "") +
-            (log.severity === "error" ? "bg-red-200 text-red-900 " : "")
+            "uppercase font-semibold opacity-70 " +
+            (log.severity === "info" ? "text-slate-700" : "") +
+            (log.severity === "warning" ? "text-yellow-700" : "") +
+            (log.severity === "error" ? "text-red-700" : "")
           }
         >
           {log.severity}
-        </div>
-        <div>{log.message}</div>
+        </span>{" "}
+        {log.message}
       </div>
     </div>
   );
