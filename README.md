@@ -1,24 +1,31 @@
-- Screenshot/Logo at the top
+TODO: screenshot/logo at the top
 
-## Pitch
+Tenta allows you to manage sensors remotely and in real-time.
 
-Wireless sensor networks provide the necessary data for effective measures to reduce emissions and combat climate change. However, these networks are prone to failure and failures often go undetected since it’s prohibitively time-consuming to physically check on the sensors.
+With Tenta, you can:
 
-- collect and store data from sensors
-- provide a dashboard to supervise sensors in real-time
-- remote configuration / software updates
-- wide range of sensor networks: LoRaWAN, MQTT, static, mobile, ... (modularity)
+- Collect and store measurements and logs from sensors
+- Configure and update sensors remotely
+- Supervise sensors in real-time in an intuitive dashboard
 
-Tenta is **lightweight** and **composable**. We only do sensor management, no processing and no (fancy) visualization. There are already great tools that do that (e.g. Grafana, polars). This allows us to focus on the basics and get those perfect: Collecting measurements and a real-time dashboard to manage and configure sensors.
+Tenta is lightweight and composable. It is designed to be used as a building block in your IoT stack, together with other awesome tools like [Grafana](https://grafana.com/), [DuckDB](https://duckdb.org/), or [polars](https://www.pola.rs/).
 
-## Roadmap
+Tenta ships with a concise and language-independent MQTT interface and a client library for Python. Sensors that communicate over LoRaWAN or HTTP can connect to Tenta via translation gateways.
 
-1. Real-time charts of the incoming data on the dashboard
-1. Compress data in the database to use less storage
-1. Indicator if sensors are currently connected to the MQTT broker
-1. Tagging system to record metadata (e.g. nearby construction work, changes to the hardware, ...)
-1. Demo instance to make Tenta easy to try out
+## Documentation
+
+- To get up and running with Tenta, try our [Getting Started guide](https://tenta.pages.dev/).
+- The full documentation is available at [tenta.pages.dev](https://tenta.pages.dev/).
+- Our [REST API documentation](https://bump.sh/empicano/doc/tenta) provides a reference for the HTTP interface.
+
+## Research
+
+We are open for collaborations! Tenta evolved out of the [ACROPOLIS](https://mediatum.ub.tum.de/node?id=1690527) project at [TUM](https://www.tum.de/en/). If you are interested in using Tenta in your research, don't hesitate [to reach out](mailto:felix@felixboehm.dev). We are happy to help you get started and provide support.
+
+## License
+
+Tenta is licensed under the [MIT License](LICENSE).
 
 ## Versioning
 
-This project adheres to [Semantic Versioning](https://semver.org). Please expect breaking changes until we reach version 1.0.0. Note that only the MQTT and database interfaces are subject to semantic versioning. Although changes will be tracked in release notes, Tenta's REST API is considered internal and may change at any time.
+Tenta's MQTT, HTTP and database interfaces adhere to Semantic Versioning. Please expect breaking changes until we reach version 1.0.0. Changes will be tracked in release notes.
