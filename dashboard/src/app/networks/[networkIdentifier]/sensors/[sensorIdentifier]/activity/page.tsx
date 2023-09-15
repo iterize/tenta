@@ -6,9 +6,8 @@ import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { maxBy, minBy, range } from "lodash";
+import { min, maxBy, range } from "lodash";
 import { useLogsAggregation } from "@/requests/logs-aggregation";
-import { formatDistanceToNow } from "date-fns";
 import { IconActivityHeartbeat } from "@tabler/icons-react";
 import { ConfigRevisionTag } from "@/components/custom/config-revision-tag";
 import { TimestampLabel } from "@/components/custom/timestamp-label";
@@ -90,6 +89,11 @@ function MeasurementActivityPlot(props: {
 }) {
   const plotRef = useRef(null);
 
+  const plotHeight = 35 + (Object.keys(props.data).length - 1) * 20;
+  const maxLabelLength =
+    min([maxBy(Object.keys(props.data), (d) => d.length)?.length, 27]) || 0;
+  const labelColumnWidth = maxLabelLength * 7.3 + 2;
+
   useEffect(() => {
     const svg = d3.select(plotRef.current);
 
@@ -111,8 +115,8 @@ function MeasurementActivityPlot(props: {
       return;
     }
 
-    const xScale = d3.scaleLinear([minX, maxX], [200, 1050]);
-    const yScale = d3.scaleLinear([minY, maxY], [125, 10]);
+    const xScale = d3.scaleLinear([minX, maxX], [labelColumnWidth + 5, 1000]);
+    const yScale = d3.scaleLinear([minY, maxY], [plotHeight - 25, 10]);
 
     svg.selectAll("*").remove();
 
@@ -167,7 +171,7 @@ function MeasurementActivityPlot(props: {
         })
       )
       .attr("x", (d) => xScale(d))
-      .attr("y", 147)
+      .attr("y", plotHeight - 3)
       .attr("text-anchor", "middle")
       .attr("fill", "currentColor");
 
@@ -177,7 +181,7 @@ function MeasurementActivityPlot(props: {
       .append("g")
       .attr(
         "class",
-        "y-tick-labels text-slate-600 z-10 text-xs font-medium font-mono"
+        "y-tick-labels text-slate-600 z-10 text-[0.65rem] font-medium font-mono"
       )
       .selectAll("text")
       .data(yTicks)
@@ -187,7 +191,7 @@ function MeasurementActivityPlot(props: {
         const label = Object.keys(props.data)[d];
         return label.length > 27 ? label.slice(0, 24) + "..." : label;
       })
-      .attr("x", 195)
+      .attr("x", labelColumnWidth)
       .attr("y", (d) => yScale(d) + 4)
       .attr("text-anchor", "end")
       .attr("fill", "currentColor");
@@ -214,11 +218,15 @@ function MeasurementActivityPlot(props: {
         .attr("cy", (d) => yScale(i))
         .attr("fill", "currentColor");
     });
-  }, [props.data, plotRef.current]);
+  }, [labelColumnWidth, plotHeight, props.data, plotRef.current]);
 
   return (
     <div className="w-[calc(100%-1rem)] p-2 ml-4 bg-white border rounded-md shadow border-slate-300">
-      <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />
+      <svg
+        viewBox={`0 0 1000 ${plotHeight}`}
+        ref={plotRef}
+        className="w-full"
+      />
     </div>
   );
 }

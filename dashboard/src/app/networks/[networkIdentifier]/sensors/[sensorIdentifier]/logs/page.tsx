@@ -97,7 +97,7 @@ export default function Page(props: {
         />
         <Button onClick={fetchMoreLogs}>load older data</Button>
       </div>
-      <div className="flex flex-col items-center justify-center w-full mt-2 gap-y-4">
+      <div className="flex flex-col items-center justify-center w-full gap-y-4">
         {logsData === undefined && "loading"}
         {logsData.map((log) => (
           <div
@@ -106,11 +106,10 @@ export default function Page(props: {
           >
             <div
               key={JSON.stringify(log)}
-              className="flex flex-row items-center w-full p-3 pb-2 border-b border-slate-200 gap-x-2"
+              className="flex flex-row items-center w-full p-3 pb-2 border-b border-slate-200 gap-x-3"
             >
               <ConfigRevisionTag revision={log.revision} />
-              <div className="font-medium">
-                Created{" "}
+              <div className="font-regular">
                 {formatDistanceToNow(new Date(log.creationTimestamp * 1000), {
                   addSuffix: true,
                 })}

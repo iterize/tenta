@@ -48,7 +48,7 @@ export default function Page(props: {
         <IconAdjustmentsFilled className="p-1.5 bg-blue-500 rounded text-blue-50 w-7 h-7" />{" "}
         <h1>Sensor Node Configurations</h1>
       </div>
-      <div className="flex flex-row justify-center w-full">
+      <div className="flex flex-row justify-start w-full">
         <Button>
           <IconPlus width={16} className="mr-1.5 -ml-0.5" />
           New Revision
@@ -76,7 +76,7 @@ function ConfigurationBox(props: {
 }) {
   return (
     <div className="flex flex-col flex-shrink-0 w-full overflow-hidden bg-white border rounded-lg shadow-md border-slate-300">
-      <div className="flex flex-row items-start justify-start p-3 border-b gap-x-4 border-slate-200">
+      <div className="flex flex-row items-start justify-start p-3 border-b gap-x-3 border-slate-200">
         <ConfigRevisionTag revision={props.configuration.revision} />
         <div className="flex flex-col w-full">
           <div className="grid flex-grow w-full h-1.5 grid-cols-3 my-2 rounded-full  relative">
@@ -123,14 +123,17 @@ function ConfigurationBox(props: {
             <TimestampLabel
               label="created"
               timestamp={props.configuration.creationTimestamp}
+              labelClassName="font-semibold text-emerald-800"
             />
             <TimestampLabel
               label="published"
               timestamp={props.configuration.publicationTimestamp}
+              labelClassName="font-semibold text-emerald-800"
             />
             <TimestampLabel
               label="acknowledged"
               timestamp={props.configuration.acknowledgmentTimestamp}
+              labelClassName="font-semibold text-emerald-800"
             />
           </div>
         </div>

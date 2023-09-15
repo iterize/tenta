@@ -101,7 +101,7 @@ export default function Page(props: {
         />
         <Button onClick={fetchMoreMeasurements}>load older data</Button>
       </div>
-      <div className="flex flex-col items-center justify-center w-full mt-2 gap-y-4">
+      <div className="flex flex-col items-center justify-center w-full gap-y-4">
         {measurementsData === undefined && "loading"}
         {measurementsData
           .slice((currentPageNumber - 1) * 64, currentPageNumber * 64)
@@ -112,11 +112,10 @@ export default function Page(props: {
             >
               <div
                 key={JSON.stringify(measurement)}
-                className="flex flex-row items-center w-full p-3 pb-2 border-b border-slate-200 gap-x-2"
+                className="flex flex-row items-center w-full p-3 pb-2 border-b border-slate-200 gap-x-3"
               >
                 <ConfigRevisionTag revision={measurement.revision} />
-                <div className="font-medium">
-                  Created{" "}
+                <div className="font-regular">
                   {formatDistanceToNow(
                     new Date(measurement.creationTimestamp * 1000),
                     {
