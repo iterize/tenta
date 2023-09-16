@@ -28,4 +28,4 @@ Tenta is licensed under the [MIT License](LICENSE).
 
 ## Versioning
 
-Tenta's MQTT, HTTP and database interfaces adhere to Semantic Versioning. Please expect breaking changes until we reach version 1.0.0. Changes will be tracked in release notes.
+Tenta's MQTT, HTTP and database interfaces adhere to Semantic Versioning. Changes will be tracked in release notes. Please expect breaking changes until we reach version 1.0.0.

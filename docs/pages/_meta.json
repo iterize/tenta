@@ -18,6 +18,10 @@
   "design": "Design decisions",
   "mqtt": "MQTT interface",
   "python": "Python library",
+  "database": {
+    "title": "Database schema ↗",
+    "href": "https://github.com/iterize/tenta/blob/main/server/schema.sql"
+  },
   "http": {
     "title": "REST API ↗",
     "href": "https://bump.sh/empicano/doc/tenta"

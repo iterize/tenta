@@ -1,3 +1,52 @@
 # Working with the data
 
-TODO: write
+The server stores measurements in the `measurement` table. This table has the following columns:
+
+- **`sensor_identifier`** (`UUID`): The identifier of the sensor that made the measurement.
+- **`attribute`** (`TEXT`): The name of the attribute that was measured.
+- **`value`** (`DOUBLE PRECISION`): The value of the measurement.
+- **`revision`** (`INT`): The revision of the configuration associated with the measurement.
+- **`creation_timestamp`** (`TIMESTAMPTZ`): The time at which the measurement was made.
+- **`receipt_timestamp`** (`TIMESTAMPTZ`): The time at which the server received the measurement.
+
+The most flexible way to process these measurements further is to download them locally. The [connector-x](https://github.com/sfu-db/connector-x) library and [pyarrow](https://github.com/apache/arrow) are a powerful combination for this:
+
+```python
+import connectorx as cx
+import pyarrow.parquet
+import pathlib
+
+
+# Read the data from PostgreSQL
+table = cx.read_sql(
+    conn="postgresql://postgres:12345678@localhost:5432/database",  # PostgreSQL connection string
+    query="SELECT * FROM measurement ORDER BY creation_timestamp DESC LIMIT 256",
+    return_type="arrow2",
+    protocol="binary",
+)
+# Use the directory of the script as path for the new file
+path = pathlib.Path(__file__).parent.resolve() / "measurements.parquet"
+# Write to parquet file
+pyarrow.parquet.write_table(table, where=path)
+```
+
+You can then read and process this `parquet` file with your preferred tool, e.g. with [polars](https://github.com/pola-rs/polars):
+
+```python
+import polars
+
+
+# Load the parquet file into polars
+dataframe = polars.read_parquet(path)
+# (optional) Transform the (attribute, value) columns into one column per attribute
+dataframe.pivot(
+    values='value',
+    index=['sensor_identifier', 'revision', 'creation_timestamp'],
+    columns='attribute',
+    aggregate_function='first',
+)
+```
+
+You can explore the `configuration` and `log` tables in the same way.
+
+If your sensors send their current configuration's revision number with each measurement, you can join the `measurement` and `configuration` tables on `(sensor_identifier, revision)` to match each measurement with the associated configuration.
