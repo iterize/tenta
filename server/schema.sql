@@ -77,6 +77,8 @@ CREATE TABLE measurement (
     receipt_timestamp TIMESTAMPTZ NOT NULL
 );
 
+CREATE INDEX ON measurement (sensor_identifier ASC, creation_timestamp ASC);
+
 SELECT create_hypertable(
     relation => 'measurement',
     time_column_name => 'creation_timestamp');
