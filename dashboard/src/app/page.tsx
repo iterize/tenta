@@ -14,55 +14,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  IconCircleCheckFilled,
-  IconCircleDashed,
-  IconPlus,
-} from "@tabler/icons-react";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { IconPlus } from "@tabler/icons-react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { IconCircleDashedX } from "@tabler/icons-react";
+import { CreationDialog } from "@/components/custom/creation-dialog";
 
 export default function Page() {
   const { userData, userDataIsloading, logoutUser } = useUser();
-
-  const [newNetworkName, setNewNetworkName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { networksData, createNetwork } = useNetworks(
     userData?.accessToken,
     logoutUser
   );
-
-  async function submit() {
-    setIsSubmitting(true);
-    try {
-      await toast.promise(createNetwork(newNetworkName), {
-        loading: "Creating new network",
-        success: "Successfully created new network",
-        error: "Could not create new network",
-      });
-      setNewNetworkName("");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
 
   if (userDataIsloading) {
     return <AuthLoadingScreen />;
@@ -86,7 +48,13 @@ export default function Page() {
             logoutUser={logoutUser}
           />
         ))}
-        <CreateNetworkButton createNetwork={createNetwork} />
+        <CreationDialog action="create" label="network" submit={createNetwork}>
+          <button className="min-h-[5rem] transition-colors border-2 border-dashed rounded-lg border-slate-300 hover:border-slate-400 text-slate-500 hover:text-slate-900">
+            <div className="flex flex-row items-center justify-center text-sm font-medium ">
+              <IconPlus width={16} className="mr-1.5 -ml-0.5" /> Create Network
+            </div>
+          </button>
+        </CreationDialog>
       </div>
       <h2 className="flex flex-row items-center mt-16 mb-4 text-2xl font-bold gap-x-1 text-slate-800">
         Server Status
@@ -136,120 +104,6 @@ function NetworkCard(props: {
         </div>
       </div>
     </Link>
-  );
-}
-
-function CreateNetworkButton(props: {
-  createNetwork: (name: string) => Promise<void>;
-}) {
-  const [newNetworkName, setNewNetworkName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const rules = [
-    {
-      label: "At least one character",
-      valid: newNetworkName.length > 0,
-    },
-    {
-      label: "Max. 64 characters",
-      valid: newNetworkName.length <= 64,
-    },
-    {
-      label: "Only lowercase letters/numbers/ dashes",
-      valid: newNetworkName.match(/^[a-z0-9-]*$/) !== null,
-    },
-    {
-      label: "No leading/trailing/consecutive dashes",
-      valid:
-        newNetworkName.match(/--/) === null &&
-        newNetworkName.match(/^-/) === null &&
-        newNetworkName.match(/-$/) === null,
-    },
-  ];
-
-  const formatIsValid = rules.every((rule) => rule.valid);
-
-  async function submit() {
-    if (!formatIsValid) {
-      toast.error("Invalid network name");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await toast.promise(props.createNetwork(newNetworkName), {
-        loading: "Creating new network",
-        success: "Successfully created new network",
-        error: "Could not create new network",
-      });
-      setIsOpen(false);
-      setNewNetworkName("");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        setIsOpen(open);
-        setNewNetworkName("");
-      }}
-    >
-      <DialogTrigger asChild>
-        <button className="min-h-[5rem] transition-colors border-2 border-dashed rounded-lg border-slate-300 hover:border-slate-400 text-slate-500 hover:text-slate-900">
-          <div className="flex flex-row items-center justify-center text-sm font-medium ">
-            <IconPlus width={16} className="mr-1.5 -ml-0.5" /> Create Network
-          </div>
-        </button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create a new network</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-row items-baseline gap-x-3">
-          <Label className="text-right whitespace-nowrap">Network Name</Label>
-          <div className="flex flex-col items-start justify-start flex-grow gap-y-2">
-            <Input
-              autoFocus
-              value={newNetworkName}
-              onChange={(e) => setNewNetworkName(e.target.value)}
-              className="w-full"
-            />
-            {rules.map((rule, index) => (
-              <div
-                key={index}
-                className={
-                  "flex flex-row items-center gap-x-2 text-xs font-medium px-3 " +
-                  (rule.valid ? "text-emerald-700" : "text-rose-700")
-                }
-              >
-                {rule.valid ? (
-                  <IconCircleCheckFilled size={14} />
-                ) : (
-                  <IconCircleDashed size={14} />
-                )}
-
-                <div>{rule.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button
-            onClick={isSubmitting ? () => {} : submit}
-            variant={isSubmitting ? "ghost" : "default"}
-          >
-            {isSubmitting ? "..." : "Create"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 
