@@ -15,8 +15,8 @@ The payloads are JSON encoded and have the following structure:
 
 ```json
 {
-  "revision": 0,
-  "configuration": {} // Can be any valid JSON object
+  "configuration": {}, // Can be any valid JSON object
+  "revision": 0
 }
 ```
 
@@ -26,9 +26,9 @@ The payloads are JSON encoded and have the following structure:
 // Array structure allows to batch messages
 [
   {
-    "revision": 0,
+    "success": true, // Did the sensor successfully process the configuration?
     "timestamp": 1683645000.0,
-    "success": true // Did the sensor successfully process the configuration?
+    "revision": 0
   }
 ]
 ```
@@ -39,13 +39,13 @@ The payloads are JSON encoded and have the following structure:
 // Array structure allows to batch messages
 [
   {
-    "revision": 0, // Optional
-    "timestamp": 1683645000.0,
     "value": {
       // Data points have type double
       "temperature": 23.1,
       "humidity": 0.62
-    }
+    },
+    "timestamp": 1683645000.0,
+    "revision": 0 // Optional
   }
 ]
 ```
@@ -56,10 +56,10 @@ The payloads are JSON encoded and have the following structure:
 // Array structure allows to batch messages
 [
   {
+    "message": "The CPU is burning; Please call the fire department.",
     "severity": "error", // One of: info, warning, error
-    "revision": 0, // Optional
     "timestamp": 1683645000.0,
-    "message": "The CPU is burning; Please call the fire department."
+    "revision": 0 // Optional
   }
 ]
 ```

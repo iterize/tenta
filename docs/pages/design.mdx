@@ -1,4 +1,4 @@
-# Design Decisions
+# Design decisions
 
 ## Delegation of processing and (elaborate) visualization
 
@@ -28,6 +28,9 @@ HTTP would be a viable alternative to relay measurements from the sensors to Ten
 Tenta does not directly support LoRaWAN. You can use a LoRaWAN gateway to translate messages between the sensors and Tenta. This is a common setup that allows you to connect sensors communicating both over MQTT or LoRaWAN to a single Tenta instance.
 
 ## Structure of measurements
+
+- Compare with JSON
+- not as flexible, what's possible is adding and removing attributes from the structure, but not changing them
 
 Measurements are stored in a single table in the database. This table has an `attribute` column (string) and a `value` column (double-precision floating-point). Measurements arrive as JSON documents at the server which stores each key-value pair as a separate row. If your measurements consist of values for temperature and humidity, for instance, the server will store them as two rows in the database.
 

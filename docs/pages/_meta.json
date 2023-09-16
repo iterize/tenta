@@ -1,13 +1,39 @@
 {
-  "index": "Overview",
-  "roadmap": "Roadmap",
-  "---1": {
-    "type": "separator"
+  "index": {
+    "display": "hidden"
   },
-  "user-guide": "🏔️ User Guide",
-  "developer-guide": "🛠️ Developer Guide",
-  "---2": {
-    "type": "separator"
+  "introduction": "Introduction",
+  "-- Guides": {
+    "type": "separator",
+    "title": "Guides"
   },
-  "api-reference": "⚙️ API Reference"
+  "overview": "Overview",
+  "connect": "Connect to Tenta",
+  "export": "Working with the data",
+  "deployment": "Deployment",
+  "-- Reference": {
+    "type": "separator",
+    "title": "Reference"
+  },
+  "design": "Design decisions",
+  "mqtt": "MQTT interface",
+  "python": "Python library",
+  "http": {
+    "title": "REST API ↗",
+    "href": "https://bump.sh/empicano/doc/tenta"
+  },
+  "-- More": {
+    "type": "separator",
+    "title": "More"
+  },
+  "issues": {
+    "title": "Issue tracker ↗",
+    "href": "https://github.com/iterize/tenta/issues"
+  },
+  "discussions": {
+    "title": "Discussions ↗",
+    "href": "https://github.com/iterize/tenta/discussions"
+  },
+  "contribute": "How to contribute",
+  "roadmap": "Roadmap"
 }

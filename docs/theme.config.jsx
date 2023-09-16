@@ -48,7 +48,7 @@ export default {
       </svg>
     ),
   },
-  docsRepositoryBase: "https://github.com/iterize/tenta/blob/main/docs",
+  docsRepositoryBase: "https://github.com/iterize/tenta/tree/main/docs",
   //primaryHue: 43,
   navigation: true,
   useNextSeoProps() {
@@ -72,25 +72,6 @@ export default {
     ),
   },
   faviconGlyph: "🏔️",
-  sidebar: {
-    titleComponent({ title, type, route }) {
-      if (type === "doc") {
-        if (route.split("/").length === 2) {
-          return (
-            <strong className="text-neutral-800 dark:text-neutral-200 font-semibold">
-              {title}
-            </strong>
-          );
-        } else {
-          return (
-            <span className="text-neutral-600 dark:text-neutral-400">
-              {title}
-            </span>
-          );
-        }
-      }
-    },
-  },
   /*banner: {
     key: "v1.0.0-release",
     text: "🎉 Tenta v0.1.0 has been released",
