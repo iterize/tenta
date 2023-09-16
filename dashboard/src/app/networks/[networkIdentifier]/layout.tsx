@@ -4,7 +4,7 @@ import { AuthLoadingScreen } from "@/components/custom/auth-loading-screen";
 import { useNetworks } from "@/requests/networks";
 import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import {
   IconActivityHeartbeat,
   IconAdjustmentsFilled,
@@ -16,6 +16,7 @@ import {
 import { IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { CreationDialog } from "@/components/custom/creation-dialog";
 
 export default function NetworkPageLayout(props: {
   children: React.ReactNode;
@@ -24,11 +25,13 @@ export default function NetworkPageLayout(props: {
   const { userData, userDataIsloading, logoutUser } = useUser();
 
   const { networksData } = useNetworks(userData?.accessToken, logoutUser);
-  const sensorsData = useSensors(
+  const { sensorsData, createSensor } = useSensors(
     userData?.accessToken,
     logoutUser,
     props.params.networkIdentifier
   );
+
+  const router = useRouter();
 
   if (userDataIsloading) {
     return <AuthLoadingScreen />;
@@ -78,10 +81,21 @@ export default function NetworkPageLayout(props: {
                   />
                 ))}{" "}
                 <div className="flex justify-center w-full p-3">
-                  <Button>
-                    <IconPlus width={16} className="mr-1.5 -ml-0.5" /> New
-                    Sensor
-                  </Button>
+                  <CreationDialog
+                    action="create"
+                    label="sensor"
+                    submit={createSensor}
+                    onSuccess={(newIdentifier: string) => {
+                      router.push(
+                        `/networks/${props.params.networkIdentifier}/sensors/${newIdentifier}/activity`
+                      );
+                    }}
+                  >
+                    <Button>
+                      <IconPlus width={16} className="mr-1.5 -ml-0.5" /> New
+                      Sensor
+                    </Button>
+                  </CreationDialog>
                 </div>
               </div>
             </>

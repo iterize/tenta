@@ -59,10 +59,33 @@ export function useSensors(
   logoutUser: () => void,
   networkIdentifier: string
 ) {
-  const { data } = useSWR(
+  const { data, mutate } = useSWR(
     [`/networks/${networkIdentifier}/sensors`, accessToken],
     ([url, accessToken]) => fetcher(url, accessToken, logoutUser)
   );
 
-  return data;
+  const createSensor = async (sensorName: string): Promise<string> => {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/networks/${networkIdentifier}/sensors`,
+      {
+        sensor_name: sensorName,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    const newData = schema.parse([{ ...data, sensor_name: sensorName }]);
+    mutate((prevData: SensorsType | undefined) => [
+      ...(prevData || []),
+      ...newData,
+    ]);
+    return newData[0].identifier;
+  };
+
+  return {
+    sensorsData: data,
+    createSensor,
+  };
 }

@@ -15,7 +15,7 @@ export default function Page(props: {
 }) {
   const { userData, userDataIsloading, logoutUser } = useUser();
 
-  const sensorsData = useSensors(
+  const { sensorsData } = useSensors(
     userData?.accessToken,
     logoutUser,
     props.params.networkIdentifier

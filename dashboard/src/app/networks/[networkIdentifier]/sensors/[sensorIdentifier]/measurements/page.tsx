@@ -20,7 +20,7 @@ export default function Page(props: {
 
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
 
-  const sensorsData = useSensors(
+  const { sensorsData } = useSensors(
     userData?.accessToken,
     logoutUser,
     props.params.networkIdentifier

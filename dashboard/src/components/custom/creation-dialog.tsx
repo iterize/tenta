@@ -16,7 +16,8 @@ import { Button } from "@/components/ui/button";
 export function CreationDialog(props: {
   action: "create" | "update";
   label: "sensor" | "network";
-  submit: (name: string) => Promise<void>;
+  submit: (name: string) => Promise<void | string>;
+  onSuccess?: (newIdentifier: string) => void;
   children: React.ReactNode;
   prefill?: string;
 }) {
@@ -62,7 +63,12 @@ export function CreationDialog(props: {
           props.action.slice(1, -1) +
           "ing"
         } ${props.label}`,
-        success: `Successfully ${props.action + "d"} ${props.label}`,
+        success: (data) => {
+          if (props.onSuccess && typeof data === "string") {
+            props.onSuccess(data);
+          }
+          return `Successfully ${props.action + "d"} ${props.label}`;
+        },
         error: `Could not ${props.action} ${props.label}`,
       });
       setIsOpen(false);

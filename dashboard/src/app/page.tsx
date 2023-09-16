@@ -74,7 +74,7 @@ function NetworkCard(props: {
   accessToken: string;
   logoutUser: () => void;
 }) {
-  const sensorsData = useSensors(
+  const { sensorsData } = useSensors(
     props.accessToken,
     props.logoutUser,
     props.networkIdentifier
