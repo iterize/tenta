@@ -13,17 +13,24 @@ import { TheTenta } from "@/components/custom/the-tenta";
 export default function Page() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { userData, userDataIsloading, loginUser } = useUser();
+  const { userData, userDataIsloading, signupUser } = useUser();
 
   async function submit() {
+    if (password !== passwordConfirmation) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await toast.promise(loginUser(username, password), {
+      await toast.promise(signupUser(username, password), {
         loading: "Authenticating",
-        success: "Successfully authenticated",
-        error: "Failed to authenticate",
+        success: "Successfully created new account",
+        error: "Username already exists",
       });
       setUsername("");
       setPassword("");
@@ -50,7 +57,7 @@ export default function Page() {
           <TheTenta className="max-w-2xl" />
         </div>
         <div className="flex flex-col items-center justify-center w-full max-w-xs mx-auto gap-y-2">
-          <h1 className="mb-1 text-2xl font-bold">Login</h1>
+          <h1 className="mb-1 text-2xl font-bold">Signup</h1>
           <Input
             required
             type="username"
@@ -62,15 +69,24 @@ export default function Page() {
             required
             type="password"
             placeholder="Password"
+            autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <Input
+            required
+            type="password"
+            autoComplete="new-password"
+            placeholder="Password Confirmation"
+            value={passwordConfirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
+          />
           <div className="flex items-baseline justify-center w-full">
             <Link
-              href="/signup"
+              href="/login"
               className="mx-3 text-xs font-semibold underline text-slate-900"
             >
-              Sign up instead
+              Log in instead
             </Link>
             <div className="flex-grow" />
             <Button
@@ -78,7 +94,7 @@ export default function Page() {
               onClick={isSubmitting ? () => {} : submit}
               variant={isSubmitting ? "ghost" : "default"}
             >
-              {isSubmitting ? "..." : "Log in"}
+              {isSubmitting ? "..." : "Sign up"}
             </Button>
           </div>
           {contactEmail !== undefined && (

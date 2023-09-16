@@ -48,6 +48,20 @@ export function useUser() {
     mutate(userData);
   };
 
+  const signupUser = async (username: string, password: string) => {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/users`,
+      {
+        user_name: username,
+        password,
+      }
+    );
+    const userData = userDataSchema.parse(data);
+    Cookies.set("userIdentifier", userData.userIdentifier);
+    Cookies.set("accessToken", userData.accessToken);
+    mutate(userData);
+  };
+
   return {
     userData,
     userDataIsloading: !userData && !error,
@@ -57,5 +71,6 @@ export function useUser() {
       mutate(undefined);
     },
     loginUser,
+    signupUser,
   };
 }
