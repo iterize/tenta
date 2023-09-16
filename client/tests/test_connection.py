@@ -26,9 +26,13 @@ MQTT_BROKERS: typing.List[typing.Dict[str, typing.Any]] = [
 ]
 DEFAULTS: typing.Dict[str, typing.Any] = {
     "sensor_identifier": "some-sensor-id",
-    "config_revision": 17,
     "connection_timeout": 1,
 }
+
+
+def force_teardown() -> None:
+    if tenta.TentaClient.instance is not None:
+        tenta.TentaClient.instance.teardown()
 
 
 @pytest.mark.order(2)
@@ -52,8 +56,7 @@ def test_bad_connection_with_wrong_host() -> None:
         except ConnectionError:
             pass
         finally:
-            if tenta.TentaClient.instance is not None:
-                tenta.TentaClient.instance.teardown()
+            force_teardown()
 
 
 @pytest.mark.order(2)
@@ -68,8 +71,7 @@ def test_bad_connection_with_wrong_port() -> None:
         except ConnectionError:
             pass
         finally:
-            if tenta.TentaClient.instance is not None:
-                tenta.TentaClient.instance.teardown()
+            force_teardown()
 
 
 @pytest.mark.order(2)
@@ -84,8 +86,7 @@ def test_bad_connection_with_wrong_identifier() -> None:
         except ConnectionError:
             pass
         finally:
-            if tenta.TentaClient.instance is not None:
-                tenta.TentaClient.instance.teardown()
+            force_teardown()
 
 
 @pytest.mark.order(2)
@@ -99,7 +100,6 @@ def test_bad_connection_with_wrong_password() -> None:
         except ConnectionError:
             return
         finally:
-            if tenta.TentaClient.instance is not None:
-                tenta.TentaClient.instance.teardown()
+            force_teardown()
 
         raise Exception("Should have raised a ConnectionError")

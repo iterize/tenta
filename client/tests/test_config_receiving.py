@@ -41,16 +41,16 @@ def test_config_receiving() -> None:
         mqtt_port=MQTT_PORT,
         mqtt_identifier=MQTT_IDENTIFIER,
         mqtt_password=MQTT_PASSWORD,
-        sensor_identifier=SENSOR_IDENTIFIER,
-        config_revision=17,
         connection_timeout=1,
+        sensor_identifier=SENSOR_IDENTIFIER,
+        receive_configs=True,
     )
 
-    config_1 = tenta.ConfigMessage(
+    config_1 = tenta.ConfigurationMessage(
         revision=17,
         configuration={"some_value": 42},
     )
-    config_2 = tenta.ConfigMessage(
+    config_2 = tenta.ConfigurationMessage(
         revision=18,
         configuration={"some_other_value": 43},
     )
