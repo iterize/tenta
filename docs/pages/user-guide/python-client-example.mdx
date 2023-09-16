@@ -14,64 +14,117 @@ import ssl
 tenta_client = tenta.TentaClient(
     mqtt_host="test.mosquitto.org", mqtt_port=1884,
     mqtt_identifier="rw", mqtt_password="readwrite",
-    sensor_identifier="81b...", config_revision=17,
+
+    # the sensor identifier is optional; if you do not specify it here you
+    # will have to specify it when publishing messages (see below)
+    sensor_identifier="81b...",
+
+    # receive_configs is set to true by default a `ValueError` will be raised
+    # if this is `True` but `sensor_identifier` has not been specified
+    receive_configs=True,
 )
 ```
 
 **Publish logs asynchronously**, i.e., your code continues to
-run while the message is being published.
+run while the message is being published. You can send them one
+by one or in batches.
 
 ```python
-tenta_client.publish_log(
-    severity="info", message="Hello, world!"
+tenta_client.publish(
+    tenta.LogMessage(severity="info", message="Hello, world!")
 )
-tenta_client.publish_log(
-    severity="info", message="Hello, to you too!"
+tenta_client.publish(
+    tenta.LogMessage(severity="info", message="Hello, to you too!")
+)
+tenta_client.publish(
+    [
+        tenta.LogMessage(severity="warning", message="Excepteur voluptate proident"),
+        tenta.LogMessage(severity="error", message="esse aliqua nisi elit"),
+    ]
 )
 tenta_client.wait_for_publish()
-print("Logs 1-2 published!")
+print("Logs 1-4 published!")
 ```
 
 **Publish logs synchronously**, i.e., your code waits until the
 message has been published successfully.
 
 ```python
-tenta_client.publish_log(
-    severity="warning", message="Hello, to you too!",
+tenta_client.publish(
+    tenta.LogMessage(severity="warning", message="do incididunt"),
     wait_for_publish=True, wait_for_publish_timeout=5,
 )
-print("Log 3 published!")
+print("Log 5 published!")
+
+tenta_client.publish(
+    [
+        tenta.LogMessage(severity="warning", message="dolor elit laboris ipsum"),
+        tenta.LogMessage(severity="warning", message="Consequat laboris incididunt")
+    ],
+    wait_for_publish=True, wait_for_publish_timeout=5,
+)
+print("Log 6-7 published!")
+```
+
+You can specify the `sensor_identifier` either for the whole client
+on creation (as seen above) or pass the `sensor_identifier` to the
+`publish` function directly which will override the client's value.
+A `ValueError` will be raised if the `sensor_identifier` is not
+specified anywhere.
+
+```python
+tenta_client.publish(
+    tenta.LogMessage(severity="warning", message="Hello, to you too!"),
+    sensor_identifier="not-81b...",
+    wait_for_publish=True, wait_for_publish_timeout=5,
+)
 ```
 
 **Publish measurements asynchronously**.
 
 ```python
-tenta_client.publish_measurement(
-    value={
-        "temperature": 20.0, "humidity": 50.0,
-        "pressure": 1013.25, "voltage": 3.3,
-    },
+tenta_client.publish(
+    tenta.MeasurementMessage(
+        value={
+            "temperature": 20.0, "humidity": 50.0,
+            "pressure": 1013.25, "voltage": 3.3,
+        },
+    )
 )
 tenta_client.wait_for_publish()
-print("Measurements published!")
+```
+
+You can give log messages and measurements a **timestamp**.
+If you do not specify a timestamp, the current time will be used.
+
+```python
+tenta_client.publish(
+    tenta.MeasurementMessage(
+        value={
+            "coolness": 80.0, "swagg": 9001,
+        },
+        timestamp=time.time() - 3600,
+    )
+)
+tenta_client.wait_for_publish()
 ```
 
 **Publish acknowledgment asynchronously**, i.e., "did the sensor successfully
 process a new config revision?" -> `True`/`False`.
 
 ```python
-tenta_client.publish_acknowledgment(
-    success=False, revision=20,
+tenta_client.publish(
+    tenta.AcknowledgmentMessage(success=False, revision=20)
 )
 tenta_client.wait_for_publish()
-print("Acknowledgment published!")
 ```
 
-Get the **latest received config** on demand.
+Get the **latest received config** on demand. This will raise a `ValueError`
+if `receive_configs` has not been set to `True` on client creation.
 
 ```python
 config_message: typing.Optional[
-    tenta.ConfigMessage
+    tenta.ConfigurationMessage
 ] = tenta_client.get_latest_received_config_message()
 ```
 
@@ -94,7 +147,7 @@ queue might raise Exceptions.
 tenta_client = tenta.TentaClient(
     mqtt_host="localhost", mqtt_port=1884,
     mqtt_identifier="server", mqtt_password="password",
-    sensor_identifier="81b...", config_revision=17,
+    sensor_identifier="81c...",
 
     # callbacks are optional
     on_config_message=lambda config_message: print(
@@ -103,19 +156,6 @@ tenta_client = tenta.TentaClient(
     on_publish=lambda message_id: print(
         f"Message with id {message_id} has been published!"
     ),
-)
-
-current_queue_length = tenta_client.get_active_message_count()
-```
-
-By default, all published messages will be tagged by the current timestamp.
-However, by **passing a timestamp** to the functions `publish_log`/
-`publish_measurement`/`publish_acknowledgement`, you can override this behaviour.
-
-```python
-tenta_client.publish_log(
-    severity="info", message="Hello, world!",
-    timestamp=time.time() - 3600,
 )
 tenta_client.teardown()
 ```
@@ -126,7 +166,7 @@ You can communicate using **TLS encryption**.
 tenta_client_with_tls = tenta.TentaClient(
     mqtt_host="test.mosquitto.org", mqtt_port=8885,
     mqtt_identifier="rw", mqtt_password="readwrite",
-    sensor_identifier="81b...", config_revision=17,
+    sensor_identifier="81b...",
 
     # tls settings are optional
     # this server certificate is only valid for the MQTT
@@ -139,8 +179,3 @@ tenta_client_with_tls = tenta.TentaClient(
 )
 tenta_client_with_tls.teardown()
 ```
-
-Finally, if the client does not precisely fit your needs, you can also
-inherit from it and only override the methods that require changes or
-take the client as a starting point for your own implementation since
-this code is open-source in the end.

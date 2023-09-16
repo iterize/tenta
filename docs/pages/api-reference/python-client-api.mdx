@@ -1,12 +1,20 @@
 # Tenta Python Client API Reference
 
-It exports the three classes `ConfigMessage`, `TLSParameters` and `TentaClient`.
+This library provides statically typed classes for all message types
+used by Tenta: `MeasurementMessage`, `LogMessage`, `AcknowledgmentMessage`,
+`ConfigurationMessage`, and `TLSParameters`.
+
+The `TentaClient` class provides a simple interface for sending messages
+to the Tenta server using Paho MQTT.
 
 
-## ConfigMessage Objects
+## Module `tenta.types`
+
+
+### ConfigurationMessage Objects
 
 ```python
-class ConfigMessage()
+class ConfigurationMessage()
 ```
 
 A configuration message published by the server. Used by the `TentaClient`
@@ -19,10 +27,98 @@ class to produce a typed object for received configs.
 def __init__(revision: int, configuration: Any) -> None
 ```
 
-Create a new configuration message.
+Create a configuration message.
+
+**Arguments**:
+
+- `revision` - Config revision number.
+- `configuration` - The configuration object.
 
 
-## TLSParameters Objects
+### LogMessage Objects
+
+```python
+class LogMessage()
+```
+
+A log message published by the client.
+
+
+#### \_\_init\_\_
+
+```python
+def __init__(severity: Literal["info", "warning", "error"],
+             message: str,
+             revision: Optional[int] = None,
+             timestamp: Optional[float] = None) -> None
+```
+
+Create a log message.
+
+**Arguments**:
+
+- `severity` - Severity of the log message.
+- `message` - The log message content.
+- `revision` - Config revision of the log.
+- `timestamp` - Timestamp of the measurement. If not provided, the `TentaClient` uses
+  the current time.
+
+
+### MeasurementMessage Objects
+
+```python
+class MeasurementMessage()
+```
+
+A measurement message published by the client.
+
+
+#### \_\_init\_\_
+
+```python
+def __init__(value: Dict[str, Union[float, int]],
+             revision: Optional[int] = None,
+             timestamp: Optional[float] = None) -> None
+```
+
+Create a measurement message.
+
+**Arguments**:
+
+- `value` - Value of the measurement. E.g. `{"temperature": 20.0, "humidity": 45.4}`.
+- `revision` - Config revision of the measurement.
+- `timestamp` - Timestamp of the measurement. If not provided, the `TentaClient` uses
+  the current time.
+
+
+### AcknowledgmentMessage Objects
+
+```python
+class AcknowledgmentMessage()
+```
+
+An acknowledgment message published by the client.
+
+
+#### \_\_init\_\_
+
+```python
+def __init__(revision: int,
+             success: bool,
+             timestamp: Optional[float] = None) -> None
+```
+
+Create an acknowledgment message.
+
+**Arguments**:
+
+- `revision` - The config revision to be acknowledged.
+- `success` - Whether the config was processed/accepted successfully.
+- `timestamp` - Timestamp of the acceptance. If not provided, the `TentaClient` uses
+  the current time.
+
+
+### TLSParameters Objects
 
 ```python
 class TLSParameters()
@@ -47,7 +143,10 @@ def __init__(ca_certs: Optional[str] = None,
 Create a new TLS parameters object.
 
 
-## TentaClient Objects
+## Module `tenta.client`
+
+
+### TentaClient Objects
 
 ```python
 class TentaClient()
@@ -61,12 +160,12 @@ def __init__(mqtt_host: str,
              mqtt_port: int,
              mqtt_identifier: str,
              mqtt_password: str,
-             sensor_identifier: str,
-             config_revision: Optional[int] = None,
-             on_config_message: Optional[Callable[[ConfigMessage],
+             connection_timeout: int = 8,
+             sensor_identifier: Optional[str] = None,
+             receive_configs: bool = True,
+             on_config_message: Optional[Callable[[ConfigurationMessage],
                                                   None]] = None,
              on_publish: Optional[Callable[[int], None]] = None,
-             connection_timeout: int = 8,
              tls_context: Optional[ssl.SSLContext] = None,
              tls_parameters: Optional[TLSParameters] = None,
              tls_insecure: Optional[bool] = None) -> None
@@ -83,12 +182,21 @@ in the documentation to see how to pass the TLS parameters.
 - `mqtt_port` - The port of the MQTT broker.
 - `mqtt_identifier` - The MQTT identifier.
 - `mqtt_password` - The MQTT password.
-- `sensor_identifier` - The sensor identifier.
-- `config_revision` - The current revision of the sensor.
-- `on_config_message` - A callback that is called when a new configuration message is received.
-- `on_publish` - A callback that is called when a message is published.
 - `connection_timeout` - How many seconds to wait for the initial connection to the MQTT
   broker until a `TimeoutError` is raised.
+- `sensor_identifier` - A sensor identifier. If this is `None`, the client will expect
+  a sensor identifier with each individual message, you publish.
+  It will raise a `ValueError` if you try to publish a message
+  without a sensor identifier.
+- `receive_configs` - Whether to subscribe to the configuration topic. If this is set
+  to `True` but no sensor identifier is specified, a `ValueError`
+  is raised.
+- `on_config_message` - A callback that is called when a new configuration message is
+  received. The function receives the `ConfigurationMessage` as
+  an argument.
+- `on_publish` - A callback that is called when a message is published. The
+  function receives the `message_id` of the published message as
+  an argument.
 - `tls_context` - The TLS context to use for the connection. This will be passed as
   is to `paho.mqtt.client.Client.tls_set_context`.
 - `tls_parameters` - The TLS parameters to use for the connection. This will be passed
@@ -103,86 +211,40 @@ in the documentation to see how to pass the TLS parameters.
 - `ConnectionError` - If the client could not connect to the MQTT broker.
 
 
-#### publish\_log
+#### publish
 
 ```python
-def publish_log(severity: Literal["info", "warning", "error"],
-                message: str,
-                timestamp: Optional[float] = None,
-                wait_for_publish: bool = False,
-                wait_for_publish_timeout: int = 60) -> int
+def publish(messages: Union[
+    LogMessage,
+    MeasurementMessage,
+    AcknowledgmentMessage,
+    List[LogMessage],
+    List[MeasurementMessage],
+    List[AcknowledgmentMessage],
+],
+            sensor_identifier: Optional[str] = None,
+            wait_for_publish: bool = False,
+            wait_for_publish_timeout: int = 60) -> int
 ```
 
-Publish a log to the MQTT broker.
+Publish a list of messages to the MQTT broker. All messages must be of the same type
+(`LogMessage`, `MeasurementMessage` or `AcknowledgmentMessage`). They will be published
+in a single MQTT message.
 
 **Arguments**:
 
-- `severity` - The severity of the log.
-- `message` - The log message.
-- `timestamp` - Timestamp of the log. Uses the current time if not specified.
+- `messages` - A list of messages to publish.
+- `sensor_identifier` - A sensor identifier. If this is `None`, the client will
+  use the sensor identifier that was specified when creating
+  the client. If no sensor identifier was specified when
+  creating the client, a `ValueError` is raised.
 - `wait_for_publish` - Whether to wait for the message to be published.
 - `wait_for_publish_timeout` - How many seconds to wait for the message to be published
-  until a `TimeoutError` is raised. Only used if
-  `wait_for_publish` is `True`.
   
 
 **Returns**:
 
-  The `message_id` of the published message.
-
-
-#### publish\_measurement
-
-```python
-def publish_measurement(value: Dict[str, Union[float, int]],
-                        timestamp: Optional[float] = None,
-                        wait_for_publish: bool = False,
-                        wait_for_publish_timeout: int = 60) -> int
-```
-
-Publish a measurement to the MQTT broker.
-
-**Arguments**:
-
-- `value` - The measurement value, e.g. `{"temperature": 20.5, "humidity": 50}`.
-- `timestamp` - Timestamp of the log. Uses the current time if not specified.
-- `wait_for_publish` - Whether to wait for the message to be published.
-- `wait_for_publish_timeout` - How many seconds to wait for the message to be published
-  until a `TimeoutError` is raised. Only used if
-  `wait_for_publish` is `True`.
-  
-
-**Returns**:
-
-  The `message_id` of the published message.
-
-
-#### publish\_acknowledgment
-
-```python
-def publish_acknowledgment(success: bool,
-                           revision: Optional[int],
-                           timestamp: Optional[float] = None,
-                           wait_for_publish: bool = False,
-                           wait_for_publish_timeout: int = 60) -> int
-```
-
-Publish an acknowledgment to the MQTT broker.
-
-**Arguments**:
-
-- `success` - Whether the configuration was processed/applied successfully.
-- `revision` - The revision of the configuration that was processed/applied.
-- `timestamp` - Timestamp of the log. Uses the current time if not specified.
-- `wait_for_publish` - Whether to wait for the message to be published.
-- `wait_for_publish_timeout` - How many seconds to wait for the message to be published
-  until a `TimeoutError` is raised. Only used if
-  `wait_for_publish` is `True`.
-  
-
-**Returns**:
-
-  The `message_id` of the published message.
+  The `message_id` of the MQTT message.
 
 
 #### was\_message\_published
@@ -232,7 +294,7 @@ Wait until all messages have been published.
 #### get\_latest\_received\_config\_message
 
 ```python
-def get_latest_received_config_message() -> Optional[ConfigMessage]
+def get_latest_received_config_message() -> Optional[ConfigurationMessage]
 ```
 
 Return the latest received configuration.

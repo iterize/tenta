@@ -1,4 +1,5 @@
 import os
+import tempfile
 import typing
 
 
@@ -38,25 +39,43 @@ with open(EXAMPLE_DST, "w") as f:
 
 # generate automatic API reference and prettify output
 
+# os.system call into temp file
 
-os.system(
-    f"cd {os.path.join(MONOREPO_DIR, 'client')} && pydoc-markdown --module=tenta > {API_DST}"
-)
+with tempfile.NamedTemporaryFile() as f:
 
-with open(API_DST, "r") as f:
-    raw_api_reference_content = f.read()
-
-api_reference_content = "\n".join(
-    list(
-        filter(
-            lambda line: not line.startswith('<a id="'),
-            (
-                ["# Tenta Python Client API Reference"]
-                + raw_api_reference_content.split("\n")[5:]
-            ),
+    def fetch(module: str) -> str:
+        os.system(
+            f"cd {os.path.join(MONOREPO_DIR, 'client')} && pydoc-markdown --module={module} > {f.name}"
         )
+        with open(f.name, "r") as f2:
+            return "\n".join(
+                filter(
+                    lambda line: not line.startswith('<a id="'),
+                    f2.read().split("\n"),
+                )
+            )
+
+    raw_api_reference_content_init = fetch("tenta").replace(
+        "# tenta", "# Module `tenta`"
     )
-)
+    raw_api_reference_content_types = (
+        fetch("tenta.types")
+        .replace("\n## ", "\n### ")
+        .replace("\n# ", "\n## ")
+        .replace("## tenta.types", "## Module `tenta.types`")
+    )
+    raw_api_reference_content_client = (
+        fetch("tenta.client")
+        .replace("\n## ", "\n### ")
+        .replace("\n# ", "\n## ")
+        .replace("## tenta.client", "## Module `tenta.client`")
+    )
+
 
 with open(API_DST, "w") as f:
-    f.write(api_reference_content)
+    f.write(
+        "# Tenta Python Client API Reference\n"
+        + "\n".join(raw_api_reference_content_init.split("\n")[4:])
+        + raw_api_reference_content_types
+        + raw_api_reference_content_client,
+    )
