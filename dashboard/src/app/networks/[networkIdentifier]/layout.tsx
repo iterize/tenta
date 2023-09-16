@@ -23,7 +23,7 @@ export default function NetworkPageLayout(props: {
 }) {
   const { userData, userDataIsloading, logoutUser } = useUser();
 
-  const networksData = useNetworks(userData?.accessToken, logoutUser);
+  const { networksData } = useNetworks(userData?.accessToken, logoutUser);
   const sensorsData = useSensors(
     userData?.accessToken,
     logoutUser,

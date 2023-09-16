@@ -28,7 +28,7 @@ export default function Page() {
     setIsSubmitting(true);
     try {
       await toast.promise(signupUser(username, password), {
-        loading: "Authenticating",
+        loading: "Creating new account",
         success: "Successfully created new account",
         error: "Username already exists",
       });

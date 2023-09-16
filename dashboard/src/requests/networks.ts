@@ -58,9 +58,32 @@ export function useNetworks(
   accessToken: string | undefined,
   logoutUser: () => void
 ) {
-  const { data } = useSWR(["/networks", accessToken], ([url, accessToken]) =>
-    fetcher(url, accessToken, logoutUser)
+  const { data, mutate } = useSWR(
+    ["/networks", accessToken],
+    ([url, accessToken]) => fetcher(url, accessToken, logoutUser)
   );
 
-  return data;
+  const createNetwork = async (networkName: string) => {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/networks`,
+      {
+        network_name: networkName,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    const networkData = schema.parse([{ ...data, network_name: networkName }]);
+    mutate((prevData: NetworksType | undefined) => [
+      ...(prevData || []),
+      ...networkData,
+    ]);
+  };
+
+  return {
+    networksData: data,
+    createNetwork,
+  };
 }
