@@ -29,7 +29,8 @@ export default function Page(props: {
     measurementsData,
     measurementsDataFetchingState,
     numberOfMeasurementsPages,
-    fetchMoreMeasurements,
+    fetchNewerMeasurements,
+    fetchOlderMeasurements,
   } = useMeasurements(
     userData?.accessToken,
     logoutUser,
@@ -41,8 +42,17 @@ export default function Page(props: {
   >();
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("fetching newer data");
+      fetchNewerMeasurements();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  });
+
+  useEffect(() => {
     if (
-      measurementsDataFetchingState === "fetching" &&
+      measurementsDataFetchingState === "user-fetching" &&
       dataLoadingToastId === undefined
     ) {
       setDataLoadingToastId(toast.loading("loading data"));
@@ -96,10 +106,13 @@ export default function Page(props: {
           numberOfPages={numberOfMeasurementsPages}
           setCurrentPageNumber={setCurrentPageNumber}
           noDataPlaceholder={
-            measurementsDataFetchingState === "fetching" ? "..." : "no data"
+            measurementsDataFetchingState === "background-fetching" ||
+            measurementsDataFetchingState === "user-fetching"
+              ? "..."
+              : "no data"
           }
         />
-        <Button onClick={fetchMoreMeasurements}>load older data</Button>
+        <Button onClick={fetchOlderMeasurements}>load older data</Button>
       </div>
       <div className="flex flex-col items-center justify-center w-full gap-y-4">
         {measurementsData === undefined && "loading"}

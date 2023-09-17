@@ -86,11 +86,11 @@ function NetworkCard(props: {
         <h3 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-lg font-semibold border-b border-slate-200">
           <div>{props.networkName}</div>
           <div className="flex-grow" />
-          <div className="px-1 text-sm font-medium rounded text-emerald-800 bg-emerald-200">
+          <div className="px-1 text-xs font-normal text-slate-500 ">
             {sensorsData === undefined && "..."}
             {sensorsData !== undefined && (
               <>
-                <span className="font-bold text-emerald-900">
+                <span className="font-semibold text-slate-700">
                   {sensorsData.length}
                 </span>{" "}
                 sensor

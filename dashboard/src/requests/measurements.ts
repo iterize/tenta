@@ -128,20 +128,6 @@ async function fetcher(
 
     let data: MeasurementsType = localData;
 
-    if (loadNewerData) {
-      let newerData = await getSinglePage(
-        url,
-        localMaxCreationTimestamp,
-        undefined,
-        accessToken,
-        logoutUser
-      );
-      if (newerData === undefined) {
-        return undefined;
-      }
-      data = [...data, ...newerData];
-    }
-
     if (loadOlderData) {
       let newerData = await getSinglePage(
         url,
@@ -154,6 +140,30 @@ async function fetcher(
         return undefined;
       }
       data = [...data, ...newerData];
+    }
+
+    if (loadNewerData) {
+      while (true) {
+        let newerData = await getSinglePage(
+          url,
+          localMaxCreationTimestamp,
+          undefined,
+          accessToken,
+          logoutUser
+        );
+        if (newerData === undefined) {
+          return undefined;
+        }
+        data = [...data, ...newerData];
+        let newMaxCreationTimestamp = maxBy(data, (d) => d.creationTimestamp)
+          ?.creationTimestamp;
+
+        if (newerData.length < 64 || newMaxCreationTimestamp === undefined) {
+          break;
+        }
+
+        localMaxCreationTimestamp = newMaxCreationTimestamp;
+      }
     }
 
     return data.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
@@ -170,24 +180,36 @@ export function useMeasurements(
   const [numberOfRequestedPages, setNumberOfRequestedPages] = useState(1);
 
   const [fetchingState, setFetchingState] = useState<
-    "idle" | "fetching" | "new data" | "no new data"
-  >("idle");
+    | "pending"
+    | "user-fetching"
+    | "background-fetching"
+    | "new data"
+    | "no new data"
+  >("pending");
 
   const url = `/networks/${networkIdentifier}/sensors/${sensorIdentifier}/measurements`;
   const numberOfPages = Math.ceil(data.length / 64);
 
   useEffect(() => {
     if (
-      fetchingState !== "fetching" &&
-      numberOfPages < numberOfRequestedPages
+      fetchingState === "user-fetching" ||
+      fetchingState === "background-fetching"
     ) {
+      return;
+    }
+
+    if (fetchingState === "pending" || numberOfPages < numberOfRequestedPages) {
       const f = async () => {
-        setFetchingState("fetching");
+        // initial data load and newer data is automatic -> don't show toasts
+        // older data is user-triggered -> show toasts
+        setFetchingState(
+          fetchingState === "pending" ? "background-fetching" : "user-fetching"
+        );
         const startTimestamp = new Date().getTime();
         const newData = await fetcher(
           url,
           data,
-          false,
+          true,
           true,
           accessToken,
           logoutUser
@@ -250,7 +272,15 @@ export function useMeasurements(
     measurementsData: data,
     measurementsDataFetchingState: fetchingState,
     numberOfMeasurementsPages: numberOfPages,
-    fetchMoreMeasurements: () => {
+    fetchNewerMeasurements: () => {
+      if (
+        fetchingState !== "background-fetching" &&
+        fetchingState !== "user-fetching"
+      ) {
+        setFetchingState("pending");
+      }
+    },
+    fetchOlderMeasurements: () => {
       setNumberOfRequestedPages(numberOfRequestedPages + 1);
     },
   };
