@@ -10,21 +10,25 @@ With Tenta, you can:
 
 Tenta is lightweight and composable. It is designed to be used as a building block in your IoT stack, together with other awesome tools like [Grafana](https://grafana.com/), [DuckDB](https://duckdb.org/), or [polars](https://www.pola.rs/).
 
-Tenta ships with a concise and language-independent MQTT interface and a client library for Python. Sensors that communicate over LoRaWAN or HTTP can connect to Tenta via translation gateways.
+Tenta ships with a concise and language-independent MQTT interface. Sensors that communicate over LoRaWAN or HTTP can connect to Tenta via translation gateways.
 
-## Documentation
+---
 
-- To get up and running with Tenta, try our [Getting Started guide](https://tenta.pages.dev/).
-- The full documentation is available at [tenta.pages.dev](https://tenta.pages.dev/).
-- Our [REST API documentation](https://bump.sh/empicano/doc/tenta) provides a reference for the HTTP interface.
+**[Read the documentation at tenta.onrender.com](https://tenta.onrender.com/)**
 
-## Research
-
-We are open for collaborations! Tenta evolved out of the [ACROPOLIS](https://mediatum.ub.tum.de/node?id=1690527) project at [TUM](https://www.tum.de/en/). If you are interested in using Tenta in your research, don't hesitate [to reach out](mailto:felix@felixboehm.dev). We are happy to help you get started and provide support.
+---
 
 ## License
 
 Tenta is licensed under the [MIT License](LICENSE).
+
+## Contributing
+
+We're very happy about contributions to Tenta! ✨ You can get started by reading [the contribution guide](https://tenta.onrender.com/contribute) in our docs.
+
+## Research
+
+We are open for collaborations! Tenta evolved out of the [ICOS Cities PAUL](https://www.icos-cp.eu/) project at [TUM](https://www.tum.de/en/). If you are interested in using Tenta in your research, don't hesitate [to reach out](mailto:contact@iterize.dev). We are happy to help you get started and provide support.
 
 ## Versioning
 
