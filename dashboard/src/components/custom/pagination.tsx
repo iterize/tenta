@@ -1,5 +1,6 @@
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { range } from "lodash";
+import { clsx } from "clsx";
 
 export function Pagination(props: {
   currentPageNumber: number;
@@ -16,7 +17,7 @@ export function Pagination(props: {
   if (showLeftDots && !showRightDots) {
     visiblePages = range(props.numberOfPages - 3, props.numberOfPages + 1);
   } else if (!showLeftDots && showRightDots) {
-    visiblePages = range(1, 5);
+    visiblePages = [1, 2, 3, 4];
   } else if (showLeftDots && showRightDots) {
     visiblePages = [
       props.currentPageNumber - 1,
@@ -42,26 +43,37 @@ export function Pagination(props: {
           className="mr-[1.5px] text-slate-600 group-hover:text-blue-950"
         />
       </button>
-      <div className="flex h-8 overflow-hidden border divide-x rounded-md shadow-sm bg-slate-50 border-slate-300 divide-slate-200">
+      <div className="flex h-8 overflow-hidden border rounded-md shadow-sm bg-slate-200 gap-x-px border-slate-300">
         {showLeftDots && (
-          <div className="flex items-center justify-center h-full cursor-not-allowed min-w-[3rem] text-slate-600">
+          <div className="items-center justify-center h-full cursor-not-allowed min-w-[3rem] text-slate-600 hidden sm:flex bg-slate-50">
             ...
           </div>
         )}
 
         {visiblePages.length === 0 && (
-          <div className="flex items-center justify-center min-w-[3rem] px-3 h-full cursor-not-allowed text-slate-600">
+          <div className="flex items-center justify-center min-w-[2rem] md:min-w-[3rem] px-1 md:px-3 h-full cursor-not-allowed text-slate-600 bg-slate-50">
             {props.noDataPlaceholder}
           </div>
+        )}
+
+        {visiblePages.length > 0 && (
+          <>
+            <div
+              key={props.currentPageNumber}
+              className={`items-center justify-center min-w-[2.5rem] md:min-w-[3rem] px-2 md:px-3 h-full flex sm:hidden bg-white text-slate-950`}
+            >
+              {props.currentPageNumber}
+            </div>
+          </>
         )}
 
         {visiblePages.map((pageNumber) => (
           <button
             key={pageNumber}
-            className={`flex items-center justify-center min-w-[3rem] h-full ${
+            className={`items-center justify-center min-w-[2.5rem] md:min-w-[3rem] px-2 md:px-3 h-full hidden sm:flex ${
               pageNumber === props.currentPageNumber
                 ? "bg-white text-slate-950"
-                : "text-slate-500"
+                : "text-slate-500 bg-slate-50"
             }`}
             onClick={() => props.setCurrentPageNumber(pageNumber)}
           >
@@ -70,7 +82,7 @@ export function Pagination(props: {
         ))}
 
         {showRightDots && (
-          <div className="flex items-center justify-center min-w-[3rem] h-full cursor-not-allowed text-slate-600">
+          <div className="items-center justify-center min-w-[3rem] h-full cursor-not-allowed text-slate-600 hidden sm:flex bg-slate-50">
             ...
           </div>
         )}

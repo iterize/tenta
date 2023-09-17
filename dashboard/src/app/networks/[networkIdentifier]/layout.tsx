@@ -198,31 +198,46 @@ export default function NetworkPageLayout(props: {
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="activity">
                   <div className="flex flex-row items-center gap-x-1">
-                    <IconActivityHeartbeat size={14} />
+                    <IconActivityHeartbeat
+                      size={14}
+                      className="max-[480px]:hidden"
+                    />
                     Activity
                   </div>
                 </TabsTrigger>
                 <TabsTrigger value="configurations">
                   <div className="flex flex-row items-center gap-x-1">
-                    <IconChartHistogram size={14} />
+                    <IconChartHistogram
+                      size={14}
+                      className="max-[480px]:hidden"
+                    />
                     Configs
                   </div>
                 </TabsTrigger>
                 <TabsTrigger value="plots">
                   <div className="flex flex-row items-center gap-x-1">
-                    <IconAdjustmentsFilled size={14} />
+                    <IconAdjustmentsFilled
+                      size={14}
+                      className="max-[480px]:hidden"
+                    />
                     Plots
                   </div>
                 </TabsTrigger>
                 <TabsTrigger value="measurements">
                   <div className="flex flex-row items-center gap-x-1">
-                    <IconDatabaseSearch size={14} />
+                    <IconDatabaseSearch
+                      size={14}
+                      className="max-[480px]:hidden"
+                    />
                     Data
                   </div>
                 </TabsTrigger>
                 <TabsTrigger value="logs">
                   <div className="flex flex-row items-center gap-x-1">
-                    <IconDatabaseExclamation size={14} />
+                    <IconDatabaseExclamation
+                      size={14}
+                      className="max-[480px]:hidden"
+                    />
                     Logs
                   </div>
                 </TabsTrigger>

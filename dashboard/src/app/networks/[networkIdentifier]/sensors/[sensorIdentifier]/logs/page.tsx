@@ -103,7 +103,7 @@ export default function Page(props: {
         <IconDatabaseExclamation className="p-1.5 bg-yellow-500 rounded text-yellow-50 w-7 h-7" />{" "}
         <h1>Raw log data</h1>
       </div>
-      <div className="flex flex-row items-center justify-start w-full gap-x-6">
+      <div className="flex flex-row items-center justify-start w-full gap-x-4 md:gap-x-6">
         <Pagination
           currentPageNumber={currentPageNumber}
           numberOfPages={numberOfLogsPages}
@@ -131,13 +131,17 @@ export default function Page(props: {
               className="flex flex-row items-center w-full p-3 pb-2 border-b border-slate-200 gap-x-3"
             >
               <ConfigRevisionTag revision={log.revision} />
-              <div className="font-regular">
-                {formatDistanceToNow(new Date(log.creationTimestamp * 1000), {
-                  addSuffix: true,
-                })}
+              <div className="flex flex-col items-start justify-center flex-grow md:items-baseline gap-x-2 md:flex-row ">
+                <div className="font-regular">
+                  {formatDistanceToNow(new Date(log.creationTimestamp * 1000), {
+                    addSuffix: true,
+                  })}
+                </div>
+                <div className="flex-grow" />
+                <div className="text-xs">
+                  {new Date(log.creationTimestamp * 1000).toISOString()}
+                </div>
               </div>
-              <div className="flex-grow" />
-              <div>{new Date(log.creationTimestamp * 1000).toISOString()}</div>
             </div>
             <div className="w-full px-3 py-2 font-mono text-xs break-words bg-slate-50 text-slate-500 whitespace-break-spaces gap-x-2">
               <span
