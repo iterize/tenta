@@ -1,14 +1,14 @@
 import Image from "next/image";
 
-export function TheTenta(props: { className: "max-w-xl" | "max-w-2xl" }) {
+export function TheTenta(props: { className: string }) {
   return (
-    <div className="relative">
+    <div className={"relative " + props.className}>
       <Image
         src="/tenta-artwork-png-recolored.png"
         alt="Tenta Artwork"
         width="1716"
         height="1716"
-        className={"relative z-10 " + props.className}
+        className={"relative z-10 w-full"}
       />
       <div
         className="absolute top-0 left-0 z-0 w-full h-full"

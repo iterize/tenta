@@ -245,7 +245,7 @@ function MeasurementActivityPlot(props: {
   }, [labelColumnWidth, plotHeight, props.data, plotRef.current]);
 
   return (
-    <div className="w-[calc(100%-1rem)] p-2 ml-4 bg-white border rounded-md shadow border-slate-300">
+    <div className="w-full md:w-[calc(100%-1rem)] md:ml-4 p-2 bg-white border rounded-md shadow border-slate-300">
       <svg
         viewBox={`0 0 1000 ${plotHeight}`}
         ref={plotRef}
@@ -269,22 +269,23 @@ function LogAggregationPanel(props: {
   const log = props.log;
 
   return (
-    <div className="flex flex-col justify-start flex-shrink-0 w-[calc(100%-1rem)] ml-4 overflow-hidden text-sm bg-white border rounded-lg shadow gap-x-6 border-slate-300">
-      <div className="flex flex-row items-center w-full p-3 border-b font-regular border-slate-200 gap-x-3">
+    <div className="flex flex-col justify-start flex-shrink-0 w-full md:w-[calc(100%-1rem)] md:ml-4 overflow-hidden text-sm bg-white border rounded-lg shadow gap-x-6 border-slate-300">
+      <div className="flex flex-row items-center w-full p-3 border-b md:flex-row font-regular border-slate-200 gap-x-3 gap-y-1">
         <ConfigRevisionTag
           revision={log.minRevision}
           to_revision={log.maxRevision}
         />
-
-        <TimestampLabel
-          label="first appeared"
-          timestamp={log.minCreationTimestamp}
-        />
-        <div className="-mx-1 font-light">|</div>
-        <TimestampLabel
-          label="last appeared"
-          timestamp={log.maxCreationTimestamp}
-        />
+        <div className="flex flex-col items-baseline flex-grow text-xs md:flex-row">
+          <TimestampLabel
+            label="first appeared"
+            timestamp={log.minCreationTimestamp}
+          />
+          <div className="hidden -mx-1 font-light md:block">|</div>
+          <TimestampLabel
+            label="last appeared"
+            timestamp={log.maxCreationTimestamp}
+          />
+        </div>
       </div>
       <div className="w-full px-3 py-2 font-mono text-xs break-words bg-slate-50 text-slate-500 whitespace-break-spaces gap-x-2">
         <span

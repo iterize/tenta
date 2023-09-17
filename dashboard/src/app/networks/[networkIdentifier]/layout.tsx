@@ -93,7 +93,7 @@ export default function NetworkPageLayout(props: {
         <Link href={`/networks/${props.params.networkIdentifier}`}>
           <div className="flex flex-row items-baseline px-2 m-0 font-regular">
             {network ? (
-              <div>
+              <div className="flex flex-col items-baseline md:flex-row gap-x-2">
                 <div>
                   <span className="font-bold">
                     {truncate(network.name, { length: 32 })}
@@ -110,8 +110,8 @@ export default function NetworkPageLayout(props: {
           </div>
         </Link>
       </div>
-      <div className="md:grid md:grid-cols-3 h-[calc(100vh-6rem)]">
-        <div className="hidden w-full h-full overflow-hidden border-r border-slate-300 md:block">
+      <div className="lg:grid lg:grid-cols-3 h-[calc(100vh-7rem)] lg:h-[calc(100vh-6rem)] bg-slate-50">
+        <div className="hidden w-full h-full overflow-hidden border-r border-slate-300 lg:block">
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (
             <>
@@ -150,7 +150,7 @@ export default function NetworkPageLayout(props: {
           )}
         </div>
 
-        <div className="flex justify-center w-full col-span-2 p-2 md:hidden">
+        <div className="flex justify-center w-full col-span-2 p-2 bg-white lg:hidden">
           {sensorsData !== undefined && (
             <Select
               value={currentSensorIdentifier}
@@ -183,7 +183,7 @@ export default function NetworkPageLayout(props: {
         </div>
 
         {currentSensorIdentifier !== undefined && (
-          <div className="flex justify-center w-full col-span-2 px-2 py-1 -mt-2 border-b md:hidden">
+          <div className="flex justify-center w-full col-span-2 px-2 py-1 -mt-2 bg-white lg:hidden">
             <Tabs
               defaultValue="activity"
               value={currentActivityValue}
@@ -246,7 +246,9 @@ export default function NetworkPageLayout(props: {
           </div>
         )}
 
-        <div className="col-span-2">{props.children}</div>
+        <div className="block w-full h-px lg:hidden bg-slate-300" />
+
+        <div className="col-span-2 lg:min-h-0 ">{props.children}</div>
       </div>
     </>
   );
@@ -278,34 +280,36 @@ function SensorListItem(props: {
         >
           <div
             className={
-              "flex flex-row items-center justify-start w-full h-12 px-3 gap-x-1 "
+              "flex flex-row items-center justify-start w-full h-16 px-3 gap-x-1 "
             }
           >
             <div
               className={
-                "w-full flex flex-row items-baseline gap-x-2 " +
+                "w-full flex flex-col items-baseline gap-x-2 " +
                 (isActive
                   ? "text-slate-950"
                   : "text-slate-500 group-hover:text-blue-900")
               }
             >
-              <div className="font-bold">{props.sensorName}</div>{" "}
+              <div className="flex flex-row items-center w-full gap-x-1">
+                <div className="font-bold">{props.sensorName}</div>{" "}
+                <div className="flex-grow" />
+                {isActive && (
+                  <CreationDialog
+                    action="update"
+                    label="sensor"
+                    submit={props.updateSensor}
+                    previousValue={props.sensorName}
+                  >
+                    <button className="p-2 rounded-md hover:bg-blue-150 hover:text-blue-950">
+                      <IconEdit size={16} />
+                    </button>
+                  </CreationDialog>
+                )}
+              </div>
               <div className="font-mono text-xs opacity-60">
                 ({props.sensorIdentifier})
               </div>
-              <div className="flex-grow" />
-              {isActive && (
-                <CreationDialog
-                  action="update"
-                  label="sensor"
-                  submit={props.updateSensor}
-                  previousValue={props.sensorName}
-                >
-                  <button className="p-2 rounded-md hover:bg-blue-150 hover:text-blue-950">
-                    <IconEdit size={16} />
-                  </button>
-                </CreationDialog>
-              )}
             </div>
           </div>
         </Link>
@@ -408,7 +412,7 @@ function SensorListItemLink(props: {
       }
     >
       <div className="flex flex-row items-center justify-center h-8 px-3 gap-x-1.5 font-medium text-xs">
-        {renderedIcon}
+        <div className="hidden xl:block">{renderedIcon}</div>
         {renderedLabel}
       </div>
     </Link>

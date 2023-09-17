@@ -51,7 +51,7 @@ export function Pagination(props: {
         )}
 
         {visiblePages.length === 0 && (
-          <div className="flex items-center justify-center min-w-[2rem] md:min-w-[3rem] px-1 md:px-3 h-full cursor-not-allowed text-slate-600 bg-slate-50">
+          <div className="flex items-center justify-center min-w-[2rem] md:min-w-[3rem] px-2 md:px-3 h-full cursor-not-allowed text-slate-600 bg-slate-50">
             {props.noDataPlaceholder}
           </div>
         )}
