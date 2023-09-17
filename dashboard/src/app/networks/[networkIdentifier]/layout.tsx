@@ -30,9 +30,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useState } from "react";
+
 export default function NetworkPageLayout(props: {
   children: React.ReactNode;
-  params: { networkIdentifier: string; sensorIdentifier: string };
+  params: { networkIdentifier: string };
 }) {
   const { userData, userDataIsloading, logoutUser } = useUser();
 
@@ -44,6 +47,21 @@ export default function NetworkPageLayout(props: {
   );
 
   const router = useRouter();
+  const pathname = usePathname();
+
+  const [currentSensorIdentifier, setCurrentSensorIdentifier] = useState<
+    string | undefined
+  >(undefined);
+  const [currentActivityValue, setCurrentActivityValue] = useState<
+    "activity" | "plots" | "configurations" | "measurements" | "logs"
+  >("activity");
+
+  useEffect(() => {
+    if (pathname.split("/").length > 4) {
+      setCurrentSensorIdentifier(pathname.split("/")[4] as any);
+      setCurrentActivityValue(pathname.split("/")[5] as any);
+    }
+  }, [pathname]);
 
   if (userDataIsloading) {
     return <AuthLoadingScreen />;
@@ -54,6 +72,17 @@ export default function NetworkPageLayout(props: {
   const network = networksData?.find(
     (network) => network.identifier === props.params.networkIdentifier
   );
+
+  let currentlyActiveLabel: string;
+  if (
+    !["activity", "plots", "configurations", "measurements", "logs"].includes(
+      pathname.split("/").pop() ?? ""
+    )
+  ) {
+    currentlyActiveLabel = "activity";
+  } else {
+    currentlyActiveLabel = pathname.split("/").pop() ?? "";
+  }
 
   return (
     <>
@@ -81,7 +110,7 @@ export default function NetworkPageLayout(props: {
           </div>
         </Link>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 h-[calc(100vh-6rem)] grid-rows-1">
+      <div className="md:grid md:grid-cols-3 h-[calc(100vh-6rem)]">
         <div className="hidden w-full h-full overflow-hidden border-r border-slate-300 md:block">
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (
@@ -96,6 +125,7 @@ export default function NetworkPageLayout(props: {
                     updateSensor={async (newSensorName: string) => {
                       await updateSensor(sensor.identifier, newSensorName);
                     }}
+                    currentlyActiveLabel={currentlyActiveLabel}
                   />
                 ))}
                 <div className="flex justify-center w-full p-3">
@@ -123,10 +153,10 @@ export default function NetworkPageLayout(props: {
         <div className="flex justify-center w-full col-span-2 p-2 md:hidden">
           {sensorsData !== undefined && (
             <Select
-              value={props.params.sensorIdentifier}
+              value={currentSensorIdentifier}
               onValueChange={(newSensorIdentifier: string) => {
                 router.push(
-                  `/networks/${props.params.networkIdentifier}/sensors/${newSensorIdentifier}/activity`
+                  `/networks/${props.params.networkIdentifier}/sensors/${newSensorIdentifier}/${currentActivityValue}`
                 );
               }}
             >
@@ -152,6 +182,55 @@ export default function NetworkPageLayout(props: {
           )}
         </div>
 
+        {currentSensorIdentifier !== undefined && (
+          <div className="flex justify-center w-full col-span-2 px-2 py-1 -mt-2 border-b md:hidden">
+            <Tabs
+              defaultValue="activity"
+              value={currentActivityValue}
+              className="w-full"
+              onValueChange={(newValue) => {
+                setCurrentActivityValue(newValue as any);
+                router.push(
+                  `/networks/${props.params.networkIdentifier}/sensors/${currentSensorIdentifier}/${newValue}`
+                );
+              }}
+            >
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="activity">
+                  <div className="flex flex-row items-center gap-x-1">
+                    <IconActivityHeartbeat size={14} />
+                    Activity
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger value="configurations">
+                  <div className="flex flex-row items-center gap-x-1">
+                    <IconChartHistogram size={14} />
+                    Configs
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger value="plots">
+                  <div className="flex flex-row items-center gap-x-1">
+                    <IconAdjustmentsFilled size={14} />
+                    Plots
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger value="measurements">
+                  <div className="flex flex-row items-center gap-x-1">
+                    <IconDatabaseSearch size={14} />
+                    Data
+                  </div>
+                </TabsTrigger>
+                <TabsTrigger value="logs">
+                  <div className="flex flex-row items-center gap-x-1">
+                    <IconDatabaseExclamation size={14} />
+                    Logs
+                  </div>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        )}
+
         <div className="col-span-2">{props.children}</div>
       </div>
     </>
@@ -163,19 +242,10 @@ function SensorListItem(props: {
   sensorName: string;
   sensorIdentifier: string;
   updateSensor: (name: string) => Promise<void>;
+  currentlyActiveLabel: string;
 }) {
   const pathname = usePathname();
   const isActive = pathname.includes(`/sensors/${props.sensorIdentifier}`);
-
-  let currentlyActiveLabel = pathname.split("/").pop();
-  if (
-    currentlyActiveLabel === undefined ||
-    !["activity", "plots", "configurations", "measurements", "logs"].includes(
-      currentlyActiveLabel
-    )
-  ) {
-    currentlyActiveLabel = "activity";
-  }
 
   return (
     <div className="border-b border-slate-300 group">
@@ -188,7 +258,7 @@ function SensorListItem(props: {
         }
       >
         <Link
-          href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${currentlyActiveLabel}`}
+          href={`/networks/${props.networkIdentifier}/sensors/${props.sensorIdentifier}/${props.currentlyActiveLabel}`}
           className={isActive ? "cursor-default" : "cursor-pointer"}
         >
           <div
