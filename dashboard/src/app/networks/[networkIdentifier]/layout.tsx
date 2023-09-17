@@ -18,6 +18,17 @@ import { IconPlus } from "@tabler/icons-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CreationDialog } from "@/components/custom/creation-dialog";
+import { truncate } from "lodash";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function NetworkPageLayout(props: {
   children: React.ReactNode;
@@ -46,29 +57,32 @@ export default function NetworkPageLayout(props: {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-start w-full h-12 overflow-hidden border-b border-slate-300 bg-slate-100">
+      <div className="flex flex-row items-center justify-start w-full h-16 overflow-hidden border-b md:h-12 border-slate-300 bg-slate-100">
         <Link href="/">
-          <IconSquareChevronLeftFilled className="w-12 h-12 p-3.5 hover:bg-slate-200 text-slate-800 hover:text-slate-950 border-r border-slate-100 hover:border-slate-300" />
+          <IconSquareChevronLeftFilled className="w-12 h-16 md:h-12 p-3.5 hover:bg-slate-200 text-slate-800 hover:text-slate-950 border-r border-slate-100 hover:border-slate-300" />
         </Link>
         <Link href={`/networks/${props.params.networkIdentifier}`}>
-          <h1 className="flex flex-row items-baseline px-2 m-0 font-regular">
-            <div>
-              {network ? (
-                <span>
-                  <span className="font-bold">{network.name}</span> network{" "}
-                  <span className="font-mono text-xs opacity-60">
-                    ({network.identifier})
-                  </span>
+          <div className="flex flex-row items-baseline px-2 m-0 font-regular">
+            {network ? (
+              <div>
+                <div>
+                  <span className="font-bold">
+                    {truncate(network.name, { length: 32 })}
+                  </span>{" "}
+                  <span className="flex-shrink-0">network</span>
+                </div>
+                <span className="font-mono text-xs opacity-60">
+                  ({network.identifier})
                 </span>
-              ) : (
-                "..."
-              )}
-            </div>
-          </h1>
+              </div>
+            ) : (
+              "..."
+            )}
+          </div>
         </Link>
       </div>
-      <div className="grid grid-cols-3 h-[calc(100vh-6rem)] grid-rows-1">
-        <div className="w-full h-full overflow-hidden border-r border-slate-300">
+      <div className="grid grid-cols-2 md:grid-cols-3 h-[calc(100vh-6rem)] grid-rows-1">
+        <div className="hidden w-full h-full overflow-hidden border-r border-slate-300 md:block">
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (
             <>
@@ -89,9 +103,9 @@ export default function NetworkPageLayout(props: {
                     action="create"
                     label="sensor"
                     submit={createSensor}
-                    onSuccess={(newIdentifier: string) => {
+                    onSuccess={(newSensorIdentifier: string) => {
                       router.push(
-                        `/networks/${props.params.networkIdentifier}/sensors/${newIdentifier}/activity`
+                        `/networks/${props.params.networkIdentifier}/sensors/${newSensorIdentifier}/activity`
                       );
                     }}
                   >
@@ -105,6 +119,39 @@ export default function NetworkPageLayout(props: {
             </>
           )}
         </div>
+
+        <div className="flex justify-center w-full col-span-2 p-2 md:hidden">
+          {sensorsData !== undefined && (
+            <Select
+              value={props.params.sensorIdentifier}
+              onValueChange={(newSensorIdentifier: string) => {
+                router.push(
+                  `/networks/${props.params.networkIdentifier}/sensors/${newSensorIdentifier}/activity`
+                );
+              }}
+            >
+              <SelectTrigger className="w-full h-14">
+                <SelectValue placeholder="Select a sensor" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Sensors</SelectLabel>
+                  {sensorsData.map((sensor) => (
+                    <SelectItem value={sensor.identifier}>
+                      <div className="flex flex-col items-start">
+                        <span className="font-medium">{sensor.name}</span>
+                        <span className="font-mono text-xs text-slate-500">
+                          {sensor.identifier}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+        </div>
+
         <div className="col-span-2">{props.children}</div>
       </div>
     </>
