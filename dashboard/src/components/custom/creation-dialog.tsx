@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -19,9 +19,9 @@ export function CreationDialog(props: {
   submit: (name: string) => Promise<void | string>;
   onSuccess?: (newIdentifier: string) => void;
   children: React.ReactNode;
-  prefill?: string;
+  previousValue?: string;
 }) {
-  const [name, setName] = useState(props.prefill ?? "");
+  const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -85,14 +85,16 @@ export function CreationDialog(props: {
       open={isOpen}
       onOpenChange={(open) => {
         setIsOpen(open);
-        setName("");
+        setName(props.previousValue || "");
       }}
     >
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="capitalize">
-            {props.action} {props.label}
+          <DialogTitle>
+            <span className="capitalize">
+              {props.action} {props.label}
+            </span>
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-row items-baseline gap-x-3">
@@ -104,14 +106,27 @@ export function CreationDialog(props: {
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full"
+              className="w-full mb-0.5"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  submit();
+                }
+              }}
             />
+            {props.previousValue !== undefined && (
+              <div className="px-3 mb-2 -mt-2 text-xs text-slate-600">
+                previously{" "}
+                <span className="italic font-semibold">
+                  {props.previousValue}
+                </span>
+              </div>
+            )}
             {rules.map((rule, index) => (
               <div
                 key={index}
                 className={
-                  "flex flex-row items-center gap-x-2 text-xs font-medium px-3 " +
-                  (rule.valid ? "text-emerald-700" : "text-rose-700")
+                  "flex flex-row items-center gap-x-2 text-xs font-medium px-3 h-3.5 " +
+                  (rule.valid ? "text-emerald-600" : "text-rose-600")
                 }
               >
                 {rule.valid ? (

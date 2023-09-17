@@ -11,6 +11,7 @@ import {
   IconChartHistogram,
   IconDatabaseExclamation,
   IconDatabaseSearch,
+  IconEdit,
   IconSquareChevronLeftFilled,
 } from "@tabler/icons-react";
 import { IconPlus } from "@tabler/icons-react";
@@ -25,7 +26,7 @@ export default function NetworkPageLayout(props: {
   const { userData, userDataIsloading, logoutUser } = useUser();
 
   const { networksData } = useNetworks(userData?.accessToken, logoutUser);
-  const { sensorsData, createSensor } = useSensors(
+  const { sensorsData, createSensor, updateSensor } = useSensors(
     userData?.accessToken,
     logoutUser,
     props.params.networkIdentifier
@@ -78,8 +79,11 @@ export default function NetworkPageLayout(props: {
                     networkIdentifier={props.params.networkIdentifier}
                     sensorName={sensor.name}
                     sensorIdentifier={sensor.identifier}
+                    updateSensor={async (newSensorName: string) => {
+                      await updateSensor(sensor.identifier, newSensorName);
+                    }}
                   />
-                ))}{" "}
+                ))}
                 <div className="flex justify-center w-full p-3">
                   <CreationDialog
                     action="create"
@@ -111,6 +115,7 @@ function SensorListItem(props: {
   networkIdentifier: string;
   sensorName: string;
   sensorIdentifier: string;
+  updateSensor: (name: string) => Promise<void>;
 }) {
   const pathname = usePathname();
   const isActive = pathname.includes(`/sensors/${props.sensorIdentifier}`);
@@ -129,10 +134,10 @@ function SensorListItem(props: {
     <div className="border-b border-slate-300 group">
       <div
         className={
-          "flex flex-col border-slate-600 " +
+          "flex flex-col border-r-4 " +
           (isActive
-            ? "bg-slate-50 border-r-4"
-            : "hover:bg-sky-100 hover:text-sky-900")
+            ? "bg-slate-50 border-slate-600 "
+            : "hover:bg-blue-100 hover:text-blue-900 border-transparent")
         }
       >
         <Link
@@ -146,15 +151,29 @@ function SensorListItem(props: {
           >
             <div
               className={
-                isActive
+                "w-full flex flex-row items-baseline gap-x-2 " +
+                (isActive
                   ? "text-slate-950"
-                  : "text-slate-500 group-hover:text-sky-900"
+                  : "text-slate-500 group-hover:text-blue-900")
               }
             >
-              <span className="font-bold">{props.sensorName}</span>{" "}
-              <span className="font-mono text-xs opacity-60">
+              <div className="font-bold">{props.sensorName}</div>{" "}
+              <div className="font-mono text-xs opacity-60">
                 ({props.sensorIdentifier})
-              </span>
+              </div>
+              <div className="flex-grow" />
+              {isActive && (
+                <CreationDialog
+                  action="update"
+                  label="sensor"
+                  submit={props.updateSensor}
+                  previousValue={props.sensorName}
+                >
+                  <button className="p-2 rounded-md hover:bg-blue-150 hover:text-blue-950">
+                    <IconEdit size={16} />
+                  </button>
+                </CreationDialog>
+              )}
             </div>
           </div>
         </Link>

@@ -84,8 +84,34 @@ export function useSensors(
     return newData[0].identifier;
   };
 
+  const updateSensor = async (
+    sensorIdentifier: string,
+    newSensorName: string
+  ): Promise<void> => {
+    await axios.put(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/networks/${networkIdentifier}/sensors/${sensorIdentifier}`,
+      {
+        sensor_name: newSensorName,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    mutate((prevData: SensorsType | undefined) =>
+      (prevData || []).map((sensor) => {
+        if (sensor.identifier === sensorIdentifier) {
+          return { ...sensor, name: newSensorName };
+        }
+        return sensor;
+      })
+    );
+  };
+
   return {
     sensorsData: data,
     createSensor,
+    updateSensor,
   };
 }
