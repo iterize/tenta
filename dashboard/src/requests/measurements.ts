@@ -200,17 +200,18 @@ export function useMeasurements(
 
     if (fetchingState === "pending" || numberOfPages < numberOfRequestedPages) {
       const f = async () => {
+        const userTriggeredFetch = fetchingState !== "pending";
         // initial data load and newer data is automatic -> don't show toasts
         // older data is user-triggered -> show toasts
         setFetchingState(
-          fetchingState === "pending" ? "background-fetching" : "user-fetching"
+          userTriggeredFetch ? "user-fetching" : "background-fetching"
         );
         const startTimestamp = new Date().getTime();
         const newData = await fetcher(
           url,
           data,
           true,
-          true,
+          userTriggeredFetch,
           accessToken,
           logoutUser
         );

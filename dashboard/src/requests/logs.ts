@@ -134,20 +134,6 @@ async function fetcher(
 
     let data: LogsType = localData;
 
-    if (loadNewerData) {
-      let newerData = await getSinglePage(
-        url,
-        localMaxCreationTimestamp,
-        undefined,
-        accessToken,
-        logoutUser
-      );
-      if (newerData === undefined) {
-        return undefined;
-      }
-      data = [...data, ...newerData];
-    }
-
     if (loadOlderData) {
       let newerData = await getSinglePage(
         url,
@@ -160,6 +146,30 @@ async function fetcher(
         return undefined;
       }
       data = [...data, ...newerData];
+    }
+
+    if (loadNewerData) {
+      while (true) {
+        let newerData = await getSinglePage(
+          url,
+          localMaxCreationTimestamp,
+          undefined,
+          accessToken,
+          logoutUser
+        );
+        if (newerData === undefined) {
+          return undefined;
+        }
+        data = [...data, ...newerData];
+        let newMaxCreationTimestamp = maxBy(data, (d) => d.creationTimestamp)
+          ?.creationTimestamp;
+
+        if (newerData.length < 64 || newMaxCreationTimestamp === undefined) {
+          break;
+        }
+
+        localMaxCreationTimestamp = newMaxCreationTimestamp;
+      }
     }
 
     return data.sort((a, b) => b.creationTimestamp - a.creationTimestamp);
@@ -176,25 +186,39 @@ export function useLogs(
   const [numberOfRequestedPages, setNumberOfRequestedPages] = useState(1);
 
   const [fetchingState, setFetchingState] = useState<
-    "idle" | "fetching" | "new data" | "no new data"
-  >("idle");
+    | "pending"
+    | "user-fetching"
+    | "background-fetching"
+    | "new data"
+    | "no new data"
+  >("pending");
 
   const url = `/networks/${networkIdentifier}/sensors/${sensorIdentifier}/logs`;
   const numberOfPages = Math.ceil(data.length / 64);
 
   useEffect(() => {
     if (
-      fetchingState !== "fetching" &&
-      numberOfPages < numberOfRequestedPages
+      fetchingState === "user-fetching" ||
+      fetchingState === "background-fetching"
     ) {
+      return;
+    }
+
+    if (fetchingState === "pending" || numberOfPages < numberOfRequestedPages) {
       const f = async () => {
-        setFetchingState("fetching");
+        const userTriggeredFetch = fetchingState !== "pending";
+        // initial data load and newer data is automatic -> don't show toasts
+        // older data is user-triggered -> show toasts
+        setFetchingState(
+          userTriggeredFetch ? "user-fetching" : "background-fetching"
+        );
+
         const startTimestamp = new Date().getTime();
         const newData = await fetcher(
           url,
           data,
-          false,
           true,
+          userTriggeredFetch,
           accessToken,
           logoutUser
         );
@@ -256,7 +280,15 @@ export function useLogs(
     logsData: data,
     logsDataFetchingState: fetchingState,
     numberOfLogsPages: numberOfPages,
-    fetchMoreLogs: () => {
+    fetchNewerLogs: () => {
+      if (
+        fetchingState !== "background-fetching" &&
+        fetchingState !== "user-fetching"
+      ) {
+        setFetchingState("pending");
+      }
+    },
+    fetchOlderLogs: () => {
       setNumberOfRequestedPages(numberOfRequestedPages + 1);
     },
   };

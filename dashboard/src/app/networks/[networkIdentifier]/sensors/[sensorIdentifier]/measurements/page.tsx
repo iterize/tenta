@@ -43,7 +43,9 @@ export default function Page(props: {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("fetching newer data");
+      console.log(
+        `fetching newer measurements for sensor ${props.params.sensorIdentifier}`
+      );
       fetchNewerMeasurements();
     }, 5000);
 

@@ -25,20 +25,36 @@ export default function Page(props: {
     logoutUser,
     props.params.networkIdentifier
   );
-  const { logsData, logsDataFetchingState, numberOfLogsPages, fetchMoreLogs } =
-    useLogs(
-      userData?.accessToken,
-      logoutUser,
-      props.params.networkIdentifier,
-      props.params.sensorIdentifier
-    );
+  const {
+    logsData,
+    logsDataFetchingState,
+    numberOfLogsPages,
+    fetchNewerLogs,
+    fetchOlderLogs,
+  } = useLogs(
+    userData?.accessToken,
+    logoutUser,
+    props.params.networkIdentifier,
+    props.params.sensorIdentifier
+  );
   const [dataLoadingToastId, setDataLoadingToastId] = useState<
     string | undefined
   >();
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      console.log(
+        `fetching newer logs for sensor ${props.params.sensorIdentifier}`
+      );
+      fetchNewerLogs();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  });
+
+  useEffect(() => {
     if (
-      logsDataFetchingState === "fetching" &&
+      logsDataFetchingState === "user-fetching" &&
       dataLoadingToastId === undefined
     ) {
       setDataLoadingToastId(toast.loading("loading data"));
@@ -92,10 +108,13 @@ export default function Page(props: {
           numberOfPages={numberOfLogsPages}
           setCurrentPageNumber={setCurrentPageNumber}
           noDataPlaceholder={
-            logsDataFetchingState === "fetching" ? "..." : "no data"
+            logsDataFetchingState === "user-fetching" ||
+            logsDataFetchingState === "background-fetching"
+              ? "..."
+              : "no data"
           }
         />
-        <Button onClick={fetchMoreLogs}>load older data</Button>
+        <Button onClick={fetchOlderLogs}>load older data</Button>
       </div>
       <div className="flex flex-col items-center justify-center w-full gap-y-4">
         {logsData === undefined && "loading"}
