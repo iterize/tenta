@@ -3,7 +3,6 @@
 import useSWR from "swr";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { z } from "zod";
-import toast from "react-hot-toast";
 
 const schema = z
   .object({
@@ -31,11 +30,9 @@ async function fetcher(url: string): Promise<StatusType | undefined> {
     .then((res: AxiosResponse) => schema.parse(res.data))
     .catch((err: AxiosError) => {
       console.error(`Error while fetching url ${url}: ${err}`);
-      if (err.response?.status.toString().startsWith("5")) {
-        toast("Server error", { icon: "🔥" });
-      } else {
-        toast("Client error", { icon: "❓" });
-      }
+
+      // redirect to /offline
+      window.location.href = "/offline";
       return undefined;
     });
 }

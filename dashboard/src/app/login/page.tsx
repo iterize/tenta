@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@/requests/user";
@@ -9,6 +9,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { TheTenta } from "@/components/custom/the-tenta";
+import { useStatus } from "@/requests/status";
 
 export default function Page() {
   const [username, setUsername] = useState("");
@@ -16,6 +17,8 @@ export default function Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { userData, userDataIsloading, loginUser } = useUser();
+
+  const serverStatus = useStatus();
 
   async function submit() {
     setIsSubmitting(true);
@@ -34,7 +37,7 @@ export default function Page() {
     }
   }
 
-  if (userDataIsloading) {
+  if (userDataIsloading || serverStatus === undefined) {
     return <AuthLoadingScreen />;
   } else if (userData !== undefined) {
     redirect("/");
