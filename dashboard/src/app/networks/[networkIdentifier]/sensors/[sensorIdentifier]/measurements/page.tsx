@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { formatDistanceToNow } from "date-fns";
 import { IconDatabaseSearch } from "@tabler/icons-react";
 import { ConfigRevisionTag } from "@/components/custom/config-revision-tag";
+import { Spinner } from "@/components/custom/spinner";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -115,6 +116,8 @@ export default function Page(props: {
           }
         />
         <Button onClick={fetchOlderMeasurements}>load older data</Button>
+        <div className="flex-grow" />
+        {measurementsDataFetchingState === "background-fetching" && <Spinner />}
       </div>
       <div className="flex flex-col items-center justify-center w-full gap-y-4">
         {measurementsData === undefined && "loading"}
