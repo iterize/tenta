@@ -102,7 +102,7 @@ export function useConfigurations(
   networkIdentifier: string,
   sensorIdentifier: string
 ) {
-  const { data } = useSWR(
+  const { data, mutate } = useSWR(
     [
       `/networks/${networkIdentifier}/sensors/${sensorIdentifier}/configurations`,
       accessToken,
@@ -110,5 +110,33 @@ export function useConfigurations(
     ([url, accessToken]) => fetcher(url, accessToken, logoutUser)
   );
 
-  return data;
+  const createConfigRevision = async (
+    value: Record<string, any>
+  ): Promise<void> => {
+    const { data } = await axios.post(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/networks/${networkIdentifier}/sensors/${sensorIdentifier}/configurations`,
+      value,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    mutate((prevData: ConfigurationsType | undefined) => [
+      {
+        revision: data.revision, // @ts-ignore
+        value: value,
+        creationTimestamp: null,
+        publicationTimestamp: null,
+        acknowledgmentTimestamp: null,
+        success: null,
+      },
+      ...(prevData || []),
+    ]);
+  };
+
+  return {
+    configurationsData: data,
+    createConfigRevision,
+  };
 }

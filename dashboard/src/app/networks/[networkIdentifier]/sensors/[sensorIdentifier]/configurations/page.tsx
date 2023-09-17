@@ -7,8 +7,16 @@ import { useSensors } from "@/requests/sensors";
 import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
 import { TimestampLabel } from "@/components/custom/timestamp-label";
-import { IconAdjustmentsFilled, IconPlus } from "@tabler/icons-react";
+import {
+  IconAdjustmentsFilled,
+  IconCircleCheckFilled,
+  IconCircleXFilled,
+  IconPlus,
+} from "@tabler/icons-react";
 import { ConfigRevisionTag } from "@/components/custom/config-revision-tag";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Page(props: {
   params: { networkIdentifier: string; sensorIdentifier: string };
@@ -21,12 +29,17 @@ export default function Page(props: {
     props.params.networkIdentifier
   );
 
-  const configurationsData = useConfigurations(
+  const { configurationsData, createConfigRevision } = useConfigurations(
     userData?.accessToken,
     logoutUser,
     props.params.networkIdentifier,
     props.params.sensorIdentifier
   );
+
+  const [newConfigValue, setNewConfigValue] = useState<string | undefined>(
+    undefined
+  );
+  const [configIsSubmitting, setConfigIsSubmitting] = useState(false);
 
   if (userDataIsloading || configurationsData === undefined) {
     return <AuthLoadingScreen />;
@@ -42,18 +55,109 @@ export default function Page(props: {
     return "unknown sensor id";
   }
 
+  function isValidJsonString(str: string) {
+    try {
+      JSON.parse(str);
+      return str.trimStart().startsWith("{");
+    } catch (e) {
+      return false;
+    }
+  }
+
+  const configObjectIsValid = isValidJsonString(newConfigValue ?? "");
+
+  async function submitNewConfig() {
+    if (newConfigValue === undefined) {
+      return;
+    }
+
+    if (!configObjectIsValid) {
+      toast.error("Invalid config object");
+      return;
+    }
+
+    setConfigIsSubmitting(true);
+    try {
+      await toast.promise(createConfigRevision(JSON.parse(newConfigValue)), {
+        loading: "Publishing config",
+        success: () => {
+          setNewConfigValue(undefined);
+          return "Successfully published config";
+        },
+        error: "Could not publish config",
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setConfigIsSubmitting(false);
+    }
+  }
+
   return (
     <>
       <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
         <IconAdjustmentsFilled className="p-1.5 bg-blue-500 rounded text-blue-50 w-7 h-7" />{" "}
         <h1>Sensor Node Configurations</h1>
       </div>
-      <div className="flex flex-row justify-start w-full">
-        <Button>
-          <IconPlus width={16} className="mr-1.5 -ml-0.5" />
-          New Revision
-        </Button>
-      </div>
+      {newConfigValue === undefined && (
+        <div className="flex flex-row justify-start w-full">
+          <Button
+            onClick={() => {
+              setNewConfigValue("");
+            }}
+          >
+            <IconPlus width={16} className="mr-1.5 -ml-0.5" />
+            New Revision
+          </Button>
+        </div>
+      )}
+      {newConfigValue !== undefined && (
+        <div className="flex flex-col items-end w-full p-3 bg-white border rounded-lg shadow border-slate-300 gap-y-2">
+          <div className="w-full text-sm font-medium text-left">
+            New Configuration Object:
+          </div>
+          <Textarea
+            autoFocus
+            value={newConfigValue}
+            onChange={(e) => {
+              setNewConfigValue(e.target.value);
+            }}
+            placeholder={
+              '{\n    "someValue": 30,\n    "maybeAFirmwareVersion": 1.7.1\n}'
+            }
+            rows={12}
+          />
+          <div className="flex flex-row w-full gap-x-2">
+            <div
+              className={
+                "flex flex-row gap-x-1.5 items-center text-xs font-medium px-3 h-3.5 " +
+                (configObjectIsValid ? "text-emerald-600" : "text-red-600")
+              }
+            >
+              {configObjectIsValid ? (
+                <IconCircleCheckFilled size={14} />
+              ) : (
+                <IconCircleXFilled size={14} />
+              )}
+              Object is {!configObjectIsValid && "not"} a valid JSON object
+            </div>
+            <div className="flex-grow" />
+            <Button
+              onClick={() => {
+                setNewConfigValue(undefined);
+              }}
+            >
+              Abort
+            </Button>
+            <Button
+              onClick={configIsSubmitting ? () => {} : submitNewConfig}
+              variant={configIsSubmitting ? "ghost" : "default"}
+            >
+              Publish
+            </Button>
+          </div>
+        </div>
+      )}
       {configurationsData.map((configuration) => (
         <ConfigurationBox
           key={configuration.revision}
@@ -142,5 +246,13 @@ function ConfigurationBox(props: {
         {JSON.stringify(props.configuration.value, null, 2)}
       </div>
     </div>
+  );
+}
+
+function NewConfigurationBox(props: {
+  createConfigRevision: (value: Record<string, any>) => Promise<void>;
+}) {
+  return (
+    <div className="flex flex-col flex-shrink-0 w-full overflow-hidden bg-white border rounded-lg shadow-md border-slate-300"></div>
   );
 }

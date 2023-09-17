@@ -67,12 +67,12 @@ export function CreationDialog(props: {
           if (props.onSuccess && typeof data === "string") {
             props.onSuccess(data);
           }
+          setIsOpen(false);
+          setName("");
           return `Successfully ${props.action + "d"} ${props.label}`;
         },
         error: `Could not ${props.action} ${props.label}`,
       });
-      setIsOpen(false);
-      setName("");
     } catch (error) {
       console.error(error);
     } finally {
