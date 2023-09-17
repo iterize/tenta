@@ -13,13 +13,13 @@ export function TimestampLabel(props: {
 }) {
   if (props.timestamp === null) {
     return (
-      <div className="font-regular">
-        not <span className={props.labelClassName}>{props.label}</span> yet
+      <div className="px-1 text-center">
+        not <span className={props.labelClassName}>{props.label}</span> (yet)
       </div>
     );
   } else {
     return (
-      <div className="font-regular">
+      <div className="px-1 text-center">
         <TooltipProvider>
           <Tooltip delayDuration={200}>
             <TooltipTrigger>

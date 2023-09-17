@@ -127,7 +127,7 @@ export default function Page(props: {
             }
             rows={12}
           />
-          <div className="flex flex-row w-full gap-x-2">
+          <div className="flex flex-col w-full gap-y-1.5 gap-x-2 md:flex-row">
             <div
               className={
                 "flex flex-row gap-x-1.5 items-center text-xs font-medium px-3 h-3.5 " +
@@ -142,19 +142,21 @@ export default function Page(props: {
               Object is {!configObjectIsValid && "not"} a valid JSON object
             </div>
             <div className="flex-grow" />
-            <Button
-              onClick={() => {
-                setNewConfigValue(undefined);
-              }}
-            >
-              Abort
-            </Button>
-            <Button
-              onClick={configIsSubmitting ? () => {} : submitNewConfig}
-              variant={configIsSubmitting ? "ghost" : "default"}
-            >
-              Publish
-            </Button>
+            <div className="flex flex-row justify-end w-full gap-x-2">
+              <Button
+                onClick={() => {
+                  setNewConfigValue(undefined);
+                }}
+              >
+                Abort
+              </Button>
+              <Button
+                onClick={configIsSubmitting ? () => {} : submitNewConfig}
+                variant={configIsSubmitting ? "ghost" : "default"}
+              >
+                Publish
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -180,7 +182,7 @@ function ConfigurationBox(props: {
 }) {
   return (
     <div className="flex flex-col flex-shrink-0 w-full overflow-hidden bg-white border rounded-lg shadow-md border-slate-300">
-      <div className="flex flex-row items-start justify-start p-3 border-b gap-x-3 border-slate-200">
+      <div className="flex flex-col items-start justify-start p-3 border-b md:flex-row gap-x-3 border-slate-200">
         <ConfigRevisionTag revision={props.configuration.revision} />
         <div className="flex flex-col w-full">
           <div className="grid flex-grow w-full h-1.5 grid-cols-3 my-2 rounded-full  relative">
@@ -223,7 +225,7 @@ function ConfigurationBox(props: {
               }
             />
           </div>
-          <div className="grid flex-grow w-full grid-cols-3 -mt-1 text-xs">
+          <div className="grid flex-grow w-full grid-cols-3 -mt-1 text-[0.65rem]">
             <TimestampLabel
               label="created"
               timestamp={props.configuration.creationTimestamp}
