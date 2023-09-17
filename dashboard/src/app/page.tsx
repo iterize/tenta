@@ -33,11 +33,11 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col items-center flex-grow w-full p-8 bg-slate-50">
+    <div className="flex flex-col items-center flex-grow w-full p-4 lg:p-8 bg-slate-50">
       <h2 className="flex flex-row items-center mb-4 text-2xl font-bold gap-x-1 text-slate-800">
         Networks
       </h2>
-      <div className="grid w-full max-w-4xl grid-cols-2 gap-4">
+      <div className="grid w-full max-w-4xl grid-cols-1 gap-2 md:gap-4 md:grid-cols-2">
         {networksData === undefined && "..."}
         {networksData?.map((network) => (
           <NetworkCard
@@ -56,11 +56,11 @@ export default function Page() {
           </button>
         </CreationDialog>
       </div>
-      <h2 className="flex flex-row items-center mt-16 mb-4 text-2xl font-bold gap-x-1 text-slate-800">
+      <h2 className="flex flex-row items-center mt-8 mb-4 text-2xl font-bold md:mt-12 lg:mt-16 gap-x-1 text-slate-800">
         Server Status
       </h2>
       <ServerStatus />
-      <h2 className="flex flex-row items-center mt-16 mb-4 text-2xl font-bold gap-x-1 text-slate-800">
+      <h2 className="flex flex-row items-center mt-8 mb-4 text-2xl font-bold md:mt-12 lg:mt-16 gap-x-1 text-slate-800">
         Dashboard Status
       </h2>
       <DashboardStatus />
@@ -84,9 +84,9 @@ function NetworkCard(props: {
     <Link href={`/networks/${props.networkIdentifier}`} className="group">
       <div className="flex flex-col w-full overflow-hidden bg-white border rounded-lg shadow group-hover:bg-slate-50 border-slate-300 group-hover:shadow-md group-hover:border-slate-400">
         <h3 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-lg font-semibold border-b border-slate-200">
-          <div>{props.networkName}</div>
+          <div className="break-all">{props.networkName}</div>
           <div className="flex-grow" />
-          <div className="px-1 text-xs font-normal text-slate-500 ">
+          <div className="px-1 text-xs font-normal text-slate-500 whitespace-nowrap">
             {sensorsData === undefined && "..."}
             {sensorsData !== undefined && (
               <>
@@ -116,14 +116,14 @@ function ServerStatus() {
         <span className="inline-flex font-medium w-28">Environment:</span>{" "}
         {serverStatus?.environment || "..."}
       </div>
-      <div>
+      <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
         <span className="inline-flex font-medium w-28">Commit SHA:</span>{" "}
         <span className="font-mono bg-slate-150 rounded-sm py-0.5 px-1 text-slate-700">
           {serverStatus?.commitSha || "..."}
         </span>
       </div>
-      <div>
-        <span className="inline-flex font-medium w-28">Branch Name:</span>{" "}
+      <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+        <span className="inline-flex font-medium w-28 ">Branch Name:</span>{" "}
         {serverStatus?.branchName || "..."}
       </div>
       <div>
@@ -169,13 +169,13 @@ function DashboardStatus() {
           </>
         )}
       </div>
-      <div>
+      <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
         <span className="inline-flex font-medium w-28">Commit SHA:</span>{" "}
         <span className="font-mono bg-slate-150 rounded-sm py-0.5 px-1 text-slate-700">
           {process.env.NEXT_PUBLIC_COMMIT_SHA}
         </span>
       </div>
-      <div>
+      <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
         <span className="inline-flex font-medium w-28">Branch Name:</span>{" "}
         {process.env.NEXT_PUBLIC_BRANCH_NAME}
       </div>

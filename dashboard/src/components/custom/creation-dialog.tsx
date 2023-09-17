@@ -88,7 +88,7 @@ export function CreationDialog(props: {
       }}
     >
       <DialogTrigger asChild>{props.children}</DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-[calc(100vw-1rem)] sm:max-w-[calc(640px-2rem)] rounded-xl">
         <DialogHeader>
           <DialogTitle>
             <span className="capitalize">
@@ -96,9 +96,9 @@ export function CreationDialog(props: {
             </span>
           </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-row items-baseline gap-x-3">
-          <Label className="text-right capitalize whitespace-nowrap">
-            {props.label} Name
+        <div className="flex flex-row items-baseline gap-3">
+          <Label className="hidden text-right capitalize whitespace-nowrap md:block">
+            {props.label} Name:
           </Label>
           <div className="flex flex-col items-start justify-start flex-grow gap-y-2">
             <Input
