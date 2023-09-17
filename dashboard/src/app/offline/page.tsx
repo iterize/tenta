@@ -1,6 +1,16 @@
+"use client";
+
+import { useStatus } from "@/requests/status";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Page() {
+  const serverStatus = useStatus();
+
+  if (serverStatus !== undefined) {
+    redirect("/login");
+  }
+
   return (
     <main className="flex flex-col items-center justify-center w-screen h-[calc(100vh-3rem)] p-8 gap-y-4 text-normal relative">
       <div className="absolute top-0 bottom-0 left-0 right-0 z-0 background-paper-pattern" />
