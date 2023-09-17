@@ -44,9 +44,13 @@ export default function Page(props: {
     <>
       <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
         <IconChartHistogram className="p-1.5 bg-orange-500 rounded text-orange-50 w-7 h-7" />{" "}
-        <h1>Measurement data over the last four weeks</h1>
-        <div className="flex-grow" />
-        <span className="text-xs">Plot times in UTC</span>
+        <div className="flex flex-row items-baseline flex-grow">
+          <h1>
+            Measurements <span className="text-xs">(last 4 weeks)</span>
+          </h1>
+          <div className="flex-grow" />
+          <span className="text-xs">Plot times in UTC</span>
+        </div>
       </div>
       {Object.keys(measurementsAggregationData)
         .sort()
@@ -222,10 +226,10 @@ function MeasurementAggregationPlot(props: {
   }, [props.data, plotRef.current]);
 
   return (
-    <div className="flex flex-row w-full pl-4 gap-x-4">
-      <div className="flex flex-row items-center justify-center w-64 gap-x-2">
+    <div className="flex flex-col w-full md:pl-4 lg:flex-row gap-x-4 gap-y-1">
+      <div className="flex flex-row items-start justify-start w-64 pl-2 gap-x-2 md:pl-0">
         <h2 className="font-mono text-sm font-medium">{props.label}</h2>
-        <div className="flex-grow border-b-[2.5px] border-dotted border-slate-300" />
+        <div className="flex-grow border-b-[2.5px] border-dotted border-slate-300 hidden md:block" />
       </div>
       <div className="flex-grow p-2 bg-white border rounded-md shadow border-slate-300">
         <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />
