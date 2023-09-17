@@ -1,6 +1,7 @@
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { range } from "lodash";
 import { clsx } from "clsx";
+import { toast } from "react-hot-toast";
 
 export function Pagination(props: {
   currentPageNumber: number;
@@ -92,7 +93,7 @@ export function Pagination(props: {
         onClick={
           props.currentPageNumber < props.numberOfPages
             ? () => props.setCurrentPageNumber(props.currentPageNumber + 1)
-            : () => {}
+            : () => toast.error("Already on the last page")
         }
       >
         <IconChevronRight

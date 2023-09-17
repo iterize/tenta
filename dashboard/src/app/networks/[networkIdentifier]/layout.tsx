@@ -110,7 +110,7 @@ export default function NetworkPageLayout(props: {
           </div>
         </Link>
       </div>
-      <div className="lg:grid lg:grid-cols-3 h-[calc(100vh-7rem)] lg:h-[calc(100vh-6rem)] bg-slate-50">
+      <div className="lg:grid lg:grid-cols-3 minh-[calc(100vh-7rem)] lg:min-h-[calc(100vh-6rem)] bg-slate-50">
         <div className="hidden w-full h-full overflow-hidden border-r border-slate-300 lg:block">
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (

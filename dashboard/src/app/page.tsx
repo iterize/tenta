@@ -111,7 +111,7 @@ function ServerStatus() {
   const serverStatus = useStatus();
 
   return (
-    <div className="flex flex-col w-full max-w-xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded shadow border-slate-300">
+    <div className="flex flex-col w-full max-w-xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded-lg shadow border-slate-300">
       <div>
         <span className="inline-flex font-medium w-28">Environment:</span>{" "}
         {serverStatus?.environment || "..."}
@@ -158,7 +158,7 @@ function ServerStatus() {
 
 function DashboardStatus() {
   return (
-    <div className="flex flex-col w-full max-w-xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded shadow border-slate-300">
+    <div className="flex flex-col w-full max-w-xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded-lg shadow border-slate-300">
       <div>
         <span className="inline-flex font-medium w-28">Environment:</span>{" "}
         {process.env.NEXT_PUBLIC_BRANCH_NAME === undefined && "..."}
