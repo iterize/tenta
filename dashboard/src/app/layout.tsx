@@ -1,11 +1,11 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Rubik } from "next/font/google";
 import { SWRProvider } from "@/app/swr-provider";
 import { NavigationBar } from "@/components/custom/navigation-bar";
 import { Toaster } from "react-hot-toast";
 
-const inter = Inter({ subsets: ["latin"] });
+const rubik = Rubik({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://someridiculousdomaintogetridofthaterror.com"),
@@ -42,7 +42,7 @@ export default function RootLayout({
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Tenta Dashboard Banner" />
       </head>
-      <body className={inter.className}>
+      <body className={rubik.className}>
         <SWRProvider>
           <main className="flex flex-col w-screen min-h-screen">
             <NavigationBar />
