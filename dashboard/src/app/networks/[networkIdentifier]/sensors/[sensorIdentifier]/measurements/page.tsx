@@ -99,9 +99,13 @@ export default function Page(props: {
 
   return (
     <>
-      <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
-        <IconDatabaseSearch className="p-1.5 bg-emerald-500 rounded text-emerald-50 w-7 h-7" />{" "}
-        <h1>Raw measurement data</h1>
+      <div className="flex flex-row items-center justify-start w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
+        <div className="flex flex-row items-center justify-center text-white rounded-md bg-emerald-950">
+          <div className="w-8 h-8 p-2 bg-emerald-500 rounded-l-md">
+            <IconDatabaseSearch className="w-full h-full" />
+          </div>
+          <div className="px-3 font-medium">Raw Measurements</div>
+        </div>
       </div>
       <div className="flex flex-row items-center justify-start w-full gap-x-4 md:gap-x-6">
         <Pagination

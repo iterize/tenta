@@ -43,15 +43,18 @@ export default function Page(props: {
 
   return (
     <>
-      <div className="flex flex-row items-center w-full pb-4 text-base font-medium border-b text-slate-900 gap-x-2 border-slate-300">
-        <IconActivityHeartbeat className="p-1.5 bg-rose-500 rounded text-rose-50 w-7 h-7" />{" "}
-        <div className="flex flex-row items-baseline flex-grow">
-          <h1>
-            Activity <span className="text-xs">(last 4 weeks)</span>
-          </h1>
-          <div className="flex-grow" />
-          <span className="text-xs">Plot times in UTC</span>
+      <div className="flex flex-row items-center justify-center w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
+        <div className="flex flex-row items-center justify-center text-white rounded-md bg-rose-950">
+          <div className="w-8 h-8 p-2 bg-rose-500 rounded-l-md">
+            <IconActivityHeartbeat className="w-full h-full" />
+          </div>
+          <div className="px-3 font-medium">
+            Activity
+            <span className="pl-2 text-xs font-normal">last 4 weeks</span>
+          </div>
         </div>
+        <div className="flex-grow" />
+        <span className="text-xs font-medium">Plot times in UTC</span>
       </div>
       <h2 className="w-full -mb-2 text-sm font-medium">
         Measurement messages:
