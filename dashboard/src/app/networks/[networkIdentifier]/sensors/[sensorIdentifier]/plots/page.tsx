@@ -8,7 +8,6 @@ import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { maxBy, minBy, range } from "lodash";
 import { useLogsAggregation } from "@/requests/logs-aggregation";
-import { formatDistanceToNow } from "date-fns";
 import { IconChartHistogram } from "@tabler/icons-react";
 
 export default function Page(props: {
@@ -43,12 +42,12 @@ export default function Page(props: {
   return (
     <>
       <div className="flex flex-row items-center justify-center w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
-        <div className="flex flex-row items-center justify-center text-white rounded-md bg-orange-950">
+        <div className="flex flex-row items-center justify-center text-white bg-orange-200 rounded-md">
           <div className="w-8 h-8 p-2 bg-orange-500 rounded-l-md">
             <IconChartHistogram className="w-full h-full" />
           </div>
-          <div className="px-3 font-medium">
-            Measurements
+          <div className="px-3 font-medium text-orange-900">
+            Plots
             <span className="pl-2 text-xs font-normal">last 4 weeks</span>
           </div>
         </div>
@@ -226,7 +225,7 @@ function MeasurementAggregationPlot(props: {
       .attr("y", yScale(maxY) - 1)
       .attr("text-anchor", "end")
       .attr("fill", "currentColor");
-  }, [props.data, plotRef.current]);
+  }, [props.data, plotRef]);
 
   return (
     <div className="flex flex-col w-full md:pl-4 lg:flex-row gap-x-4 gap-y-1">

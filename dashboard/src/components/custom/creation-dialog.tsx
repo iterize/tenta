@@ -90,12 +90,12 @@ export function CreationDialog(props: {
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent className="max-w-[calc(100vw-1rem)] sm:max-w-[calc(640px-2rem)] rounded-xl">
         <DialogHeader>
-          <DialogTitle className="w-full text-center capitalize">
+          <DialogTitle className="w-full font-medium text-center capitalize">
             {props.action} {props.label}
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-row items-baseline gap-3">
-          <Label className="hidden text-right capitalize whitespace-nowrap md:block">
+          <Label className="hidden font-normal text-right capitalize whitespace-nowrap md:block">
             {props.label} Name:
           </Label>
           <div className="flex flex-col items-start justify-start flex-grow gap-y-2">
@@ -113,7 +113,7 @@ export function CreationDialog(props: {
             {props.previousValue !== undefined && (
               <div className="px-3 mb-2 -mt-2 text-xs text-slate-600">
                 previously{" "}
-                <span className="italic font-semibold">
+                <span className="italic font-medium">
                   {props.previousValue}
                 </span>
               </div>
@@ -122,7 +122,7 @@ export function CreationDialog(props: {
               <div
                 key={index}
                 className={
-                  "flex flex-row items-center gap-x-2 text-xs font-medium px-3 h-3.5 " +
+                  "flex flex-row items-center gap-x-2 text-xs font-normal px-3 h-3.5 " +
                   (rule.valid ? "text-emerald-600" : "text-rose-600")
                 }
               >

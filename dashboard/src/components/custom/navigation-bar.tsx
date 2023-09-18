@@ -18,7 +18,7 @@ export function NavigationBar() {
       </Link>
       <Link href="/">
         <h1 className="pl-4 font-light text-slate-950">
-          <span className="font-semibold">Tenta Dashboard</span>{" "}
+          <span className="font-medium">Tenta Dashboard</span>{" "}
           <span className="hidden lg:inline">
             {process.env.NEXT_PUBLIC_INSTANCE_TITLE !== undefined && (
               <>&nbsp;|&nbsp; {process.env.NEXT_PUBLIC_INSTANCE_TITLE}</>

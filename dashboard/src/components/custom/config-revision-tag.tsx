@@ -21,7 +21,7 @@ export function ConfigRevisionTag(props: {
         <TooltipTrigger>
           <div
             className={
-              "flex-shrink-0 pl-1.5 pr-2 py-0.5 text-sm bg-blue-150 rounded-md font-medium flex flex-row gap-x-1.5 items-center justify-center whitespace-nowrap " +
+              "flex-shrink-0 pl-1.5 pr-2 py-1 text-sm bg-blue-150 rounded-md font-normal flex flex-row gap-x-1.5 items-center justify-center whitespace-nowrap " +
               (noRevision
                 ? "bg-slate-150 text-slate-800"
                 : "bg-blue-150 text-blue-800")
@@ -29,7 +29,7 @@ export function ConfigRevisionTag(props: {
           >
             <>
               <IconFileSettings
-                size={14}
+                size={16}
                 className={noRevision ? "text-slate-500" : "text-blue-500"}
               />{" "}
               {(noRevision || props.to_revision === undefined) &&

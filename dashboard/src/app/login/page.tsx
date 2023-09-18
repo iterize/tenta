@@ -53,7 +53,7 @@ export default function Page() {
           <TheTenta className="max-w-2xl" />
         </div>
         <div className="flex flex-col items-center justify-center w-full max-w-xs mx-auto gap-y-2">
-          <h1 className="mb-1 text-2xl font-bold">Login</h1>
+          <h1 className="mb-1 text-2xl font-medium">Login</h1>
           <Input
             required
             type="username"
@@ -71,7 +71,7 @@ export default function Page() {
           <div className="flex items-baseline justify-center w-full">
             <Link
               href="/signup"
-              className="mx-3 text-xs font-semibold underline text-slate-900"
+              className="mx-3 text-xs underline font-regular text-slate-900"
             >
               Sign up instead
             </Link>

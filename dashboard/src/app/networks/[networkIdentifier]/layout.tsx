@@ -95,7 +95,7 @@ export default function NetworkPageLayout(props: {
             {network ? (
               <div className="flex flex-col items-baseline md:flex-row gap-x-2">
                 <div>
-                  <span className="font-bold">
+                  <span className="font-semibold">
                     {truncate(network.name, { length: 32 })}
                   </span>{" "}
                   <span className="flex-shrink-0">network</span>
@@ -187,7 +187,10 @@ export default function NetworkPageLayout(props: {
                     </div>
                   </SelectLabel>
                   {sensorsData.map((sensor) => (
-                    <SelectItem value={sensor.identifier}>
+                    <SelectItem
+                      value={sensor.identifier}
+                      key={sensor.identifier}
+                    >
                       <div className="flex flex-col items-start">
                         <span className="font-medium">{sensor.name}</span>
                         <span className="font-mono text-xs text-slate-500">
@@ -311,7 +314,7 @@ function SensorListItem(props: {
               }
             >
               <div className="flex flex-row items-center w-full gap-x-1">
-                <div className="font-bold">{props.sensorName}</div>{" "}
+                <div className="font-medium">{props.sensorName}</div>{" "}
                 <div className="flex-grow" />
                 {isActive && (
                   <CreationDialog
@@ -374,7 +377,7 @@ function SensorListItemLink(props: {
       renderedIcon = (
         <IconActivityHeartbeat
           size={12}
-          className={isActive ? "text-rose-600" : "text-slate-600"}
+          className={isActive ? "text-rose-600" : "text-slate-400"}
         />
       );
       activeColor = "bg-rose-50 text-rose-800";
@@ -384,7 +387,7 @@ function SensorListItemLink(props: {
       renderedIcon = (
         <IconChartHistogram
           size={12}
-          className={isActive ? "text-orange-600" : "text-slate-600"}
+          className={isActive ? "text-orange-600" : "text-slate-400"}
         />
       );
       activeColor = "bg-orange-50 text-orange-800";
@@ -394,7 +397,7 @@ function SensorListItemLink(props: {
       renderedIcon = (
         <IconAdjustmentsFilled
           size={12}
-          className={isActive ? "text-sky-600" : "text-slate-600"}
+          className={isActive ? "text-sky-600" : "text-slate-400"}
         />
       );
       activeColor = "bg-sky-50 text-sky-800";
@@ -404,7 +407,7 @@ function SensorListItemLink(props: {
       renderedIcon = (
         <IconDatabaseSearch
           size={12}
-          className={isActive ? "text-emerald-600" : "text-slate-600"}
+          className={isActive ? "text-emerald-600" : "text-slate-400"}
         />
       );
       activeColor = "bg-emerald-50 text-emerald-800";
@@ -414,7 +417,7 @@ function SensorListItemLink(props: {
       renderedIcon = (
         <IconDatabaseExclamation
           size={12}
-          className={isActive ? "text-yellow-600" : "text-slate-600"}
+          className={isActive ? "text-yellow-600" : "text-slate-400"}
         />
       );
       activeColor = "bg-yellow-50 text-yellow-800";
@@ -427,10 +430,10 @@ function SensorListItemLink(props: {
       className={
         isActive
           ? activeColor
-          : "bg-slate-100 hover:bg-slate-50 hover:text-slate-900 text-slate-500"
+          : "bg-slate-100 hover:bg-slate-50 hover:text-slate-900 text-slate-600"
       }
     >
-      <div className="flex flex-row items-center justify-center h-8 px-3 gap-x-1.5 font-medium text-xs">
+      <div className="flex flex-row items-center justify-center h-8 px-3 gap-x-1.5 font-regular text-xs">
         <div className="hidden xl:block">{renderedIcon}</div>
         {renderedLabel}
       </div>

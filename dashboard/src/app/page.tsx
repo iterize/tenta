@@ -34,7 +34,7 @@ export default function Page() {
 
   return (
     <div className="flex flex-col items-center flex-grow w-full p-4 lg:p-8 bg-slate-50">
-      <h2 className="flex flex-row items-center mb-4 text-2xl font-bold gap-x-1 text-slate-800">
+      <h2 className="flex flex-row items-center mb-4 text-2xl font-medium gap-x-1 text-slate-800">
         Networks
       </h2>
       <div className="grid w-full max-w-4xl grid-cols-1 gap-2 md:gap-4 md:grid-cols-2">
@@ -50,17 +50,17 @@ export default function Page() {
         ))}
         <CreationDialog action="create" label="network" submit={createNetwork}>
           <button className="min-h-[5rem] transition-colors border-2 border-dashed rounded-lg border-slate-300 hover:border-slate-400 text-slate-500 hover:text-slate-900">
-            <div className="flex flex-row items-center justify-center text-sm font-medium ">
+            <div className="flex flex-row items-center justify-center text-sm font-regular ">
               <IconPlus width={16} className="mr-1.5 -ml-0.5" /> Create Network
             </div>
           </button>
         </CreationDialog>
       </div>
-      <h2 className="flex flex-row items-center mt-8 mb-4 text-2xl font-bold md:mt-12 lg:mt-16 gap-x-1 text-slate-800">
+      <h2 className="flex flex-row items-center mt-8 mb-4 text-2xl font-medium md:mt-12 lg:mt-16 gap-x-1 text-slate-800">
         Server Status
       </h2>
       <ServerStatus />
-      <h2 className="flex flex-row items-center mt-8 mb-4 text-2xl font-bold md:mt-12 lg:mt-16 gap-x-1 text-slate-800">
+      <h2 className="flex flex-row items-center mt-8 mb-4 text-2xl font-medium md:mt-12 lg:mt-16 gap-x-1 text-slate-800">
         Dashboard Status
       </h2>
       <DashboardStatus />
@@ -83,7 +83,7 @@ function NetworkCard(props: {
   return (
     <Link href={`/networks/${props.networkIdentifier}`} className="group">
       <div className="flex flex-col w-full overflow-hidden bg-white border rounded-lg shadow group-hover:bg-slate-50 border-slate-300 group-hover:shadow-md group-hover:border-slate-400">
-        <h3 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-lg font-semibold border-b border-slate-200">
+        <h3 className="flex flex-row items-baseline px-3 pt-2 pb-1 m-0 text-base font-medium border-b border-slate-200">
           <div className="break-all">{props.networkName}</div>
           <div className="flex-grow" />
           <div className="px-1 text-xs font-normal text-slate-500 whitespace-nowrap">
@@ -113,21 +113,21 @@ function ServerStatus() {
   return (
     <div className="flex flex-col w-full max-w-xl p-4 mx-auto overflow-hidden text-sm bg-white border rounded-lg shadow border-slate-300">
       <div>
-        <span className="inline-flex font-medium w-28">Environment:</span>{" "}
+        <span className="inline-flex w-28">Environment:</span>{" "}
         {serverStatus?.environment || "..."}
       </div>
       <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
-        <span className="inline-flex font-medium w-28">Commit SHA:</span>{" "}
+        <span className="inline-flex w-28">Commit SHA:</span>{" "}
         <span className="font-mono bg-slate-150 rounded-sm py-0.5 px-1 text-slate-700">
           {serverStatus?.commitSha || "..."}
         </span>
       </div>
       <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
-        <span className="inline-flex font-medium w-28 ">Branch Name:</span>{" "}
+        <span className="inline-flex w-28 ">Branch Name:</span>{" "}
         {serverStatus?.branchName || "..."}
       </div>
       <div>
-        <span className="inline-flex font-medium w-28">Last Boot:</span>{" "}
+        <span className="inline-flex w-28">Last Boot:</span>{" "}
         {serverStatus?.startTimestamp !== undefined && (
           <TooltipProvider>
             <Tooltip>
@@ -149,7 +149,7 @@ function ServerStatus() {
         )}
       </div>
       <div>
-        <span className="inline-flex font-medium w-28">MQTT Broker:</span>{" "}
+        <span className="inline-flex w-28">MQTT Broker:</span>{" "}
         {serverStatus?.mqttHostname || "..."}:{serverStatus?.mqttPort || "..."}
       </div>
     </div>
@@ -160,7 +160,7 @@ function DashboardStatus() {
   return (
     <div className="flex flex-col w-full max-w-xl p-4 mx-auto mb-8 overflow-hidden text-sm bg-white border rounded-lg shadow border-slate-300">
       <div>
-        <span className="inline-flex font-medium w-28">Environment:</span>{" "}
+        <span className="inline-flex w-28">Environment:</span>{" "}
         {process.env.NEXT_PUBLIC_BRANCH_NAME === undefined && "..."}
         {process.env.NEXT_PUBLIC_BRANCH_NAME !== undefined && (
           <>
@@ -170,17 +170,17 @@ function DashboardStatus() {
         )}
       </div>
       <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
-        <span className="inline-flex font-medium w-28">Commit SHA:</span>{" "}
+        <span className="inline-flex w-28">Commit SHA:</span>{" "}
         <span className="font-mono bg-slate-150 rounded-sm py-0.5 px-1 text-slate-700">
           {process.env.NEXT_PUBLIC_COMMIT_SHA}
         </span>
       </div>
       <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
-        <span className="inline-flex font-medium w-28">Branch Name:</span>{" "}
+        <span className="inline-flex w-28">Branch Name:</span>{" "}
         {process.env.NEXT_PUBLIC_BRANCH_NAME}
       </div>
       <div>
-        <span className="inline-flex font-medium w-28">Last Build:</span>{" "}
+        <span className="inline-flex w-28">Last Build:</span>{" "}
         {process.env.NEXT_PUBLIC_BUILD_TIMESTAMP !== undefined && (
           <TooltipProvider>
             <Tooltip>

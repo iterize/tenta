@@ -44,11 +44,11 @@ export default function Page(props: {
   return (
     <>
       <div className="flex flex-row items-center justify-center w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
-        <div className="flex flex-row items-center justify-center text-white rounded-md bg-rose-950">
+        <div className="flex flex-row items-center justify-center text-white rounded-md bg-rose-200">
           <div className="w-8 h-8 p-2 bg-rose-500 rounded-l-md">
             <IconActivityHeartbeat className="w-full h-full" />
           </div>
-          <div className="px-3 font-medium">
+          <div className="px-3 font-medium text-rose-900">
             Activity
             <span className="pl-2 text-xs font-normal">last 4 weeks</span>
           </div>
@@ -56,8 +56,8 @@ export default function Page(props: {
         <div className="flex-grow" />
         <span className="text-xs font-medium">Plot times in UTC</span>
       </div>
-      <h2 className="w-full -mb-2 text-sm font-medium">
-        Measurement messages:
+      <h2 className="w-full -mb-2 text-sm">
+        <span className="font-medium">Measurement</span> messages:
       </h2>
       {Object.keys(measurementsAggregationData).length !== 0 && (
         <MeasurementActivityPlot data={measurementsAggregationData} />
@@ -65,8 +65,8 @@ export default function Page(props: {
       {Object.keys(measurementsAggregationData).length === 0 && (
         <div className="w-full text-sm text-center">no measurements</div>
       )}
-      <h2 className="w-full mt-2 -mb-2 text-sm font-medium">
-        <span className={"uppercase font-semibold "}>ERROR</span> log messages:
+      <h2 className="w-full mt-2 -mb-2 text-sm font-normal">
+        <span className="font-medium">Error</span> log messages:
       </h2>
       {logsAggregationData.filter((l) => l.severity === "error").length ===
         0 && <div className="w-full text-sm text-center">no error logs</div>}
@@ -75,8 +75,8 @@ export default function Page(props: {
         .map((l) => (
           <LogAggregationPanel key={l.message} log={l} />
         ))}
-      <h2 className="w-full mt-2 -mb-2 text-sm font-medium">
-        <span className={"uppercase font-semibold"}>WARNING</span> log messages:
+      <h2 className="w-full mt-2 -mb-2 text-sm font-normal">
+        <span className="font-medium">Warning</span> log messages:
       </h2>
       {logsAggregationData.filter((l) => l.severity === "warning").length ===
         0 && <div className="w-full text-sm text-center">no warning logs</div>}
@@ -245,7 +245,7 @@ function MeasurementActivityPlot(props: {
       .attr("y", yScale(minY) + 10)
       .attr("text-anchor", "end")
       .attr("fill", "currentColor");
-  }, [labelColumnWidth, plotHeight, props.data, plotRef.current]);
+  }, [labelColumnWidth, plotHeight, props.data, plotRef]);
 
   return (
     <div className="w-full md:w-[calc(100%-1rem)] md:ml-4 p-2 bg-white border rounded-md shadow border-slate-300">
@@ -278,12 +278,12 @@ function LogAggregationPanel(props: {
           revision={log.minRevision}
           to_revision={log.maxRevision}
         />
-        <div className="flex flex-col items-baseline flex-grow text-xs md:flex-row">
+        <div className="flex flex-col items-baseline flex-grow text-xs md:text-sm md:flex-row">
           <TimestampLabel
             label="first appeared"
             timestamp={log.minCreationTimestamp}
           />
-          <div className="hidden -mx-1 font-light md:block">|</div>
+          <div className="hidden font-light md:block">|</div>
           <TimestampLabel
             label="last appeared"
             timestamp={log.maxCreationTimestamp}
