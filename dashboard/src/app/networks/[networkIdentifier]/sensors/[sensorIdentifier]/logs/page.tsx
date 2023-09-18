@@ -115,12 +115,18 @@ export default function Page(props: {
               : "no data"
           }
         />
-        <Button onClick={fetchOlderLogs}>load older data</Button>
-        <div className="flex-grow" />
-        {logsDataFetchingState === "background-fetching" && <Spinner />}
+        <Button onClick={fetchOlderLogs}>load older</Button>
+        <div className="flex flex-row items-end justify-end flex-grow pr-3">
+          {logsDataFetchingState === "background-fetching" && <Spinner />}
+        </div>
       </div>
       <div className="flex flex-col items-center justify-center w-full gap-y-4">
-        {logsData === undefined && "loading"}
+        {logsDataFetchingState !== "background-fetching" &&
+          logsData.length === 0 && (
+            <div className="w-full mt-2 text-sm text-center text-slate-700">
+              no logs
+            </div>
+          )}
         {logsData.map((log) => (
           <div
             key={JSON.stringify(log)}

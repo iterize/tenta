@@ -8,6 +8,7 @@ import { useUser } from "@/requests/user";
 import { redirect } from "next/navigation";
 import { TimestampLabel } from "@/components/custom/timestamp-label";
 import {
+  IconAccessPointOff,
   IconAdjustmentsFilled,
   IconCircleCheckFilled,
   IconCircleXFilled,
@@ -130,7 +131,7 @@ export default function Page(props: {
           <div className="flex flex-col w-full gap-y-1.5 gap-x-2 md:flex-row">
             <div
               className={
-                "flex flex-row gap-x-1.5 items-center text-xs font-medium px-3 h-3.5 " +
+                "flex flex-row gap-x-1.5 items-center text-xs font-medium px-3 h-3.5 flex-shrink-0 whitespace-nowrap " +
                 (configObjectIsValid ? "text-emerald-600" : "text-red-600")
               }
             >
@@ -166,6 +167,11 @@ export default function Page(props: {
           configuration={configuration}
         />
       ))}
+      {configurationsData.length === 0 && (
+        <div className="w-full mt-2 text-sm text-center text-slate-700">
+          no configurations
+        </div>
+      )}
     </>
   );
 }

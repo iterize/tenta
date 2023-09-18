@@ -227,9 +227,9 @@ function MeasurementAggregationPlot(props: {
 
   return (
     <div className="flex flex-col w-full md:pl-4 lg:flex-row gap-x-4 gap-y-1">
-      <div className="flex flex-row items-start justify-start w-64 pl-2 gap-x-2 md:pl-0">
+      <div className="flex flex-row items-center justify-start w-64 pl-2 gap-x-2 lg:pl-0">
         <h2 className="font-mono text-sm font-medium">{props.label}</h2>
-        <div className="flex-grow border-b-[2.5px] border-dotted border-slate-300 hidden md:block" />
+        <div className="flex-grow border-b-[2.5px] border-dotted border-slate-300 hidden lg:block" />
       </div>
       <div className="flex-grow p-2 bg-white border rounded-md shadow border-slate-300">
         <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />

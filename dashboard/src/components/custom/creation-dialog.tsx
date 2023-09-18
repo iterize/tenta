@@ -90,10 +90,8 @@ export function CreationDialog(props: {
       <DialogTrigger asChild>{props.children}</DialogTrigger>
       <DialogContent className="max-w-[calc(100vw-1rem)] sm:max-w-[calc(640px-2rem)] rounded-xl">
         <DialogHeader>
-          <DialogTitle>
-            <span className="capitalize">
-              {props.action} {props.label}
-            </span>
+          <DialogTitle className="w-full text-center capitalize">
+            {props.action} {props.label}
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-row items-baseline gap-3">

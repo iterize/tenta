@@ -62,7 +62,7 @@ export default function Page(props: {
       {Object.keys(measurementsAggregationData).length === 0 && (
         <div className="w-full text-sm text-center">no measurements</div>
       )}
-      <h2 className="w-full mt-2 text-sm font-medium">
+      <h2 className="w-full mt-2 -mb-2 text-sm font-medium">
         <span className={"uppercase font-semibold "}>ERROR</span> log messages:
       </h2>
       {logsAggregationData.filter((l) => l.severity === "error").length ===
@@ -72,7 +72,7 @@ export default function Page(props: {
         .map((l) => (
           <LogAggregationPanel key={l.message} log={l} />
         ))}
-      <h2 className="w-full mt-2 text-sm font-medium">
+      <h2 className="w-full mt-2 -mb-2 text-sm font-medium">
         <span className={"uppercase font-semibold"}>WARNING</span> log messages:
       </h2>
       {logsAggregationData.filter((l) => l.severity === "warning").length ===

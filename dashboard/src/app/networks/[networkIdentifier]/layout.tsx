@@ -101,7 +101,7 @@ export default function NetworkPageLayout(props: {
                   <span className="flex-shrink-0">network</span>
                 </div>
                 <span className="font-mono text-xs opacity-60">
-                  ({network.identifier})
+                  {network.identifier}
                 </span>
               </div>
             ) : (
@@ -110,7 +110,7 @@ export default function NetworkPageLayout(props: {
           </div>
         </Link>
       </div>
-      <div className="lg:grid lg:grid-cols-3 minh-[calc(100vh-7rem)] lg:min-h-[calc(100vh-6rem)] bg-slate-50">
+      <div className="lg:grid lg:grid-cols-3 min-h-[calc(100vh-7rem)] lg:min-h-[calc(100vh-6rem)] bg-slate-50">
         <div className="hidden w-full h-full overflow-hidden border-r border-slate-300 lg:block">
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (
@@ -165,7 +165,27 @@ export default function NetworkPageLayout(props: {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Sensors</SelectLabel>
+                  <SelectLabel>
+                    <div className="flex flex-row items-center justify-center w-full">
+                      <div>Sensors</div>
+                      <div className="flex-grow" />
+                      <CreationDialog
+                        action="create"
+                        label="sensor"
+                        submit={createSensor}
+                        onSuccess={(newSensorIdentifier: string) => {
+                          router.push(
+                            `/networks/${props.params.networkIdentifier}/sensors/${newSensorIdentifier}/activity`
+                          );
+                        }}
+                      >
+                        <Button>
+                          <IconPlus width={16} className="mr-1.5 -ml-0.5" /> New
+                          Sensor
+                        </Button>
+                      </CreationDialog>
+                    </div>
+                  </SelectLabel>
                   {sensorsData.map((sensor) => (
                     <SelectItem value={sensor.identifier}>
                       <div className="flex flex-col items-start">
@@ -246,8 +266,7 @@ export default function NetworkPageLayout(props: {
           </div>
         )}
 
-        <div className="block w-full h-px lg:hidden bg-slate-300" />
-
+        <div className="block w-full h-px bg-slate-300 lg:hidden" />
         <div className="col-span-2 lg:min-h-0 ">{props.children}</div>
       </div>
     </>

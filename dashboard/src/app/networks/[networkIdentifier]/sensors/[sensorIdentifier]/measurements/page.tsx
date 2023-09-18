@@ -116,14 +116,19 @@ export default function Page(props: {
           }
         />
         <Button onClick={fetchOlderMeasurements}>load older</Button>
-        <div className="flex-row items-end justify-end flex-grow hidden pr-3 md:flex">
+        <div className="flex flex-row items-end justify-end flex-grow pr-3">
           {measurementsDataFetchingState === "background-fetching" && (
             <Spinner />
           )}
         </div>
       </div>
       <div className="flex flex-col items-center justify-center w-full gap-y-4">
-        {measurementsData === undefined && "loading"}
+        {measurementsDataFetchingState !== "background-fetching" &&
+          measurementsData.length === 0 && (
+            <div className="w-full mt-2 text-sm text-center text-slate-700">
+              no measurements
+            </div>
+          )}
         {measurementsData
           .slice((currentPageNumber - 1) * 64, currentPageNumber * 64)
           .map((measurement) => (
