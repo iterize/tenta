@@ -1,0 +1,9 @@
+# Deployment
+
+The server is backed by PostgreSQL and an MQTT broker. During development and testing these services are automatically spun up locally for you. In production, it's better to deploy them independently from the server. Cloud providers can help with this.
+
+When you have your PostgreSQL instance and the MQTT broker ready:
+
+- specify your environment variables in a `.env` file (see `.env.example`)
+- initialize the database via `(set -a && source .env && ./scripts/initialize)`
+- build the Docker image via `./scripts/build`

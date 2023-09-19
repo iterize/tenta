@@ -1,1 +1,21 @@
-- includes development setup
+# How to contribute
+
+We're very happy about contributions to Tenta! ✨
+
+## Development setup
+
+- Clone the repository and switch into the `server` directory
+- Install the Python version noted in `.python-version` (e.g. with `pyenv`)
+- Install the [poetry package manager](https://github.com/python-poetry/poetry)
+- Install the dependencies with `./scripts/setup`
+- Make sure that you have Docker installed
+- You can now start the server locally with `./scripts/develop`; This automatically spins up local PostgreSQL and Mosquitto instances with Docker; The server will be available at `http://localhost:8000`
+- You can run the tests with `./scripts/test` and format and lint the code with `./scripts/check`
+
+## Dashboard
+
+## Documentation
+
+## Making a pull request
+
+You can create a draft pull request if your your contribution is not yet ready to merge. Please check if your changes call for updates to the documentation! Changes to the server should be accompanied by tests.
