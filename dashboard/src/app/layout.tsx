@@ -32,12 +32,21 @@ export default function RootLayout({
         <meta property="og:image" content="/tenta-favicon-1024.png" />
         <meta property="og:image:width" content="1024" />
         <meta property="og:image:height" content="1024" />
+        <meta property="og:image" content="/tenta-favicon-512.png" />
+        <meta property="og:image:width" content="512" />
+        <meta property="og:image:height" content="512" />
         <meta property="og:image:alt" content="Tenta Dashboard Favicon" />
-        <meta property="og:image" content="/tenta-dashboard-og-1024-512.png" />
+        <meta
+          property="og:image"
+          content="/tenta-banner-dashboard-og-1024-512.png"
+        />
         <meta property="og:image:width" content="1024" />
         <meta property="og:image:height" content="512" />
         <meta property="og:image:alt" content="Tenta Dashboard Banner" />
-        <meta property="og:image" content="/tenta-dashboard-og-1200-630.png" />
+        <meta
+          property="og:image"
+          content="/tenta-banner-dashboard-og-1200-630.png"
+        />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Tenta Dashboard Banner" />
