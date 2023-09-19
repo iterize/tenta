@@ -24,7 +24,7 @@ Tenta is licensed under the [MIT License](LICENSE).
 
 ## Research
 
-We are open for collaborations! Tenta evolved out of the [ICOS Cities PAUL](https://www.icos-cp.eu/) project at [TUM](https://www.tum.de/en/). If you are interested in using Tenta in your research, don't hesitate [to reach out](mailto:contact@iterize.dev). We are happy to help you get started and provide support.
+We are open for collaborations! Tenta evolved out of the [ICOS Cities PAUL](https://www.icos-cp.eu/) project at [Technical University of Munich](https://www.tum.de/en/). If you are interested in using Tenta in your research, don't hesitate to reach out to **contact@iterize.dev**. We are happy to help you get started and provide support.
 
 ## Contributing
 
