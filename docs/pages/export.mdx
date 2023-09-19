@@ -17,7 +17,7 @@ import pyarrow.parquet
 import pathlib
 
 
-# Read the data from PostgreSQL
+# Read the data from PostgreSQL (here: our development instance)
 table = cx.read_sql(
     conn="postgresql://postgres:12345678@localhost:5432/database",  # PostgreSQL connection string
     query="SELECT * FROM measurement ORDER BY creation_timestamp DESC LIMIT 256",

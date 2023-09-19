@@ -1,0 +1,8 @@
+# Data format
+
+- 64bit floats
+- EAV (Entity-Attribute-Value) format and what to pay attention to
+  - You can freely add or remove attributes from the measurements or send different measurements
+  - However, everything tied to a specific attribute name stays with that name forever
+  - Attributes with the same name in different measurements will be grouped together, there's no context except the name itself
+- definition: message - measurement - data point

@@ -1,1 +1,121 @@
-- definition: message - measurement - data point
+import { Callout } from "nextra/components";
+
+# Connecting the first sensor
+
+Sensors communicate with Tenta over MQTT.
+
+Most features of Tenta are optional. In the simplest case, you can use Tenta as a place to send measurements to and nothing else.
+
+Let's see an example of how to send a measurement to Tenta with Python's [paho-mqtt](https://github.com/eclipse/paho.mqtt.python):
+
+```python
+import paho.mqtt.client as mqtt
+import json
+import time
+
+
+# Create a paho-mqtt client instance
+client = mqtt.Client()
+# Connect to the MQTT broker (here: our development instance)
+client.connect("localhost", port=1883)
+# Create a test measurement containing temperature and humidity values
+measurement = {
+    "value": {"temperature": 23.1, "humidity": 0.62},
+    "timestamp": time.time(),  # The current time as Unix timestamp
+}
+# Publish our measurement
+client.publish(
+    topic="measurements/81bf7042-e20f-4a97-ac44-c15853e3618f",
+    payload=json.dumps([measurement]).encode(),
+    qos=1,
+)
+```
+
+<Callout type="info" emoji="💡">
+  The MQTT interface is language-independent. You can connect to Tenta from any
+  programming language and with any MQTT library.
+</Callout>
+
+<Callout type="info">
+  All of the examples in this documentation are self-contained and can be run
+  as-is.
+</Callout>
+
+This alone already gives you a lot of functionality. You can observe the measurements live in the dashboard and [query them in the database](/export) for further analysis.
+
+Other features are optional. You can incrementally add them to your sensors as needed.
+
+## Logs
+
+Sometimes things go wrong. When they do, Tenta's logging functionality can give you insight into your sensors to understand what happened.
+
+You can relay logs from your sensors to Tenta to have access to them in the dashboard:
+
+```python
+import paho.mqtt.client as mqtt
+import json
+import time
+
+
+# Create a paho-mqtt client instance
+client = mqtt.Client()
+# Connect to the MQTT broker (here: our development instance)
+client.connect("localhost", port=1883)
+# Create a test log message with a severity level of "error"
+log = {
+    "message": "The CPU is burning; Please call the fire department.",
+    "severity": "error",
+    "timestamp": time.time(),  # The current time as Unix timestamp
+}
+# Publish our log message
+client.publish(
+    topic="logs/81bf7042-e20f-4a97-ac44-c15853e3618f",
+    payload=json.dumps([log]).encode(),
+    qos=1,
+)
+```
+
+## Configurations
+
+Measurements and logs are sent from the sensors to Tenta. You might want to send data in the other direction to configure your sensors.
+
+You can create and update a sensor's configuration in the dashboard. Tenta relays these configurations to the sensors via MQTT.
+
+Let's see how a sensor can listen for new configurations:
+
+```python
+import paho.mqtt.client as mqtt
+import json
+
+
+def on_connect(client, userdata, flags, rc):
+    # Subscribe to our configurations topic after we connect
+    client.subscribe("configurations/81bf7042-e20f-4a97-ac44-c15853e3618f")
+
+
+def on_message(client, userdata, message):
+    # When we receive a configuration, decode it and print it
+    print(json.loads(message.payload.decode()))
+
+
+# Create a paho-mqtt client instance
+client = mqtt.Client()
+# Define our callback functions
+client.on_connect = on_connect
+client.on_message = on_message
+# Connect to the MQTT broker (here: our development instance)
+client.connect("localhost", port=1883)
+# Block the execution and listen forever
+client.loop_forever()
+```
+
+The server automatically associates each configuration with an incremental revision number. Sensors can use this revision number to detect configuration updates and to link measurements and logs to specific configurations.
+
+## Acknowledgements
+
+## Batching messages
+
+- Sensors that communicate over LoRaWAN, HTTP, or other protocols can connect to Tenta via translation gateways.
+- link to library
+
+## Complete example

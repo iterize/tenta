@@ -2,36 +2,14 @@
 
 The communication between the sensors and the server runs over four MQTT topics:
 
-- `configurations/<sensor-identifier>`: Configurations **to** sensors
-- `acknowledgments/<sensor-identifier>`: Configuration acknowledgments **from** sensors
-- `measurements/<sensor-identifier>`: Measurements **from** sensors
-- `logs/<sensor-identifier>`: Logs **from** sensors
+- `measurements/<sensor-identifier>`: Measurements from sensors
+- `logs/<sensor-identifier>`: Logs from sensors
+- `configurations/<sensor-identifier>`: Configurations to sensors
+- `acknowledgments/<sensor-identifier>`: Configuration acknowledgments from sensors
 
 ## Payloads
 
 The payloads are JSON encoded and have the following structure:
-
-**`configurations/<sensor-identifier>`:**
-
-```json
-{
-  "configuration": {}, // Can be any valid JSON object
-  "revision": 0
-}
-```
-
-**`acknowledgments/<sensor-identifier>`:**
-
-```json
-// Array structure allows to batch messages
-[
-  {
-    "success": true, // Did the sensor successfully process the configuration?
-    "timestamp": 1683645000.0,
-    "revision": 0
-  }
-]
-```
 
 **`measurements/<sensor-identifier>`:**
 
@@ -60,6 +38,28 @@ The payloads are JSON encoded and have the following structure:
     "severity": "error", // One of: info, warning, error
     "timestamp": 1683645000.0,
     "revision": 0 // Optional
+  }
+]
+```
+
+**`configurations/<sensor-identifier>`:**
+
+```json
+{
+  "configuration": {}, // Can be any valid JSON object
+  "revision": 0
+}
+```
+
+**`acknowledgments/<sensor-identifier>`:**
+
+```json
+// Array structure allows to batch messages
+[
+  {
+    "success": true, // Did the sensor successfully process the configuration?
+    "timestamp": 1683645000.0,
+    "revision": 0
   }
 ]
 ```
