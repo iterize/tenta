@@ -8,7 +8,8 @@
     "title": "Guides"
   },
   "overview": "Overview",
-  "connect": "Connect to Tenta",
+  "connect": "Connecting your first sensor",
+  "data": "Data format",
   "export": "Working with the data",
   "deployment": "Deployment",
   "-- Reference": {
@@ -17,7 +18,6 @@
   },
   "design": "Design decisions",
   "mqtt": "MQTT interface",
-  "python": "Python library",
   "database": {
     "title": "Database schema ↗",
     "href": "https://github.com/iterize/tenta/blob/main/server/schema.sql"
@@ -39,5 +39,6 @@
     "href": "https://github.com/iterize/tenta/discussions"
   },
   "contribute": "How to contribute",
-  "roadmap": "Roadmap"
+  "roadmap": "Roadmap",
+  "community": "Community projects"
 }
