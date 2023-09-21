@@ -49,7 +49,7 @@ module.exports = {
         "slate-250": "rgb(215, 223, 233)",
         "slate-350": "#afbccd",
 
-        blue: {
+        /*blue: {
           50: "#f1f5fd",
           100: "#dfe9fa",
           150: "#d3e0f8",
@@ -62,7 +62,7 @@ module.exports = {
           800: "#30409d",
           900: "#2b397d",
           950: "#1e254d",
-        },
+        },*/
         /*blue: {
           100: "#a5e1ff",
           200: "#4bc3ff",

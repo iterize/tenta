@@ -43,12 +43,12 @@ export default function Page(props: {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-center w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
-        <div className="flex flex-row items-center justify-center text-white rounded-md bg-rose-200">
-          <div className="w-8 h-8 p-2 bg-rose-500 rounded-l-md">
+      <div className="flex flex-row items-center justify-center w-full pb-4 text-lg font-normal border-b text-slate-900 gap-x-2 border-slate-300">
+        <div className="flex flex-row items-center justify-center rounded-md">
+          <div className="w-8 h-8 p-2 text-white rounded-lg bg-rose-500">
             <IconActivityHeartbeat className="w-full h-full" />
           </div>
-          <div className="px-3 font-medium text-rose-900">
+          <div className="px-3 font-medium text-rose-950">
             Activity
             <span className="pl-2 text-xs font-normal">last 4 weeks</span>
           </div>
@@ -248,7 +248,7 @@ function MeasurementActivityPlot(props: {
   }, [labelColumnWidth, plotHeight, props.data, plotRef]);
 
   return (
-    <div className="w-full md:w-[calc(100%-1rem)] md:ml-4 p-2 bg-white border rounded-md shadow border-slate-300">
+    <div className="w-full md:w-[calc(100%-1rem)] md:ml-4 p-2 bg-white border rounded-lg shadow border-slate-300">
       <svg
         viewBox={`0 0 1000 ${plotHeight}`}
         ref={plotRef}

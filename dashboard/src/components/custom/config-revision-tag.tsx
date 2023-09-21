@@ -21,16 +21,20 @@ export function ConfigRevisionTag(props: {
         <TooltipTrigger>
           <div
             className={
-              "flex-shrink-0 pl-1.5 pr-2 py-1 text-sm bg-blue-150 rounded-md font-normal flex flex-row gap-x-1.5 items-center justify-center whitespace-nowrap " +
+              "flex-shrink-0 pl-1.5 pr-2 py-1 text-xs bg-blue-150 rounded-md font-medium flex flex-row gap-x-1.5 items-center justify-center whitespace-nowrap " +
               (noRevision
                 ? "bg-slate-150 text-slate-800"
-                : "bg-blue-150 text-blue-800")
+                : "bg-blue-100 text-blue-900")
             }
           >
             <>
               <IconFileSettings
-                size={16}
-                className={noRevision ? "text-slate-500" : "text-blue-500"}
+                size={14}
+                className={
+                  noRevision
+                    ? "text-slate-800 opacity-60"
+                    : "text-blue-900 opacity-60"
+                }
               />{" "}
               {(noRevision || props.to_revision === undefined) &&
                 (props.revision === null ? "-" : props.revision)}

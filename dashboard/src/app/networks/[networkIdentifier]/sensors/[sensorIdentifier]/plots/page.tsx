@@ -41,12 +41,12 @@ export default function Page(props: {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-center w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
-        <div className="flex flex-row items-center justify-center text-white bg-orange-200 rounded-md">
-          <div className="w-8 h-8 p-2 bg-orange-500 rounded-l-md">
+      <div className="flex flex-row items-center justify-center w-full pb-4 text-lg font-normal border-b text-slate-900 gap-x-2 border-slate-300">
+        <div className="flex flex-row items-center justify-center rounded-md">
+          <div className="w-8 h-8 p-2 text-white bg-orange-500 rounded-lg">
             <IconChartHistogram className="w-full h-full" />
           </div>
-          <div className="px-3 font-medium text-orange-900">
+          <div className="px-3 font-medium text-orange-950">
             Plots
             <span className="pl-2 text-xs font-normal">last 4 weeks</span>
           </div>
@@ -228,12 +228,11 @@ function MeasurementAggregationPlot(props: {
   }, [props.data, plotRef]);
 
   return (
-    <div className="flex flex-col w-full 2xl:flex-row gap-x-4 gap-y-1">
-      <div className="flex flex-row items-center justify-start w-64 pl-2 gap-x-2 2xl:pl-0">
-        <h2 className="font-mono text-sm font-medium">{props.label}</h2>
-        <div className="flex-grow border-b-[2.5px] border-dotted border-slate-300 hidden 2xl:block" />
+    <div className="flex flex-col w-full bg-white border rounded-lg shadow border-slate-300">
+      <div className="flex items-center px-3 pt-1.5 pb-1 text-sm font-medium border-b rounded-t-lg bg-slate-50 border-slate-200 text-slate-800">
+        {props.label}
       </div>
-      <div className="flex-grow p-2 bg-white border rounded-md shadow border-slate-300">
+      <div className="w-full p-2">
         <svg viewBox="0 0 1050 150" ref={plotRef} className="w-full" />
       </div>
     </div>

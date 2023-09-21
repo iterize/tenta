@@ -99,12 +99,12 @@ export default function Page(props: {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-start w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
-        <div className="flex flex-row items-center justify-center text-white rounded-md bg-emerald-200">
-          <div className="w-8 h-8 p-2 bg-emerald-500 rounded-l-md">
+      <div className="flex flex-row items-center justify-start w-full pb-4 text-lg font-normal border-b text-slate-900 gap-x-2 border-slate-300">
+        <div className="flex flex-row items-center justify-center">
+          <div className="w-8 h-8 p-2 text-white rounded-lg bg-emerald-500">
             <IconDatabaseSearch className="w-full h-full" />
           </div>
-          <div className="px-3 font-medium text-emerald-900">
+          <div className="px-3 font-medium text-emerald-950">
             Raw Measurements
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function Page(props: {
                 key={JSON.stringify(measurement)}
                 className="flex flex-row items-center w-full p-3 pb-2 border-b border-slate-200 gap-x-3"
               >
-                <ConfigRevisionTag revision={measurement.revision} />
+                <ConfigRevisionTag revision={15} />
                 <div className="flex flex-col items-start justify-center flex-grow md:items-baseline gap-x-2 md:flex-row ">
                   <div className="font-regular">
                     {formatDistanceToNow(

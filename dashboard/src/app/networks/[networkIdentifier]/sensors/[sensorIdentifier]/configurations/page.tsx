@@ -96,12 +96,12 @@ export default function Page(props: {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-start w-full pb-4 text-base font-normal border-b text-slate-900 gap-x-2 border-slate-300">
-        <div className="flex flex-row items-center justify-center text-white bg-blue-200 rounded-md">
-          <div className="w-8 h-8 p-2 bg-blue-500 rounded-l-md">
+      <div className="flex flex-row items-center justify-start w-full pb-4 text-lg font-normal border-b text-slate-900 gap-x-2 border-slate-300">
+        <div className="flex flex-row items-center justify-center">
+          <div className="w-8 h-8 p-2 text-white bg-blue-500 rounded-lg">
             <IconAdjustmentsFilled className="w-full h-full" />
           </div>
-          <div className="px-3 font-medium text-blue-900">Configurations</div>
+          <div className="px-3 font-medium text-blue-950">Configurations</div>
         </div>
       </div>
       {newConfigValue === undefined && (
