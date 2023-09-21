@@ -4,7 +4,7 @@ export function TheTenta(props: { className: string }) {
   return (
     <div className={"relative " + props.className}>
       <Image
-        src="/tenta-artwork-png-recolored.png"
+        src="/tenta-artwork-recolored.png"
         alt="Tenta Artwork"
         width="1716"
         height="1716"
