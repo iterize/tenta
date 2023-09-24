@@ -115,7 +115,7 @@ export default function NetworkPageLayout(props: {
           {sensorsData === undefined && "..."}
           {sensorsData !== undefined && (
             <>
-              <div className="h-[calc(100%-2.5rem)] overflow-y-scroll">
+              <div className="h-[calc(100%-2.5rem)] overflow-y-scroll bg-white">
                 {sensorsData.map((sensor) => (
                   <SensorListItem
                     key={sensor.identifier}

@@ -146,7 +146,7 @@ export default function Page(props: {
                 key={JSON.stringify(measurement)}
                 className="flex flex-row items-center w-full p-3 pb-2 border-b border-slate-200 gap-x-3"
               >
-                <ConfigRevisionTag revision={15} />
+                <ConfigRevisionTag revision={measurement.revision} />
                 <div className="flex flex-col items-start justify-center flex-grow md:items-baseline gap-x-2 md:flex-row ">
                   <div className="font-regular">
                     {formatDistanceToNow(
