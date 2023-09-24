@@ -24,7 +24,7 @@ table = cx.read_sql(
     return_type="arrow2",
     protocol="binary",
 )
-# Use the directory of the script as path for the new file
+# Use the directory of the script as path for the file
 path = pathlib.Path(__file__).parent.resolve() / "measurements.parquet"
 # Write to parquet file
 pyarrow.parquet.write_table(table, where=path)
@@ -33,9 +33,12 @@ pyarrow.parquet.write_table(table, where=path)
 You can then read and process this `parquet` file with your preferred tool, e.g. with [polars](https://github.com/pola-rs/polars):
 
 ```python
+import pathlib
 import polars
 
 
+# Use the directory of the script as path for the file
+path = pathlib.Path(__file__).parent.resolve() / "measurements.parquet"
 # Load the parquet file into polars
 dataframe = polars.read_parquet(path)
 # (optional) Transform the (attribute, value) columns into one column per attribute
@@ -47,6 +50,6 @@ dataframe.pivot(
 )
 ```
 
-You can explore the `configuration` and `log` tables in the same way.
+You can explore the `configuration` and `log` tables in the same way. Please refer to the [database schema](https://github.com/iterize/tenta/blob/main/server/schema.sql) for exact details on the available columns.
 
 If your sensors send their current configuration's revision number with each measurement, you can join the `measurement` and `configuration` tables on `(sensor_identifier, revision)` to match each measurement with the associated configuration.
