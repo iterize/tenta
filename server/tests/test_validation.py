@@ -28,6 +28,7 @@ def test_validate_type_name_pass():
     pydantic.TypeAdapter(validation.types.Name).validate_python("12345678")
     pydantic.TypeAdapter(validation.types.Name).validate_python("example")
     pydantic.TypeAdapter(validation.types.Name).validate_python("12345678-abc")
+    pydantic.TypeAdapter(validation.types.Name).validate_python("un1c0rn")
 
 
 def test_validate_type_name_fail():
@@ -74,8 +75,10 @@ def test_validate_type_key_pass():
     pydantic.TypeAdapter(validation.types.Key).validate_python("x_x")
     pydantic.TypeAdapter(validation.types.Key).validate_python("x_x_x")
     pydantic.TypeAdapter(validation.types.Key).validate_python("x" * 64)
-    pydantic.TypeAdapter(validation.types.Key).validate_python("abc")
+    pydantic.TypeAdapter(validation.types.Key).validate_python("12345678")
+    pydantic.TypeAdapter(validation.types.Key).validate_python("example")
     pydantic.TypeAdapter(validation.types.Key).validate_python("example_abc")
+    pydantic.TypeAdapter(validation.types.Key).validate_python("un1c0rn")
 
 
 def test_validate_type_key_fail():
@@ -114,10 +117,6 @@ def test_validate_type_key_fail():
         pydantic.TypeAdapter(validation.types.Key).validate_python('"')
     with pytest.raises(pydantic.ValidationError):
         pydantic.TypeAdapter(validation.types.Key).validate_python(".;")
-    with pytest.raises(pydantic.ValidationError):
-        pydantic.TypeAdapter(validation.types.Key).validate_python("12345678")
-    with pytest.raises(pydantic.ValidationError):
-        pydantic.TypeAdapter(validation.types.Key).validate_python("un1c0rn")
 
 
 ########################################################################################
