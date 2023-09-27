@@ -371,11 +371,10 @@ async def read_measurements(request, values):
         )
     # Page through measurements
     query, arguments = database.parametrize(
-        identifier="read-measurements",
+        identifier=f"read-{values.query['direction']}-measurements",
         arguments={
             "sensor_identifier": values.path["sensor_identifier"],
             "creation_timestamp": values.query["creation_timestamp"],
-            "direction": values.query["direction"],
         },
     )
     elements = await request.state.dbpool.fetch(query, *arguments)

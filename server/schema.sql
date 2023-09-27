@@ -70,11 +70,11 @@ CREATE UNIQUE INDEX ON configuration (sensor_identifier ASC, revision DESC);
 -- measurements chooses arbitrarily between duplicates.
 CREATE TABLE measurement (
     sensor_identifier UUID NOT NULL REFERENCES sensor (identifier) ON DELETE CASCADE,
+    receipt_timestamp TIMESTAMPTZ NOT NULL,
     attribute TEXT NOT NULL,
     value DOUBLE PRECISION NOT NULL,
-    revision INT,
     creation_timestamp TIMESTAMPTZ NOT NULL,
-    receipt_timestamp TIMESTAMPTZ NOT NULL
+    revision INT
 );
 
 CREATE INDEX ON measurement (sensor_identifier ASC, creation_timestamp ASC);

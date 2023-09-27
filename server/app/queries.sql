@@ -188,33 +188,43 @@ ORDER BY
 LIMIT 64;
 
 
--- name: read-measurements
--- Assemble data points that have the same timestamp and revision
--- back into measurements, then sort and paginate
+-- name: read-next-measurements
+-- Reassemble data points that have the same timestamp and revision from EAV
+-- back to JSON, then sort and paginate. We use one query per direction.
+-- Somehow the query planner stumbles when we use a second CASE statement for
+-- the direction and does a full table scan.
 SELECT
-    revision,
     creation_timestamp,
+    revision,
     jsonb_object_agg(attribute, value) AS value
 FROM measurement
 WHERE
     sensor_identifier = ${sensor_identifier}
     AND CASE
         WHEN ${creation_timestamp}::TIMESTAMPTZ IS NOT NULL
-            THEN (
-                CASE
-                    WHEN ${direction} = 'next'
-                        THEN creation_timestamp > ${creation_timestamp}
-                    WHEN ${direction} = 'previous'
-                        THEN creation_timestamp < ${creation_timestamp}
-                    ELSE TRUE
-                END
-            )
+            THEN creation_timestamp > ${creation_timestamp}
         ELSE TRUE
     END
-GROUP BY revision, creation_timestamp
-ORDER BY
-    CASE WHEN ${direction} = 'next' THEN creation_timestamp END ASC,
-    CASE WHEN ${direction} = 'previous' THEN creation_timestamp END DESC
+GROUP BY creation_timestamp, revision
+ORDER BY creation_timestamp ASC
+LIMIT 64;
+
+
+-- name: read-previous-measurements
+SELECT
+    creation_timestamp,
+    revision,
+    jsonb_object_agg(attribute, value) AS value
+FROM measurement
+WHERE
+    sensor_identifier = ${sensor_identifier}
+    AND CASE
+        WHEN ${creation_timestamp}::TIMESTAMPTZ IS NOT NULL
+            THEN creation_timestamp < ${creation_timestamp}
+        ELSE TRUE
+    END
+GROUP BY creation_timestamp, revision
+ORDER BY creation_timestamp DESC
 LIMIT 64;
 
 
@@ -270,7 +280,6 @@ WITH interim AS (
     FROM permission
     WHERE user_identifier = ${user_identifier}
 )
-
 SELECT interim.user_identifier
 FROM network
 LEFT JOIN interim ON network.identifier = interim.network_identifier
@@ -287,7 +296,6 @@ WITH interim AS (
     FROM permission
     WHERE user_identifier = ${user_identifier}
 )
-
 SELECT interim.user_identifier
 FROM sensor
 LEFT JOIN interim USING (network_identifier)

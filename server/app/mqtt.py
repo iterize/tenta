@@ -107,7 +107,7 @@ async def _handle_acknowledgments(sensor_identifier, payload, dbpool):
         ],
     )
     # Ignores when the sensor or revision does not exist, because it's an UPDATE query
-    response = await dbpool.executemany(query, arguments)
+    await dbpool.executemany(query, arguments)
 
 
 async def _handle_measurements(sensor_identifier, payload, dbpool):
