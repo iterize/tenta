@@ -6,7 +6,7 @@ Measurements make up the overwhelming majority of the data in the system. They m
 
 Sensors send MQTT messages to the server. Each message contains one or more measurements. Measurements contain one or more data points, which consist of an attribute (e.g. `temperature`) and a value (e.g. `23.1`). Each data point is associated with the time Tenta received it and the time it was measured, and optionally the revision that was in use at the time.
 
-Values are sent as JSON numbers and stored as 64-bit double-precision floating-points. You cannot send strings or bytes streams. This is a compromise between flexibility and efficiency that we've rarely found to be limiting in practice. Note that you can represent integers and booleans as floats.
+Values are sent as JSON numbers and stored as 64-bit double-precision floating-points. You cannot send strings or binary objects. This is a compromise between flexibility and efficiency that we've rarely found to be limiting in practice. Note that you can represent integers and booleans as floats.
 
 ## Evolving measurement formats
 

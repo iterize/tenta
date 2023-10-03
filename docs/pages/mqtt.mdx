@@ -7,6 +7,8 @@ The communication between the sensors and the server runs over four MQTT topics:
 - `configurations/<sensor-identifier>`: Configurations to sensors
 - `acknowledgments/<sensor-identifier>`: Configuration acknowledgments from sensors
 
+To ensure that messages arrive reliably, sensors should publish and subscribe with Quality of Service (QoS) level `1`. This ensures that messages are delivered at least once. The server publishes configurations as retained messages. This means that when sensors are offline, the MQTT broker retains the latest configuration and relays it to the sensors when they reconnect and subscribe to their configurations topic.
+
 ## Payloads
 
 The payloads are JSON encoded and have the following structure:

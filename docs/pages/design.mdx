@@ -1,53 +1,47 @@
 # Design decisions
 
-## Delegation of processing and (elaborate) visualization
+This document captures important design/architectural decisions along with their context and consequences.
 
-We adhere to the Unix philosophy in that Tenta does only thing, and does it well: manage sensor networks. Tenta collects data from sensors and allows you to supervise and configure them remotely. Tenta does not process the data and does not allow you to visualize more elaborate things than real-time line charts over raw data.
+## [`0.1`] Delegation of processing and visualization
 
-There are multiple reasons why this is a good idea:
+Tenta follows the Unix philosophy and aims to be lightweight and composable. Tenta collects data from sensors and allows supervising and configuring them remotely. Tenta does not process data and does not visualize anything more elaborate than real-time line charts over raw data. Instead, we design Tenta's interfaces to work well with other tools and provide documentation about e.g. how to get data out of Tenta to process it.
 
-1. The open-source ecosystem already has excellent tools for processing and visualization, e.g. polars and Grafana. By not reinventing the wheel here, we can focus on the core functionality of Tenta. Additionally, processing and visualization vary immensely between projects, which means that we'd probably only end up with a very complex system that still doesn't work for everyone.
-1. Tenta stores the raw data it receives from the sensors as is and does not modify it. You accidentally deleted all the data while processing it outside of Tenta? Don't worry, Tenta is your source of truth.
-1. Analyzing data in real-time is often not possible, nor useful. You might want to try out and compare different processing methods, or you might want to reprocess all your data when you find a bug in your pipeline. Or you might depend on metadata or external sources that are only available at a later point in time, etc.
-1. Processing can be expensive. Depending on your needs, processing can take hours or even days. Tenta, on the other hand, is designed to show you the status of your sensors in real-time.
+The open-source ecosystem already has excellent tools for processing and visualization, e.g. polars and Grafana. By not reinventing the wheel here, we can focus on Tenta's core functionality. Additionally, processing and visualization vary immensely between projects, which means that we'd probably only end up with a very complex system that still doesn't work for everyone.
 
-Naturally, we designed Tenta's interfaces to work well with other tools and provide documentation and examples about e.g. how to get data out of Tenta to process it.
+Tenta stores the raw data it receives from the sensors and does not allow to modify it. This means that Tenta can function as a source of truth. When we export and process data outside of Tenta, bugs or accidental deletions and modifications during processing do not affect the raw data.
 
-## PostgreSQL+TimescaleDB
+Furthermore, it's often not possible to analyze data in real-time. We might want to try out and compare different processing methods, or we might want to reprocess all your data when we find a bug. The processing might depend on metadata or external sources that are only available at a later point in time, etc. Additionally, processing can sometimes take hours or days. By decoupling the processing, we can build arbitrarily complex processing pipelines without affecting Tenta's real-time functionality.
 
-Tenta stores all data in a PostgreSQL database with the TimescaleDB extension. TimescaleDB allows us to optimize certain tables for time-series data, while still being able to use most of the features of PostgreSQL (e.g. joins).
+## [`0.1`] MQTT for communication
 
-Apart from time-series data like measurements, we also need to store highly relational information e.g. about users, networks, or session tokens. The benefit of TimescaleDB over other time-series databases (e.g. InfluxDB) is that we can do all this in a single data store. This makes our setup simple and robust.
+Tenta uses MQTT to communicate with sensors. To configure sensors in real-time, communication needs to happen not only from the sensors to the server, but also in the other direction. MQTT uses little bandwidth, which is important for sensors connected via the cellular network. MQTT is flexible and has a large ecosystem of tools and libraries. Going all in on a single protocol means that we can leverage features like retained messages and last will and testament, and makes for a simpler and more robust system.
 
-## MQTT over HTTP and LoRaWAN
+LoRaWAN gateways can translate messages between the sensors and Tenta. Such gateways could also be implemented to translate from other protocols to MQTT, and thus allow connecting sensors communicating with different protocols to a single Tenta instance.
 
-Tenta uses MQTT to communicate with sensors. MQTT is a lightweight publish-subscribe protocol designed for resource-constrained devices and unreliable network connections.
+## [`0.1`] Structure of measurements
 
-HTTP would be a viable alternative to relay measurements from the sensors to Tenta. However, to configure the sensors in real-time, we need a bidirectional communication channel. Additionally, MQTT uses less bandwidth, which is important for remote sensors that are connected via the cellular network. Configurations are persisted on the MQTT broker, in case you prefer polling.
+Measurements are stored in a single EAV table in the database. This table contains an `attribute` column (string) and a `value` column (double-precision floating-point). Measurements arrive as JSON documents at the server which stores each key-value pair as a separate row. A single measurement consisting of values for temperature and humidity is stored as two rows in the database.
 
-Tenta does not directly support LoRaWAN. You can use a LoRaWAN gateway to translate messages between the sensors and Tenta. This is a common setup that allows you to connect sensors communicating both over MQTT or LoRaWAN to a single Tenta instance.
+This approach is simple and flexible. We do not have to define measurement schemas beforehand and we can store different kinds of measurements in the same table. Additionally, measurements can evolve over time without downtime or changes to the database schema.
 
-## Structure of measurements
+In previous alpha versions, measurements were stored as JSON documents. However, this approach made it difficult to query and aggregate the data. Additionally, our processing pipeline had to deal with a multitude of different measurement formats which added a lot of complexity. The EAV schema allows us to export, query, and aggregate the data in a structured way while keeping most of the flexibility of the JSON schema. Additionally, it allows us to show real-time charts and statistics on the dashboard.
 
-- Compare with JSON
-- not as flexible, what's possible is adding and removing attributes from the structure, but not changing them
+The downside of the EAV approach is that all measurements are stored as floating-point numbers. We can represent integers and booleans with doubles, but we cannot store strings or binary objects. We have not yet found this to be a problem in practice. We might be able to support strings and binary objects in the future with a `bytea` column in a separate table.
 
-Measurements are stored in a single table in the database. This table has an `attribute` column (string) and a `value` column (double-precision floating-point). Measurements arrive as JSON documents at the server which stores each key-value pair as a separate row. If your measurements consist of values for temperature and humidity, for instance, the server will store them as two rows in the database.
+## [`0.1`] Configurations as JSON documents
 
-This approach is simple and flexible. You can store any kind of measurement without having to define a schema beforehand, and you can change the structure of your measurements at any time. Similarly, sensors can send different types of measurements with different structures.
+Configurations are JSON documents that are stored and relayed to the sensors without changes. This makes configurations highly flexible and allows them to evolve over time. Tenta does not validate configurations before relaying them to the sensors (except the fact that they are valid JSON documents). Sensors should be implemented as self-sufficient systems that validate and accept/reject configurations themselves.
 
-Despite this flexibility, the server can still perform queries and aggregations over the data, which allows Tenta to show you real-time charts and statistics about your sensors. This would not be possible if we stored the measurements directly as JSON documents. The minimal structure of this approach also makes exporting data to other tools easier.
+What we need to know is whether a sensor has received a configuration and whether it could be implemented successfully. A structurally valid configuration is not guaranteed to be implemented successfully by a sensor: the MQTT broker might be offline, the sensor might have a bug in its firmware that makes the update fail, etc.
 
-The downside of this approach is that all measurements are stored as doubles. You can represent integers and booleans with doubles, but you cannot store strings or binary objects. We have not yet found this to be a problem in most cases, but it is something to keep in mind.
+Instead, Tenta implements an acknowledgment cycle. When a sensor receives a new configuration, it can reply with an acknowledgment stating whether the update was successful or not. Configurations are validated on the sensors, which is the only place where it can be done reliably.
 
-## Configuration as JSON documents
+## [`0.1`] Configuration revisions
 
-Configurations are JSON documents that are stored and relayed to the sensors as is. Similarly to the approach for measurements, this allows you to create any kind of configuration and to evolve the structure of your configurations over time.
+The server assigns each configuration a monotonically increasing revision number. This allows us to associate measurements and logs with the configuration that was active at the time. This is often important during analysis. Revision numbers are also used during the acknowledgment cycle to detect if a sensor has received a configuration and whether it could be implemented successfully.
 
-On the flip side, this means that Tenta does not validate configurations before relaying them to the sensors (except that they are valid JSON documents). This is by design. What we actually want to know is whether the sensor successfully deploys the new configuration. Apart from an invalid configuration, there are several other things that can go wrong: the MQTT broker might be down, the sensor might have a bug in its firmware that makes the update fail, etc.
+## [`0.1`] PostgreSQL+TimescaleDB
 
-Instead, Tenta implements an acknowledgment cycle to provide real-time insights into any problems. When a sensor receives a new configuration, it sends an acknowledgment back to Tenta stating whether the update was successful or not. The validation of configurations is thus done on the sensors, which is the only place where it can be done reliably.
+Tenta stores all data in a PostgreSQL database with the TimescaleDB extension. Apart from time series data like measurements, we need to store highly relational information e.g. about users, networks, or session tokens.
 
-## Configuration revision numbers
-
-Each configuration is assigned a monotonically increasing revision number. This allows us to know which configuration was active when a measurement was taken, which is often important during analysis. Revision numbers are managed internally by Tenta and are also used during the acknowledgment cycle.
+TimescaleDB allows us to optimize certain tables for time series data, while still being able to use most of the features of PostgreSQL. Compared to other time-series databases (e.g. ClickHouse, InfluxDB), we can store time series and relational data in a single data store. This makes our setup simple and robust. I've heard of scaling issues with TimescaleDB; We have not yet encountered any, and will only react to them when we do.
