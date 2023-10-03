@@ -9,7 +9,9 @@ The server stores measurements in the `measurement` table. This table has the fo
 - **`creation_timestamp`** (`TIMESTAMPTZ`): The time at which the measurement was made.
 - **`receipt_timestamp`** (`TIMESTAMPTZ`): The time at which the server received the measurement.
 
-The most flexible way to process these measurements further is to download them locally. The [connector-x](https://github.com/sfu-db/connector-x) library and [pyarrow](https://github.com/apache/arrow) are a powerful combination for this:
+The most flexible way to process these measurements further is to download them locally. You can access the database from any programming language and with any PostgreSQL client library.
+
+For Python, the [connector-x](https://github.com/sfu-db/connector-x) and [pyarrow](https://github.com/apache/arrow) libraries are a powerful combination:
 
 ```python
 import connectorx as cx
@@ -50,6 +52,6 @@ dataframe.pivot(
 )
 ```
 
-You can explore the `configuration` and `log` tables in the same way. Please refer to the [database schema](https://github.com/iterize/tenta/blob/main/server/schema.sql) for exact details on the available columns.
+You can access the other tables in the same way, e.g. to explore configurations and logs. Please refer to the [database schema](https://github.com/iterize/tenta/blob/main/server/schema.sql) for exact details on the available tables and columns.
 
 If your sensors send their current configuration's revision number with each measurement, you can join the `measurement` and `configuration` tables on `(sensor_identifier, revision)` to match each measurement with the associated configuration.
