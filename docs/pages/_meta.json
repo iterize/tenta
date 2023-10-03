@@ -30,6 +30,10 @@
     "type": "separator",
     "title": "More"
   },
+  "releases": {
+    "title": "Release notes ↗",
+    "href": "https://github.com/iterize/tenta/releases"
+  },
   "issues": {
     "title": "Issue tracker ↗",
     "href": "https://github.com/iterize/tenta/issues"

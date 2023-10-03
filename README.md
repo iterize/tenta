@@ -1,4 +1,6 @@
-![Screenshot of Tenta's dashboard](./banner.png)
+![Tenta's dashboard](./banner.png)
+
+<!-- When you make changes here, remember to duplicate them to `docs/pages/index.mdx` -->
 
 Tenta allows you to manage sensors remotely and in real-time.
 
@@ -20,7 +22,7 @@ Tenta ships with a concise and language-independent MQTT interface. Sensors that
 
 ## License
 
-Tenta is licensed under the [MIT License](LICENSE).
+Tenta is licensed under the [MIT License](https://github.com/iterize/tenta/blob/main/LICENSE).
 
 ## Research
 
