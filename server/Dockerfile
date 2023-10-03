@@ -17,7 +17,7 @@ COPY pyproject.toml poetry.lock /
 RUN poetry config virtualenvs.create false && \
     poetry install --no-root --no-ansi --no-interaction
 
-EXPOSE 8000
+EXPOSE 8421
 
 # Read commit hash and branch name as build arguments
 ARG commit_sha branch_name
@@ -26,4 +26,4 @@ ENV COMMIT_SHA=${commit_sha} BRANCH_NAME=${branch_name}
 
 COPY /app /app
 
-CMD poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --log-level info
+CMD poetry run uvicorn app.main:app --host 0.0.0.0 --port 8421 --log-level info

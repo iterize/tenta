@@ -10,5 +10,5 @@ COMMIT_SHA="$(git rev-parse --verify HEAD)"
 BRANCH_NAME="$(git branch --show-current)"
 
 # Build the docker image
-docker build --build-arg commit_sha="${COMMIT_SHA}" --build-arg branch_name="${BRANCH_NAME}" --tag server .
+docker build --build-arg commit_sha="${COMMIT_SHA}" --build-arg branch_name="${BRANCH_NAME}" --tag tenta .
 yes | docker image prune

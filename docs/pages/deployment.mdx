@@ -1,9 +1,19 @@
 # Deployment
 
-The server is backed by PostgreSQL and an MQTT broker. During development and testing these services are automatically spun up locally for you. In production, it's better to deploy them independently from the server. Cloud providers can help with this.
+Tenta's server is backed by PostgreSQL and an MQTT broker. During development and testing these services are automatically spun up locally for you. In production, it's better to deploy them independently from the server.
+
+You can get started with a free MQTT broker from [HiveMQ](https://www.hivemq.com). TimescaleDB's license restricts other cloud providers from offering it feature-complete as a service. You can either deploy and manage it yourself or use TimescaleDB's own [TimescaleDB Cloud](https://www.timescale.com/cloud) (first 30 days are free).
 
 When you have your PostgreSQL instance and the MQTT broker ready:
 
-- specify your environment variables in a `.env` file (see `.env.example`)
-- initialize the database via `(set -a && source .env && ./scripts/initialize)`
-- build the Docker image via `./scripts/build`
+- Clone the repository and switch into the server directory
+- Specify your environment variables in a `.env` file (see `.env.example`)
+- Initialize the database via `(set -a && source .env && ./scripts/initialize)`
+- Make sure that you have Docker installed
+- Build the Docker image with `./scripts/build`
+
+You can run this Docker image locally with `docker run -p 127.0.0.1:8421:8421 --env-file .env tenta` or deploy it to your cloud provider or choice (e.g. [DigitalOcean's App Platform](https://www.digitalocean.com/products/app-platform)).
+
+## Dashboard
+
+TODO

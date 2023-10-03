@@ -40,7 +40,7 @@ echo "Initializing the database"
 ./scripts/initialize --populate ||:
 
 # Run in development mode
-poetry run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload --reload-include "./app/*.sql" --reload-exclude "./tests/*" --reload-exclude="./scripts/*" --log-level debug || status=$?
+poetry run uvicorn app.main:app --host 127.0.0.1 --port 8421 --reload --reload-include "./app/*.sql" --reload-exclude "./tests/*" --reload-exclude="./scripts/*" --log-level debug || status=$?
 # Stop and remove the Mosquitto docker container
 docker stop mosquitto >/dev/null
 # Stop and remove the PostgreSQL docker container
