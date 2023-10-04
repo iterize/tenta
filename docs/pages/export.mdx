@@ -1,3 +1,5 @@
+import { Callout } from "nextra/components";
+
 # Working with the data
 
 The server stores measurements in the `measurement` table. This table has the following columns:
@@ -54,4 +56,9 @@ dataframe.pivot(
 
 You can access the other tables in the same way, e.g. to explore configurations and logs. Please refer to the [database schema](https://github.com/iterize/tenta/blob/main/server/schema.sql) for exact details on the available tables and columns.
 
-If your sensors send their current configuration's revision number with each measurement, you can join the `measurement` and `configuration` tables on `(sensor_identifier, revision)` to match each measurement with the associated configuration.
+<Callout type="info" emoji="💡">
+  If your sensors send their current configuration's revision number with each
+  measurement, you can join the `measurement` and `configuration` tables on
+  `(sensor_identifier, revision)` to match each measurement with the associated
+  configuration.
+</Callout>
