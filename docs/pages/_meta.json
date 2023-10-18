@@ -7,7 +7,7 @@
     "type": "separator",
     "title": "Guides"
   },
-  "overview": "Overview",
+  "overview": "System overview",
   "connect": "Connecting the first sensor",
   "data": "Data format",
   "export": "Working with the data",

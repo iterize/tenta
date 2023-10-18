@@ -7,7 +7,7 @@ import starlette.responses
 ########################################################################################
 
 
-async def handler(request, exc):
+async def handle(request, exc):
     """Return JSON instead of the default text/plain for handled exceptions."""
     return starlette.responses.JSONResponse(
         status_code=exc.status_code,

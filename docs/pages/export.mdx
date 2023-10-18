@@ -62,3 +62,31 @@ You can access the other tables in the same way, e.g. to explore configurations 
   `(sensor_identifier, revision)` to match each measurement with the associated
   configuration.
 </Callout>
+
+## Database access control
+
+The server should be the only user with write access to the database. If you want to give other people read access to the data, you should create a read-only user:
+
+```sql
+CREATE ROLE reader WITH LOGIN PASSWORD '12345678';
+GRANT CONNECT ON DATABASE database TO reader;
+GRANT USAGE ON SCHEMA public TO reader;
+-- Grant read-only access to all tables in the public schema
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO reader;
+```
+
+<Callout type="info" emoji="💡">
+  See the [PostgreSQL documentation](https://www.postgresql.org/docs/) for more
+  details on managing users and permissions.
+</Callout>
+
+To restrict read-only access to certain networks, sensors, or attributes, you can use views. Instead of granting the `reader` user access to all tables, we can grant access only to measurements from a certain sensor:
+
+```sql
+CREATE VIEW measurement_single_sensor AS
+SELECT *
+FROM measurement
+WHERE sensor_identifier = '81bf7042-e20f-4a97-ac44-c15853e3618f';
+-- Grant read-only access only to the view
+GRANT SELECT ON measurement_single_sensor TO reader;
+```
