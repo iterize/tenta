@@ -1,5 +1,7 @@
 # Deployment
 
+## Server
+
 Tenta's server is backed by PostgreSQL and an MQTT broker. During development and testing these services are automatically spun up locally for you. In production, it's better to deploy them independently from the server.
 
 You can get started with a free MQTT broker from [HiveMQ](https://www.hivemq.com). TimescaleDB's license restricts other cloud providers from offering it feature-complete as a service. You can either deploy and manage it yourself or use TimescaleDB's own [TimescaleDB Cloud](https://www.timescale.com/cloud) (first 30 days are free).
@@ -16,4 +18,6 @@ You can run this Docker image locally with `docker run -p 127.0.0.1:8421:8421 --
 
 ## Dashboard
 
-TODO
+_All of the following paths are relative to the `dashboard/` directory of this repository._
+
+Use the file `.env.template` as a template to create a file `.env.local` - the variables are explained in the template. Then run `npm install` and `npm run build` to build the dashboard. All static HTML files for the dashboard can be found at `out/` and can be served by any CDN (https://www.netlify.com/, https://render.com/, https://pages.cloudflare.com/).
