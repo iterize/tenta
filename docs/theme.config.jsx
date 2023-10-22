@@ -4,13 +4,13 @@ export default {
       <div className="h-[var(--nextra-navbar-height)] w-auto py-2.5 px-5 bg-slate-900 dark:bg-transparent">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="icon icon-tabler icon-tabler-ripple h-full w-full"
+          className="w-full h-full icon icon-tabler icon-tabler-ripple"
           viewBox="0 0 24 24"
-          stroke-width="2"
+          strokeWidth="2"
           stroke="white"
           fill="none"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
           <path d="M3 7c3 -2 6 -2 9 0s6 2 9 0"></path>
