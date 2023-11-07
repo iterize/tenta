@@ -34,7 +34,7 @@ path = pathlib.Path(__file__).parent.resolve() / "measurements.parquet"
 pyarrow.parquet.write_table(table, where=path)
 ```
 
-You can then read and process this `parquet` file with your preferred tool, e.g. with [polars](https://github.com/pola-rs/polars):
+You can then read and process this `parquet` file with your preferred tool, e.g., with [polars](https://github.com/pola-rs/polars):
 
 ```python
 import pathlib
