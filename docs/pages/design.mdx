@@ -26,7 +26,7 @@ This approach is simple and flexible. We do not have to define measurement schem
 
 In previous alpha versions, measurements were stored as JSON documents. However, this approach made it difficult to query and aggregate the data. Additionally, our processing pipeline had to deal with a multitude of different measurement formats, which added a lot of complexity. The EAV schema allows us to export, query, and aggregate the data in a structured way while keeping most of the flexibility of the JSON schema. Additionally, it allows us to show real-time charts and statistics on the dashboard.
 
-The downside of the EAV approach is that all measurements are stored as floating-point numbers. We can represent integers and booleans with doubles, but we cannot store strings or binary objects. We have not yet found this to be a problem in practice. We might be able to support strings and binary objects in the future with a `byte` column in a separate table.
+The downside of the EAV approach is that all measurements are stored as floating-point numbers. We can represent integers and booleans with doubles, but we cannot store strings or binary objects. We have not yet found this to be a problem in practice. We might be able to support strings and binary objects in the future with a `bytea` column in a separate table.
 
 ## [`0.1`] Configurations as JSON documents
 
