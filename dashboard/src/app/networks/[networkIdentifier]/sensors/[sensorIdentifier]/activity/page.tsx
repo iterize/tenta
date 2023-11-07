@@ -7,7 +7,6 @@ import { redirect } from "next/navigation";
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { min, maxBy, range } from "lodash";
-import { useLogsAggregation } from "@/requests/logs-aggregation";
 import { IconActivityHeartbeat } from "@tabler/icons-react";
 import { ConfigRevisionTag } from "@/components/custom/config-revision-tag";
 import { TimestampLabel } from "@/components/custom/timestamp-label";
@@ -22,18 +21,8 @@ export default function Page(props: {
     props.params.networkIdentifier,
     props.params.sensorIdentifier
   );
-  const { logsAggregationData } = useLogsAggregation(
-    userData?.accessToken,
-    logoutUser,
-    props.params.networkIdentifier,
-    props.params.sensorIdentifier
-  );
 
-  if (
-    userDataIsloading ||
-    measurementsAggregationData === undefined ||
-    logsAggregationData === undefined
-  ) {
+  if (userDataIsloading || measurementsAggregationData === undefined) {
     return <AuthLoadingScreen />;
   } else if (userData === undefined) {
     redirect("/login");
@@ -65,26 +54,6 @@ export default function Page(props: {
       {Object.keys(measurementsAggregationData).length === 0 && (
         <div className="w-full text-sm text-center">no measurements</div>
       )}
-      <h2 className="w-full mt-2 -mb-2 text-sm font-normal">
-        <span className="font-medium">Error</span> log messages:
-      </h2>
-      {logsAggregationData.filter((l) => l.severity === "error").length ===
-        0 && <div className="w-full text-sm text-center">no error logs</div>}
-      {logsAggregationData
-        .filter((l) => l.severity === "error")
-        .map((l) => (
-          <LogAggregationPanel key={l.message} log={l} />
-        ))}
-      <h2 className="w-full mt-2 -mb-2 text-sm font-normal">
-        <span className="font-medium">Warning</span> log messages:
-      </h2>
-      {logsAggregationData.filter((l) => l.severity === "warning").length ===
-        0 && <div className="w-full text-sm text-center">no warning logs</div>}
-      {logsAggregationData
-        .filter((l) => l.severity === "warning")
-        .map((l) => (
-          <LogAggregationPanel key={l.message} log={l} />
-        ))}
     </>
   );
 }

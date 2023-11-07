@@ -7,7 +7,6 @@ import { redirect } from "next/navigation";
 import { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import { maxBy, minBy, range } from "lodash";
-import { useLogsAggregation } from "@/requests/logs-aggregation";
 import { IconChartHistogram } from "@tabler/icons-react";
 
 export default function Page(props: {
@@ -20,18 +19,8 @@ export default function Page(props: {
     props.params.networkIdentifier,
     props.params.sensorIdentifier
   );
-  const { logsAggregationData } = useLogsAggregation(
-    userData?.accessToken,
-    logoutUser,
-    props.params.networkIdentifier,
-    props.params.sensorIdentifier
-  );
 
-  if (
-    userDataIsloading ||
-    measurementsAggregationData === undefined ||
-    logsAggregationData === undefined
-  ) {
+  if (userDataIsloading || measurementsAggregationData === undefined) {
     return <AuthLoadingScreen />;
   } else if (userData === undefined) {
     redirect("/login");
