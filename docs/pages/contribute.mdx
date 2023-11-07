@@ -9,26 +9,25 @@ We're very happy about any contributions to Tenta! ✨
 - Install the [poetry package manager](https://github.com/python-poetry/poetry)
 - Install the dependencies with `./scripts/setup`
 - Make sure that you have Docker installed
-- You can now start the server locally with `./scripts/develop`; This automatically spins up local PostgreSQL and Mosquitto instances with Docker; The server will be available at `http://localhost:8421`
+- Start the server in development mode with `./scripts/develop`; This automatically spins up local PostgreSQL and Mosquitto instances with Docker; The server will be available at `http://localhost:8421`
 - You can run the tests with `./scripts/test` and format and lint the code with `./scripts/check`
 
-## Dashboard
+### Dashboard
 
-- Clone the repository and switch into the `dashboard` directory
+- Start the server in development mode, as described above
+- Switch into the `dashboard` directory
 - Have [NodeJS](https://nodejs.org/en) version >= 16 installed on your machine
 - Install the dependencies with `npm install`
-- Use `.env.template` to create a `.env.local` file on the same level
-- Run the development server with `npm run dev`
-- Create a production build with `npm run build`
+- Start the dashboard in development mode with `npm run dev`; Use the username `happy-un1c0rn` and the password `12345678` to log in
 - The directory structure is explained by [NextJS](https://nextjs.org/) (version 13, app router)
 
 ## Documentation
 
-- Clone the repository and switch into the `dashboard` directory
+- Clone the repository and switch into the `docs` directory
 - Have [NodeJS](https://nodejs.org/en) version >= 16 installed on your machine
 - Install the dependencies with `npm install`
-- Run the development server with `npm run dev`
-- The docs are build using [Nextra](https://nextra.site/) which is again based on [NextJS](https://nextjs.org/)
+- Start the documentation in development mode with `npm run dev`
+- The docs are built using [Nextra](https://nextra.site/) which is again based on [NextJS](https://nextjs.org/)
 
 ## Making a pull request
 
