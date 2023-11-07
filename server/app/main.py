@@ -420,33 +420,6 @@ async def read_logs(request, values):
     )
 
 
-@validation.validate(schema=validation.ReadLogsAggregatesRequest)
-async def read_logs_aggregates(request, values):
-    relationship = await auth.authorize(
-        request,
-        auth.Sensor(
-            {
-                "network_identifier": values.path["network_identifier"],
-                "sensor_identifier": values.path["sensor_identifier"],
-            }
-        ),
-    )
-    if relationship < auth.Relationship.DEFAULT:
-        raise errors.UnauthorizedError
-    if relationship < auth.Relationship.OWNER:
-        raise errors.ForbiddenError
-    query, arguments = database.parametrize(
-        identifier="aggregate-logs",
-        arguments={"sensor_identifier": values.path["sensor_identifier"]},
-    )
-    elements = await request.state.dbpool.fetch(query, *arguments)
-    # Return successful response
-    return starlette.responses.JSONResponse(
-        status_code=200,
-        content=database.dictify(elements),
-    )
-
-
 ROUTES = [
     # fmt: off
     starlette.routing.Route(
@@ -507,11 +480,6 @@ ROUTES = [
     starlette.routing.Route(
         path="/networks/{network_identifier}/sensors/{sensor_identifier}/logs",
         endpoint=read_logs,
-        methods=["GET"],
-    ),
-    starlette.routing.Route(
-        path="/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates",
-        endpoint=read_logs_aggregates,
         methods=["GET"],
     ),
     # fmt: on

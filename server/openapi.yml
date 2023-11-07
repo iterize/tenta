@@ -378,49 +378,6 @@ paths:
           $ref: "#/components/responses/403"
         "404":
           $ref: "#/components/responses/404"
-  "/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates":
-    get:
-      tags: [Sensors]
-      summary: Read logs aggregation
-      description: |
-        Returns an aggregation of a sensor's logs that have a severity of warning or error.
-      security:
-        - "Bearer token": []
-      parameters:
-        - $ref: "#/components/parameters/network_identifier"
-        - $ref: "#/components/parameters/sensor_identifier"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    min_creation_timestamp:
-                      $ref: "#/components/schemas/timestamp"
-                    max_creation_timestamp:
-                      $ref: "#/components/schemas/timestamp"
-                    min_revision:
-                      $ref: "#/components/schemas/revision"
-                    max_revision:
-                      $ref: "#/components/schemas/revision"
-                    message:
-                      $ref: "#/components/schemas/message"
-                    severity:
-                      $ref: "#/components/schemas/severity"
-                    count:
-                      $ref: "#/components/schemas/count"
-        "400":
-          $ref: "#/components/responses/400"
-        "401":
-          $ref: "#/components/responses/401"
-        "403":
-          $ref: "#/components/responses/403"
-        "404":
-          $ref: "#/components/responses/404"
   "/networks/{network_identifier}/sensors/{sensor_identifier}/configurations":
     post:
       tags: [Sensors]

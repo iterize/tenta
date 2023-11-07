@@ -611,35 +611,3 @@ async def test_read_logs_with_previous_page(
     assert len(body) == 3
     assert keys(body, {"message", "severity", "revision", "creation_timestamp"})
     assert order(body, lambda x: x["creation_timestamp"])
-
-
-########################################################################################
-# Route: GET /networks/+/sensors/+/logs/aggregates
-########################################################################################
-
-
-async def test_read_log_aggregates(
-    reset, client, network_identifier, sensor_identifier, access_token
-):
-    """Test reading the log aggregation."""
-    response = await client.get(
-        url=f"/networks/{network_identifier}/sensors/{sensor_identifier}/logs/aggregates",
-        headers={"Authorization": f"Bearer {access_token}"},
-    )
-    assert returns(response, 200)
-    body = response.json()
-    assert isinstance(body, list)
-    assert len(body) == 2
-    assert keys(
-        body,
-        {
-            "message",
-            "severity",
-            "min_revision",
-            "max_revision",
-            "min_creation_timestamp",
-            "max_creation_timestamp",
-            "count",
-        },
-    )
-    assert order(body, lambda x: x["max_creation_timestamp"])

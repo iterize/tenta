@@ -14,23 +14,6 @@ WHERE
 GROUP BY attribute;
 
 
--- name: aggregate-logs
-SELECT
-    severity,
-    message,
-    first(revision, creation_timestamp) AS min_revision,
-    last(revision, creation_timestamp) AS max_revision,
-    min(creation_timestamp) AS min_creation_timestamp,
-    max(creation_timestamp) AS max_creation_timestamp,
-    count(*) AS count
-FROM log
-WHERE
-    sensor_identifier = ${sensor_identifier}
-    AND severity = any(ARRAY['warning', 'error'])
-GROUP BY sensor_identifier, severity, message
-ORDER BY max_creation_timestamp ASC;
-
-
 -- name: read-sensors
 SELECT
     sensor.identifier AS sensor_identifier,
