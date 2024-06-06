@@ -1,6 +1,8 @@
 import logging
 import time
 
+import app.settings as settings
+
 
 class Color:
     red = "\x1b[31m"
@@ -71,4 +73,6 @@ def configure():
     handler.setFormatter(formatter)
     # Assign our handler to the root logger
     logging.root.handlers = [handler]
-    logging.root.setLevel(logging.DEBUG)
+    logging.root.setLevel(
+        logging.INFO if settings.ENVIRONMENT == "production" else logging.DEBUG
+    )
