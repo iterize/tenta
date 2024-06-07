@@ -1,0 +1,224 @@
+# Next steps
+
+In the previous chapter, we collected and viewed our first measurements. But, Tenta can do more than that! In the following, we will learn how to transmit logs and how to send and acknowledge configurations. At the end of this chapter, we will look at a complete example that uses all of these features together.
+
+---
+
+Most features of Tenta are optional. In the simplest case, you can use Tenta as a place to send measurements to and nothing else.
+
+This alone already gives you a lot of functionality. You can observe the measurements live in the dashboard and query them in the database for further analysis.
+
+Other features are optional. You can incrementally add them to your sensors as needed.
+
+---
+
+## Logs
+
+Sometimes things go wrong. When they do, Tenta's logging functionality can give you insight into your sensors to understand what happened.
+
+You can relay logs from your sensors to Tenta to have access to them in the dashboard:
+
+```python
+import paho.mqtt.client as mqtt
+import json
+import time
+
+
+# Create a paho-mqtt client instance
+client = mqtt.Client()
+# Connect to the MQTT broker (here: our development instance)
+client.connect("localhost", port=1883)
+# Create a test log message with a severity level of "error"
+log = {
+    "message": "The CPU is burning; Please call the fire department.",
+    "severity": "error",
+    "timestamp": time.time(),  # The current time as Unix timestamp
+}
+# Publish our log message
+client.publish(
+    topic="logs/81bf7042-e20f-4a97-ac44-c15853e3618f",
+    payload=json.dumps([log]).encode(),
+    qos=1,
+)
+```
+
+## Configurations
+
+Measurements and logs are sent from the sensors to Tenta. You might want to send data in the other direction to configure your sensors.
+
+You can create and update a sensor's configuration in the dashboard. Tenta relays these configurations to the sensors via MQTT.
+
+Let's see how a sensor can listen for new configurations:
+
+```python
+import paho.mqtt.client as mqtt
+import json
+
+
+def on_connect(client, userdata, flags, rc):
+    # Subscribe to our configurations topic after we connect
+    client.subscribe("configurations/81bf7042-e20f-4a97-ac44-c15853e3618f")
+
+
+def on_message(client, userdata, message):
+    # Decode the configuration on arrival
+    message = json.loads(message.payload.decode())
+    # Print the configuration
+    print(message['configuration'])
+
+
+# Create a paho-mqtt client instance
+client = mqtt.Client()
+# Define our callback functions
+client.on_connect = on_connect
+client.on_message = on_message
+# Connect to the MQTT broker (here: our development instance)
+client.connect("localhost", port=1883)
+# Start the network loop (blocking)
+client.loop_forever()
+```
+
+The server automatically associates each configuration with an incremental revision number. Sensors can use this revision number to detect configuration updates and to link measurements and logs to specific configurations.
+
+## Acknowledgments
+
+With acknowledgments, sensors can indicate that they have received a configuration and whether they were able to apply it (or not, e.g., when the configuration is invalid).
+
+We can extend the previous example to send an acknowledgment after receiving a configuration:
+
+```python
+import paho.mqtt.client as mqtt
+import json
+
+
+def on_connect(client, userdata, flags, rc):
+    # Subscribe to our configurations topic after we connect
+    client.subscribe("configurations/81bf7042-e20f-4a97-ac44-c15853e3618f")
+
+
+def on_message(client, userdata, message):
+    # Decode the configuration on arrival
+    message = json.loads(message.payload.decode())
+    # Check that the configuration contains the parameter `baseline`
+    success = "baseline" in message["configuration"]
+    # Create the acknowledgment
+    acknowledgment = {
+        "success": success,
+        "timestamp": time.time(), # The current time as Unix timestamp
+        "revision": message["revision"],
+    }
+    # Publish our acknowledgment
+    client.publish(
+        topic="acknowledgments/81bf7042-e20f-4a97-ac44-c15853e3618f",
+        payload=json.dumps([acknowledgment]).encode(),
+        qos=1,
+    )
+
+
+# Create a paho-mqtt client instance
+client = mqtt.Client()
+# Define our callback functions
+client.on_connect = on_connect
+client.on_message = on_message
+# Connect to the MQTT broker (here: our development instance)
+client.connect("localhost", port=1883)
+# Start the network loop (blocking)
+client.loop_forever()
+```
+
+You can then see the status of configurations in the dashboard.
+
+## Batching messages
+
+You might have noticed that we send measurements, logs, and acknowledgments as lists. You can batch messages of the same type in a single MQTT message.
+
+This can be useful when your sensors are not always connected to the internet (e.g. battery-powered sensors) and can take some load off Tenta and the MQTT broker in high-throughput scenarios.
+
+## Complete example
+
+Until now, we've only seen the different message types in isolation. Let's combine them into a complete example that sends measurements and logs and receives and acknowledges configurations:
+
+```python
+import paho.mqtt.client as mqtt
+import json
+import time
+import random
+
+
+# Set the configuration to an empty dictionary initially
+configuration = {}
+
+
+def on_connect(client, userdata, flags, rc):
+    # Subscribe to our configurations topic after we connect
+    client.subscribe("configurations/81bf7042-e20f-4a97-ac44-c15853e3618f")
+
+
+def on_message(client, userdata, message):
+    # Decode the configuration on arrival
+    message = json.loads(message.payload.decode())
+    # Check that the configuration contains the parameter `baseline`
+    success = "baseline" in message["configuration"]
+    # Store the configuration globally
+    global configuration
+    if success:
+        configuration = message["configuration"]
+    # Create the acknowledgment
+    acknowledgment = {
+        "success": success,
+        "timestamp": time.time(),  # The current time as Unix timestamp
+        "revision": message["revision"],
+    }
+    # Publish our acknowledgment
+    client.publish(
+        topic="acknowledgments/81bf7042-e20f-4a97-ac44-c15853e3618f",
+        payload=json.dumps([acknowledgment]).encode(),
+        qos=1,
+    )
+
+
+# Create a paho-mqtt client instance
+client = mqtt.Client()
+# Define our callback functions
+client.on_connect = on_connect
+client.on_message = on_message
+# Connect to the MQTT broker (here: our development instance)
+client.connect("localhost", port=1883)
+# Start the network loop (non-blocking)
+client.loop_start()
+
+# Send measurements and logs in regular intervals
+while True:
+    # Generate and publish a random measurement depending on `baseline`
+    measurement = {
+        "value": {
+            "temperature": configuration.get("baseline", 20) + random.random() * 2,
+            "humidity": random.random(),
+        },
+        "timestamp": time.time(),  # The current time as Unix timestamp
+    }
+    client.publish(
+        topic="measurements/81bf7042-e20f-4a97-ac44-c15853e3618f",
+        payload=json.dumps([measurement]).encode(),
+        qos=1,
+    )
+    # Generate and publish a random log message
+    log = {
+        "message": random.choice(
+            [
+                "Everything is fine.",
+                "The CPU is toasty; Get the marshmallows ready!",
+                "The CPU is burning; Please call the fire department.",
+            ]
+        ),
+        "severity": random.choice(["info", "warning", "error"]),
+        "timestamp": time.time(),  # The current time as Unix timestamp
+    }
+    client.publish(
+        topic="logs/81bf7042-e20f-4a97-ac44-c15853e3618f",
+        payload=json.dumps([log]).encode(),
+        qos=1,
+    )
+    # Wait for 10 seconds
+    time.sleep(10)
+```
