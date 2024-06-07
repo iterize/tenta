@@ -254,7 +254,8 @@ WHERE access_token_hash = ${access_token_hash};
 
 
 -- name: authorize-resource-network
--- Return no elements if the network doesn't exist and NULL if permissions are missing
+-- Return no elements if the network doesn't exist and NULL if permissions are
+-- missing.
 -- Could be extended to support finer grained permission relationships
 WITH interim AS (
     SELECT
@@ -270,7 +271,8 @@ WHERE network.identifier = ${network_identifier};
 
 
 -- name: authorize-resource-sensor
--- Return no elements if the network or sensor doesn't exist and NULL if permissions are missing
+-- Return no elements if the network or sensor doesn't exist and NULL if
+-- permissions are missing.
 -- Could be extended to support finer grained permission relationships
 WITH interim AS (
     SELECT

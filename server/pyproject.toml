@@ -49,7 +49,7 @@ classmethod-decorators = ["classmethod", "pydantic.field_validator"]
 [tool.sqlfluff.core]
 dialect = "postgres"
 templater = "placeholder"
-exclude_rules = "L032"
+exclude_rules = ["L029", "L032"]
 
 [tool.sqlfluff.templater.placeholder]
 param_style = "dollar"
