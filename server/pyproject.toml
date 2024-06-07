@@ -1,17 +1,17 @@
 [tool.poetry]
-name = "server"
+name = "tenta"
 version = "0.1.0"
 description = ""
 authors = ["Felix Böhm <felix@felixboehm.dev>"]
 
 [tool.poetry.dependencies]
 python = "~3.11"
-starlette = "^0.31.1"
-uvicorn = {extras = ["standard"], version = "^0.23.2"}
-asyncpg = "^0.28.0"
-pydantic = "^2.3.0"
+starlette = "^0.37.2"
+uvicorn = {extras = ["standard"], version = "^0.30.1"}
+asyncpg = "^0.29.0"
+pydantic = "^2.7.3"
 passlib = {extras = ["argon2"], version = "^1.7.4"}
-pendulum = "^2.1.2"
+pendulum = "^3.0.0"
 aiomqtt = "^1.2.1"
 
 [tool.poetry.group.dev]
