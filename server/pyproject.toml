@@ -12,7 +12,7 @@ asyncpg = "^0.29.0"
 pydantic = "^2.7.3"
 passlib = {extras = ["argon2"], version = "^1.7.4"}
 pendulum = "^3.0.0"
-aiomqtt = "^1.2.1"
+aiomqtt = "^2.1.0"
 
 [tool.poetry.group.dev]
 optional = true

@@ -2,18 +2,18 @@
 
 [[package]]
 name = "aiomqtt"
-version = "1.2.1"
+version = "2.1.0"
 description = "The idiomatic asyncio MQTT client, wrapped around paho-mqtt"
 category = "main"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "aiomqtt-1.2.1-py3-none-any.whl", hash = "sha256:3925b40b2b95b1905753d53ef3a9162e903cfab35ebe9647ab4d52e45ffb727f"},
-    {file = "aiomqtt-1.2.1.tar.gz", hash = "sha256:7582f4341f08ef7110dd9ab3a559454dc28ccda1eac502ff8f08a73b238ecede"},
+    {file = "aiomqtt-2.1.0-py3-none-any.whl", hash = "sha256:ba62afe18e57b01ef28240f192b73cd54d7e42d827a47697997d3e6252a130d1"},
+    {file = "aiomqtt-2.1.0.tar.gz", hash = "sha256:8501c373c00fa7074a990a951285f31340c29b6541aea15e040da9ea33d79719"},
 ]
 
 [package.dependencies]
-paho-mqtt = ">=1.6.0,<2.0.0"
+paho-mqtt = ">=2.0.0,<3.0.0"
 
 [[package]]
 name = "annotated-types"
@@ -1572,17 +1572,18 @@ files = [
 
 [[package]]
 name = "paho-mqtt"
-version = "1.6.1"
+version = "2.1.0"
 description = "MQTT version 5.0/3.1.1 client class"
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "paho-mqtt-1.6.1.tar.gz", hash = "sha256:2a8291c81623aec00372b5a85558a372c747cbca8e9934dfe218638b8eefc26f"},
+    {file = "paho_mqtt-2.1.0-py3-none-any.whl", hash = "sha256:6db9ba9b34ed5bc6b6e3812718c7e06e2fd7444540df2455d2c51bd58808feee"},
+    {file = "paho_mqtt-2.1.0.tar.gz", hash = "sha256:12d6e7511d4137555a3f6ea167ae846af2c7357b10bc6fa4f7c3968fc1723834"},
 ]
 
 [package.extras]
-proxy = ["PySocks"]
+proxy = ["pysocks"]
 
 [[package]]
 name = "pandocfilters"
@@ -3050,4 +3051,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.11"
-content-hash = "1632852dc1a8a362aac07ba62383cc61e7d7b5f6751c6d21c56214850b61c010"
+content-hash = "4af88bceee1c0268fe667b4e169c365f7aec14a05867390fb087c20c126c09e6"

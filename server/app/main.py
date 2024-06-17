@@ -296,7 +296,7 @@ async def create_configuration(request, values):
         sensor_identifier=values.path["sensor_identifier"],
         revision=revision,
         configuration=values.body,
-        mqttc=request.state.mqttc,
+        client=request.state.client,
         dbpool=request.state.dbpool,
     )
     # Return successful response
@@ -488,19 +488,17 @@ ROUTES = [
 
 @contextlib.asynccontextmanager
 async def lifespan(app):
-    """Manage the lifetime of the database client and the MQTT client."""
-    async with database.pool() as dbpool, mqtt.client() as mqttc:
+    """Manage the lifetime of the database connection and the MQTT client."""
+    async with database.pool() as dbpool, mqtt.client() as client:
         # Start MQTT listener in (unawaited) asyncio task
         loop = asyncio.get_event_loop()
-        task = loop.create_task(mqtt.listen(mqttc, dbpool))
-        # Yield clients to application state
-        yield {"dbpool": dbpool, "mqttc": mqttc}
-        # Wait for the MQTT listener task to be cancelled when the app exits
+        task = loop.create_task(mqtt.handle(client, dbpool))
+        # Yield both to application state
+        yield {"dbpool": dbpool, "client": client}
+        # Cancel the MQTT listener task when the app exits
         task.cancel()
-        try:
+        with contextlib.suppress(asyncio.CancelledError):
             await task
-        except asyncio.CancelledError:
-            pass
 
 
 logger = logging.getLogger(__name__)

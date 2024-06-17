@@ -11,6 +11,7 @@ import pydantic
 import app.database as database
 import app.settings as settings
 import app.validation as validation
+import app.utils as utils
 
 
 def _encode_payload(payload):
@@ -40,18 +41,17 @@ async def client():
         # Make the MQTT connection persistent. The broker will retain messages on
         # topics we subscribed to in case we disconnect.
         clean_start=False,
-        client_id="server",
+        identifier="server",
     ) as x:
         yield x
 
 
 async def publish_configuration(
-    sensor_identifier, revision, configuration, mqttc, dbpool
+    sensor_identifier, revision, configuration, client, dbpool
 ):
     """Publish a configuration to the specified sensor."""
 
     async def helper(sensor_identifier, revision, configuration):
-        backoff = 1
         query, arguments = database.parametrize(
             identifier="update-configuration-on-publication",
             arguments={
@@ -59,10 +59,10 @@ async def publish_configuration(
                 "revision": revision,
             },
         )
-        while True:
+        for boff in utils.backoff():
             try:
                 # Try to publish the configuration
-                await mqttc.publish(
+                await client.publish(
                     topic=f"configurations/{sensor_identifier}",
                     payload=_encode_payload(
                         {"revision": revision, "configuration": configuration}
@@ -80,12 +80,9 @@ async def publish_configuration(
                 # The revision number only increases, never decreases.
                 logger.warning(
                     f"Failed to publish configuration {sensor_identifier}#{revision},"
-                    f" retrying in {backoff} seconds: {repr(e)}"
+                    f" retrying in {boff} seconds: {repr(e)}"
                 )
-                # Backoff exponentially, up until about 5 minutes
-                if backoff < 256:
-                    backoff *= 2
-                await asyncio.sleep(backoff)
+                await asyncio.sleep(boff)
 
     # Fire-and-forget the retry task, save the reference, and return immediately
     task = asyncio.create_task(helper(sensor_identifier, revision, configuration))
@@ -167,30 +164,42 @@ SUBSCRIPTIONS = {
 }
 
 
-async def listen(mqttc, dbpool):
-    """Listen to and handle incoming MQTT messages from sensors."""
-    async with mqttc.messages() as messages:
-        # Subscribe to all topics
-        for wildcard in SUBSCRIPTIONS.keys():
-            await mqttc.subscribe(wildcard, qos=1, timeout=10)
-            logger.info(f"Subscribed to: {wildcard}")
-        # Loop through incoming messages
-        async for message in messages:
-            logger.debug(f"Received: {message.payload!r} on topic: {message.topic}")
-            # Get sensor identifier from the topic
-            # TODO validate that identifier is a valid UUID format
-            sensor_identifier = str(message.topic).split("/")[-1]
-            # Call the appropriate handler; First match wins
-            for wildcard, (handle, validator) in SUBSCRIPTIONS.items():
-                if message.topic.matches(wildcard):
-                    try:
-                        payload = validator.validate_json(message.payload)
-                        await handle(sensor_identifier, payload, dbpool)
-                    # Errors are logged and ignored as we can't give feedback
-                    except pydantic.ValidationError:
-                        logger.warning(f"Malformed message: {message.payload!r}")
-                    except Exception as e:  # pragma: no cover
-                        logger.error(e, exc_info=True)
+async def handle(client, dbpool):
+    """Subscribe and handle incoming MQTT messages from sensors."""
+    for wildcard in SUBSCRIPTIONS.keys():
+        # Subscribe to all our topics
+        await client.subscribe(wildcard, qos=1, timeout=10)
+        logger.info(f"Subscribed to: {wildcard}")
+    while True:
+        try:
+            async for message in client._messages():
+                logger.debug(f"Received: {message.payload!r} on topic: {message.topic}")
+                # Get sensor identifier from the topic
+                # TODO validate that identifier is a valid UUID format
+                sensor_identifier = str(message.topic).split("/")[-1]
+                # Call the appropriate handler; First match wins
+                for wildcard, (handle, validator) in SUBSCRIPTIONS.items():
+                    if message.topic.matches(wildcard):
+                        try:
+                            payload = validator.validate_json(message.payload)
+                            await handle(sensor_identifier, payload, dbpool)
+                        # Errors are logged and ignored as we can't give feedback
+                        except pydantic.ValidationError:
+                            logger.warning(f"Malformed message: {message.payload!r}")
+                        except Exception as e:  # pragma: no cover
+                            logger.error(e, exc_info=True)
+                        break
+                else:  # Executed if no break is called
+                    logger.warning(f"Failed to match topic: {message.topic}")
+        except aiomqtt.MqttError:
+            # Reconnect on error
+            logger.error("Lost connection to the MQTT broker")
+            for boff in utils.backoff():
+                logger.info(f"Reconnecting to the MQTT broker in {boff:.2f} seconds")
+                await asyncio.sleep(boff)
+                with contextlib.suppress(aiomqtt.MqttError):
+                    await client.__aexit__(None, None, None)
+                with contextlib.suppress(aiomqtt.MqttError):
+                    await client.__aenter__()
+                    logger.info("Successfully reconnected to the MQTT broker")
                     break
-            else:  # Executed if no break is called
-                logger.warning(f"Failed to match topic: {message.topic}")
