@@ -1,0 +1,23 @@
+name: Publication
+on:
+  push:
+    paths:
+      - publication/**
+      - .github/workflows/publication.yml
+
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build PDF
+        uses: openjournals/openjournals-draft-action@master
+        with:
+          journal: joss
+          paper-path: publication/paper.md
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: paper
+          path: publication/paper.pdf
