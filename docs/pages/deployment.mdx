@@ -20,4 +20,12 @@ You can run this Docker image locally with `docker run -p 127.0.0.1:8421:8421 --
 
 _All of the following paths are relative to the `dashboard/` directory of this repository._
 
-Use the file `.env.template` as a template to create a file `.env.local` - the variables are explained in the template. Then, run `npm install` and `npm run build` to build the dashboard. All static HTML files for the dashboard can be found at `out/` and can be served by any CDN (https://www.netlify.com/, https://render.com/, https://pages.cloudflare.com/).
+The dashboard can be hosted on any web server that supports NodeJS applications. Some hosting options are [fly.io](https://fly.io/), [Vercel](https://vercel.com/), [Render](https://render.com/) or [DigitalOcean](https://www.digitalocean.com/).
+
+The file `.env.template` contains all available environment variables. The command `npm run build` creates a production build in the `out/` directory. This directory can be served by running `npm run start`.
+
+<Callout type="info" emoji="💡">
+
+The dashboard might be hostable as a static site in the future. See https://github.com/iterize/tenta/issues/26. Anyone is welcome to contribute!
+
+</Callout>
