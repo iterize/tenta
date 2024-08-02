@@ -34,7 +34,7 @@
     "eslint-config-next": "13.4.19",
     "js-cookie": "^3.0.5",
     "lodash": "^4.17.21",
-    "next": "13.4.19",
+    "next": "^14.0.2",
     "postcss": "8.4.28",
     "prettier": "^3.0.3",
     "react": "18.2.0",
@@ -46,5 +46,8 @@
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.2.2",
     "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.10"
   }
 }
