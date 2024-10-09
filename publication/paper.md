@@ -98,9 +98,9 @@ Tenta leverages concurrency to achieve high throughput. Database and HTTP reques
 
 # Author contributions
 
-FB: Designed and developed the server software, wrote its tests and documentation, and wrote the manuscript; MM: Developed the software running on the sensors, developed the dashboard, reviewed the manuscript; PA: Supervised the project, extracted the requirements, reviewed the manuscript; JC: Principle investigator, supervised the project, reviewed the manuscript;
+FB: Designed and developed the server software, wrote the tests, wrote the documentation, wrote the manuscript; MM: Developed the dashboard, developed the client library running on the sensors, reviewed the manuscript; PA: Supervised the project, extracted the requirements, reviewed the manuscript; JC: Principle investigator, supervised the project, reviewed the manuscript;
 
-# Acknowledgment of Financial Support
+# Acknowledgment of financial support
 
 This work was financially supported by the European Union’s Horizon 2020 Programme as part of the ICOS Cities project (Pilot Applications in Urban Landscapes - Towards
 integrated city observatories for greenhouse gases - PAUL): Grant Agreement ID 101037319.
