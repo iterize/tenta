@@ -1,0 +1,81 @@
+services:
+  server:
+    build:
+      context: ./server
+      args:
+        commit_sha: ${COMMIT_SHA:-development}
+        branch_name: ${BRANCH_NAME:-development}
+    environment:
+      - ENVIRONMENT=development
+      - POSTGRESQL_HOSTNAME=postgres
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_IDENTIFIER=postgres
+      - POSTGRESQL_PASSWORD=12345678
+      - POSTGRESQL_DATABASE=database
+      - MQTT_HOSTNAME=mosquitto
+      - MQTT_PORT=1883
+      - MQTT_IDENTIFIER=server
+      - MQTT_PASSWORD=password
+      - COMMIT_SHA=${COMMIT_SHA:-development}
+      - BRANCH_NAME=${BRANCH_NAME:-development}
+    volumes:
+      - ./server:/server
+    ports:
+      - "8421:8421"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mosquitto:
+        condition: service_started
+    command: bash -c "cd /server && poetry install --with dev && poetry run python -m scripts.initialize --populate && poetry run uvicorn app.main:app --host 0.0.0.0 --port 8421 --reload --reload-include './app/*.sql' --reload-exclude './tests/*' --reload-exclude='./scripts/*' --log-level debug"
+
+  dashboard:
+    build:
+      context: ./dashboard
+      args:
+        NODE_VERSION: 20.6.1
+        NEXT_PUBLIC_SERVER_URL: http://localhost:8421
+        NEXT_PUBLIC_INSTANCE_TITLE: "Development Instance"
+        NEXT_PUBLIC_BUILD_TIMESTAMP: ${NEXT_PUBLIC_BUILD_TIMESTAMP:-0}
+        NEXT_PUBLIC_COMMIT_SHA: ${COMMIT_SHA:-development}
+        NEXT_PUBLIC_BRANCH_NAME: ${BRANCH_NAME:-development}
+    environment:
+      - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - NEXT_PUBLIC_SERVER_URL=http://localhost:8421
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+    depends_on:
+      - server
+
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./server/tests/mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+volumes:
+  postgres_data:

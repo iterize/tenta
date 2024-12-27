@@ -14,6 +14,22 @@ Tenta is lightweight and composable. It is designed to be used as a building blo
 
 _Read the documentation at [tenta.onrender.com](https://tenta.onrender.com/)_
 
+## Try it out!
+
+You can try out Tenta in a few minutes with Docker Compose. Clone the repository and run:
+
+```sh
+NEXT_PUBLIC_BUILD_TIMESTAMP=$(date +%s) COMMIT_SHA=$(git rev-parse --verify HEAD) BRANCH_NAME=$(git branch --show-current) docker compose up --build
+```
+
+The dashboard will be available at [http://localhost:3000](http://localhost:3000). You can log in with the default username `happy-un1c0rn` and password `12345678`.
+
+You can exit the application with `Ctrl+C` and remove the containers with:
+
+```sh
+docker compose down -v
+```
+
 ## More
 
 **Publication:** [![status](https://joss.theoj.org/papers/5daf8d2d13c01da24e949c20a08d29d0/status.svg)](https://joss.theoj.org/papers/5daf8d2d13c01da24e949c20a08d29d0)

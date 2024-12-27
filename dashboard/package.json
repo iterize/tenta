@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "export NEXT_PUBLIC_BUILD_TIMESTAMP=$(date +%s) && export NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse HEAD) && export NEXT_PUBLIC_BRANCH_NAME=$(git branch --show-current) && next dev",
-    "build": "export NEXT_PUBLIC_BUILD_TIMESTAMP=$(date +%s) && export NEXT_PUBLIC_COMMIT_SHA=$(git rev-parse HEAD) && export NEXT_PUBLIC_BRANCH_NAME=$(git branch --show-current) && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
