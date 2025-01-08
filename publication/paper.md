@@ -64,7 +64,7 @@ Tenta is a lightweight server application to manage sensor networks remotely and
 \label{fig:architecture}
 \end{figure}
 
-Starting in 2022, our research group deployed a network of 20 mid-precision CO2 sensors on rooftops in and around Munich [@midcost]. To date, Tenta has reliably processed half a billion of this network's measurements as well as hundreds of configuration updates. Tenta's test suite currently stands at a statement coverage of 94%.
+Starting in 2022, our research group deployed a network of 20 mid-precision CO\textsubscript{2} sensors on rooftops in and around Munich [@midcost]. To date, Tenta has reliably processed half a billion of this network's measurements as well as hundreds of configuration updates. Tenta's test suite currently stands at a statement coverage of 94%.
 
 # Statement of need
 
@@ -78,7 +78,7 @@ Tenta follows the Unix philosophy and aims to be fast, flexible, and scalable. T
 
 \begin{figure}
 \makebox[\textwidth][c]{\includegraphics[width=1.093\textwidth]{images/screenshot.png}}%
-\caption{Tenta's dashboard shows real-time charts of collected measurements, here with data from our research group's CO2 sensor network. Users can furthermore manage configurations and inspect measurements, logs, and status metrics via the dashboard.}
+\caption{Tenta's dashboard shows real-time charts of collected measurements, here with data from our research group's CO\textsubscript{2} sensor network. Users can furthermore manage configurations and inspect measurements, logs, and status metrics via the dashboard.}
 \label{fig:screenshot}
 \end{figure}
 
